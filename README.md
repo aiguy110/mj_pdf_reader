@@ -7,6 +7,7 @@ I made several modifications and fixes to the UI, UX and functionality, and call
 
 ## Project status
 I made this mainly for myself, and I am happy with its current state. I don't think I will give it a lot of attention.
+The code could be written much more cleanly.
 
 ## MJ PDF Reader Features
 * Fast & smooth experience.
@@ -23,9 +24,9 @@ I made this mainly for myself, and I am happy with its current state. I don't th
 
 ## Things I would like to do for MJ PDF Reader
 - [ ] Refactor the very unholy code. (I am not the culprit for the most part, though.)
-- [ ] Rewrite in Kotlin would be even better.
+- [ ] Rewrite it in Kotlin would be even better.
 - [ ] Adding search functionality. Though, it looks like this is not an easy to do task, since the android-pdf-viewer library doesn't support that. (and of course OCR is not an option)
-- [ ] Adding highlight functionality. I don't use it personally, so I don't think I'll work on it any time soon. But feel free to create pull requests.
+- [ ] Adding highlight functionality. I don't use it personally, so I don't think I'll work on it any time soon. But feel free to create a pull request.
 - [ ] Take a look at this (https://github.com/JavaCafe01/PdfViewer/issues/175)
 - [ ] Adding an option to disable anything related to network connections in the settings.
 - [ ] Extract all the resources from java files.
@@ -48,8 +49,8 @@ I made this mainly for myself, and I am happy with its current state. I don't th
 - [x] Fixed the (very annoying) issue with full screen mode being lost when the screen gets rotated.
 - [x] Added the functionality to restore the zoom level when rotating the device via a Snackbar prompt
 - [x] Removed WhatsNew dependency (https://github.com/TonnyL/WhatsNew) 
-- [x] Fixed light / dark theming consistency problem by removing the ability to choose many different themes for the app. (in theory it could be add, but I don't want to spend time on it)
-- [x] Made the already unholy code further from cleanliness. (I went along with style, I really should refactor it) 
+- [x] Fixed light / dark theming consistency problem by removing the ability to choose many different themes for the app. (in theory it could be added, but I don't want to spend time on it)
+- [x] Made the already unholy code further from cleanliness. (I went along with style, it really needs to be refactored) 
 
 ## Authors and acknowledgment
 - MJ PDF Reader is made by @mudlej.
