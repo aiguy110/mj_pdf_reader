@@ -1,0 +1,4 @@
+MJ PDF Reader is a smooth PDF viewer written in Java.
+It contains a simple user interface, multiple themes, and the ability to share a PDF.
+Originally written by Gokul Swaminathan under the name of PDF Viewer Plus.
+This is a version build on it, made by Mudlej.
