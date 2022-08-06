@@ -4,6 +4,11 @@ This is a fork made by Mudlej from PDF Viewer Plus originally made by Gokul Swam
 
 I made several modifications and fixes to the UI, UX and functionality, and called the new version MJ PDF Reader.
 
+## Screenshots
+
+| Main Page (Light) | Main Page (Dark) | Full Screen (Light) |
+|:-:|:-:|:-:|
+| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_light.jpg" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_dark.jpg" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/fullscreen_light.jpg" width="190" height="400"/> |
 
 ## MJ PDF Reader Features
 * Fast & smooth experience.
@@ -15,13 +20,7 @@ I made several modifications and fixes to the UI, UX and functionality, and call
 * Open online PDFs through links.
 * Share & print PDFs.
 * Open multiple PDFs.
-* FOSS and totally private.
-* 
-## Screenshots
-
-| Main Page (Light) | Main Page (Dark) | Full Screen (Light) |
-|:-:|:-:|:-:|
-| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_light.jpg" width="190" height="340"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_dark.jpg" width="190" height="340"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/fullscreen_light.jpg" width="190" height="340"/> |
+* FOSS and totally private
 
 ## Permissions and privacy
 This app does not collect any data.  
