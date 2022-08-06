@@ -1,6 +1,6 @@
 # MJ PDF Reader
 
-This is a fork made by Mudlej from PDF View Plus originally made by Gokul Swaminathan (@JavaCafe01).
+This is a fork made by Mudlej from PDF Viewer Plus originally made by Gokul Swaminathan (@JavaCafe01).
 
 I made several modifications and fixes to the UI, UX and functionality, and called the new version MJ PDF Reader.
 
