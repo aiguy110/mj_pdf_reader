@@ -5,10 +5,6 @@ This is a fork made by Mudlej from PDF Viewer Plus originally made by Gokul Swam
 I made several modifications and fixes to the UI, UX and functionality, and called the new version MJ PDF Reader.
 
 
-## Project status
-I made this mainly for myself, and I am happy with its current state. I don't think I will give it a lot of attention.
-The code could be written much more cleanly.
-
 ## MJ PDF Reader Features
 * Fast & smooth experience.
 * Minimalist & simple user interface.
@@ -20,7 +16,22 @@ The code could be written much more cleanly.
 * Share & print PDFs.
 * Open multiple PDFs.
 * FOSS and totally private.
+* 
+## Screenshots
 
+| Main Page (Light) | Main Page (Dark) | Full Screen (Light) |
+|:-:|:-:|:-:|
+| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_light.jpg" width="190" height="340"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_dark.jpg" width="190" height="340"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/fullscreen_light.jpg" width="190" height="340"/> |
+
+## Permissions and privacy
+This app does not collect any data.  
+The following permissions are required to provide specific features in the app:
+* *Internet*: For opening PDFs through links
+* *Storage*: For saving downloading PDFs and opening them from storage
+
+## Project status
+I made this mainly for myself, and I am happy with its current state. I don't think I will give it a lot of attention.
+The code could be written much more cleanly.
 
 ## Things I would like to do for MJ PDF Reader
 - [ ] Refactor the very unholy code. (I am not the culprit for the most part, though.)
@@ -30,7 +41,6 @@ The code could be written much more cleanly.
 - [ ] Take a look at this (https://github.com/JavaCafe01/PdfViewer/issues/175)
 - [ ] Adding an option to disable anything related to network connections in the settings.
 - [ ] Extract all the resources from java files.
-
 
 ## What is different from PDF Viewer Plus
 
