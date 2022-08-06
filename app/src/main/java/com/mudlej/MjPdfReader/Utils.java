@@ -48,16 +48,16 @@ public class Utils {
         new AlertDialog.Builder(context)
                 .setTitle(context.getResources().getString(R.string.app_name) + " Features")
                 .setMessage(
-                        "* Fast & smooth experience." + end +
-                                "* Minimalist & simple user interface." + end +
-                                "* Remembers the last opened page." + end +
-                                "* Dark mode for the app and the PDF." + end +
-                                "* True full screen with hidable buttons." + end +
-                                "* An option to keep the screen on." + end +
-                                "* Open online PDFs through links." + end +
-                                "* Share & print PDFs." + end +
-                                "* Open multiple PDFs." + end +
-                                "* FOSS and totally private. (see About)."
+                    "* Fast & smooth experience." + end +
+                    "* Minimalist & simple user interface." + end +
+                    "* Remembers the last opened page." + end +
+                    "* Dark mode for the app and the PDF." + end +
+                    "* True full screen with hidable buttons." + end +
+                    "* An option to keep the screen on." + end +
+                    "* Open online PDFs through links." + end +
+                    "* Share & print PDFs." + end +
+                    "* Open multiple PDFs." + end +
+                    "* FOSS and totally private. (see About)."
                 )
                 .setPositiveButton(context.getResources().getString(R.string.ok), (dialogInterface, i)
                         -> dialogInterface.dismiss() )
