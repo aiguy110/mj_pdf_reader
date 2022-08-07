@@ -35,6 +35,7 @@ The following permissions are required to provide specific features in the app:
 ## Things I would like to do for MJ PDF Reader
 - [ ] Refactor the unholy code. (I am not the culprit for the most part, though.)
 - [ ] Rewrite it in Kotlin would be even better.
+- [ ] At least correct the way colors are handled internally in this app. (and obliterate Cyanea)
 - [ ] Adding search functionality. Though, it looks like this is not an easy task, since the android-pdf-viewer library doesn't support that. (and of course OCR is not an option)
 - [ ] Adding highlight functionality. I don't use it personally, so I don't think I'll work on it any time soon. But feel free to create a pull request.
 - [ ] Take a look at this (https://github.com/JavaCafe01/PdfViewer/issues/175)
