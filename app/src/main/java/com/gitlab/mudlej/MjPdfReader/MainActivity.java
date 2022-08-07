@@ -63,6 +63,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
 
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
@@ -183,7 +185,19 @@ public class MainActivity extends CyaneaAppCompatActivity {
         setButtonsFunctionalities();
         showAppFeaturesDialogOnFirstRun();
 
+        SharedPreferences.OnSharedPreferenceChangeListener listener;
+
+        //Setup a shared preference listener for hpwAddress and restart transport
+        listener = (prefs, key) -> {
+            if (key.equals("isDarkTheme")) {
+                switchTheme();
+            }
+        };
+
+        prefManager.registerOnSharedPreferenceChangeListener(listener);
+
     }
+
 
     @SuppressLint("SourceLockedOrientationActivity")
     private void setButtonsFunctionalities() {
@@ -229,6 +243,8 @@ public class MainActivity extends CyaneaAppCompatActivity {
 //            viewBinding.pdfView.setPositionOffset(pdfOldPositionOffset);
 
         // Prompt the user to restore the previous zoom if there is one saved other than the default
+        Log.i("ZOOM!", "pdfZoom: " + pdfZoom);
+        Log.i("ZOOM!", "viewBinding.pdfView.getZoom(): " + viewBinding.pdfView.getZoom());
         if (pdfZoom != 1 && pdfZoom != viewBinding.pdfView.getZoom()) {
             Snackbar.make(findViewById(R.id.main), "Restore zoom?", Snackbar.LENGTH_LONG)
                 .setAction("Restore", view -> viewBinding.pdfView.zoomWithAnimation(pdfZoom))
@@ -387,11 +403,16 @@ public class MainActivity extends CyaneaAppCompatActivity {
     }
 
     void configurePdfViewAndLoadWithPageNumber(PDFView.Configurator viewConfigurator, int pageNum) {
-        if (!prefManager.getBoolean("isDarkTheme", false)) {
-            viewBinding.pdfView.setBackgroundColor(Color.LTGRAY);
-        } else {
-            viewBinding.pdfView.setBackgroundColor(0xFF212121);
-        }
+//        boolean isPrefThemeDark = prefManager.getBoolean("isDarkTheme", false);
+//
+//        String currentBackgroundColor = String.format(
+//                "#%06X", (0xFFFFFF & getCyanea().getBackgroundColor())
+//        );
+//        String darkBackground = "#000000";
+//
+//        if (isPrefThemeDark && !currentBackgroundColor.equals(darkBackground)) {
+//            switchTheme();
+//        }
 
         viewBinding.pdfView.useBestQuality(prefManager.getBoolean("quality_pref", false));
         viewBinding.pdfView.setMinZoom(0.5f);
@@ -809,7 +830,7 @@ public class MainActivity extends CyaneaAppCompatActivity {
     private void switchTheme() {
         boolean isDark = prefManager.getBoolean("isDarkTheme", false);
         prefManager.edit().putBoolean("isDarkTheme", !isDark).apply();
-//        configurePdfViewAndLoadWithPageNumber(viewBinding.pdfView.fromUri(uri), pageNumber);
+        // configurePdfViewAndLoadWithPageNumber(viewBinding.pdfView.fromUri(uri), pageNumber);
 
         // change Cyanea Theme
         // TODO: This will overwrite the user's app theme, it should be fixed

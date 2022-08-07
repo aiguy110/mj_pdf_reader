@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="120" />
+  <h1 align="center"> Pdf Viewer Plus </h1>
+</p>
+
 # MJ PDF Reader
 
 This is a fork made by Mudlej from PDF Viewer Plus originally made by Gokul Swaminathan (@JavaCafe01).
@@ -33,9 +38,9 @@ I made this mainly for myself, and I am happy with its current state. I don't th
 The code could be written much more cleanly.
 
 ## Things I would like to do for MJ PDF Reader
-- [ ] Refactor the very unholy code. (I am not the culprit for the most part, though.)
+- [ ] Refactor the unholy code. (I am not the culprit for the most part, though.)
 - [ ] Rewrite it in Kotlin would be even better.
-- [ ] Adding search functionality. Though, it looks like this is not an easy to do task, since the android-pdf-viewer library doesn't support that. (and of course OCR is not an option)
+- [ ] Adding search functionality. Though, it looks like this is not an easy task, since the android-pdf-viewer library doesn't support that. (and of course OCR is not an option)
 - [ ] Adding highlight functionality. I don't use it personally, so I don't think I'll work on it any time soon. But feel free to create a pull request.
 - [ ] Take a look at this (https://github.com/JavaCafe01/PdfViewer/issues/175)
 - [ ] Adding an option to disable anything related to network connections in the settings.
@@ -43,6 +48,7 @@ The code could be written much more cleanly.
 
 ## What is different from PDF Viewer Plus
 
+- [x] Supports new versions of Android (test)
 - [x] Removed the Bottom Bar & placed its options in the action menu.
 - [x] Changed the Default Theme to the Material theme.
 - [x] A Shortcut to switch the theme for the app and PDF in the action menu.
@@ -54,12 +60,13 @@ The code could be written much more cleanly.
     - A page scroll handle.
 - [x] Changed the behavior of the page scroll handler (scroll bar). 
   - Right now it won't pop up very annoyingly when you're just reading the file. It's hidden until you tap the screen, another tap will hide it.
-- [x] Changed the title format in the top bar to show the pages count first, and removed the '.pdf' form it
+- [x] Changed the title format in the top bar to show the pages count first, and removed the '.pdf' form it.
 - [x] Fixed the (very annoying) issue with full screen mode being lost when the screen gets rotated.
-- [x] Added the functionality to restore the zoom level when rotating the device via a Snackbar prompt
+- [x] Added the functionality to restore the zoom level when rotating the device via a Snackbar prompt.
 - [x] Removed WhatsNew dependency (https://github.com/TonnyL/WhatsNew) 
 - [x] Fixed light / dark theming consistency problem by removing the ability to choose many different themes for the app. (in theory it could be added, but I don't want to spend time on it)
 - [x] Made the already unholy code further from cleanliness. (I went along with style, it really needs to be refactored) 
+- [x] Forked and changed android-pdf-viewer library to achieve some of the above modifications.
 
 ## Authors and acknowledgment
 - MJ PDF Reader is made by @mudlej.
