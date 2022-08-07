@@ -234,9 +234,9 @@ public class MainActivity extends CyaneaAppCompatActivity {
 //            viewBinding.pdfView.setPositionOffset(pdfOldPositionOffset);
 
         // Prompt the user to restore the previous zoom if there is one saved other than the default
-        Log.i("ZOOM!", "pdfZoom: " + pdfZoom);
-        Log.i("ZOOM!", "viewBinding.pdfView.getZoom(): " + viewBinding.pdfView.getZoom());
-        if (pdfZoom != 1 && pdfZoom != viewBinding.pdfView.getZoom()) {
+//        Log.i("ZOOM!", "pdfZoom: " + pdfZoom);
+//        Log.i("ZOOM!", "viewBinding.pdfView.getZoom(): " + viewBinding.pdfView.getZoom());
+        if (pdfZoom != 1) { // && pdfZoom != viewBinding.pdfView.getZoom()) {   // doesn't work for some peculiar reason
             Snackbar.make(findViewById(R.id.main), "Restore zoom?", Snackbar.LENGTH_LONG)
                 .setAction("Restore", view -> viewBinding.pdfView.zoomWithAnimation(pdfZoom))
                 .show();
@@ -249,6 +249,18 @@ public class MainActivity extends CyaneaAppCompatActivity {
             hidePickFileLayer();
         }
 
+//        // fix the background color after Cyanea theme changing
+//        boolean isDark = prefManager.getBoolean("isDarkTheme", false);
+//        if (isDark)
+////            viewBinding.pdfView.setBackgroundColor(0x696868);
+////            viewBinding.pdfView.setBackgroundColor(0xff0000);
+//            viewBinding.pdfView.setBackgroundColor(0xbcbcbc);
+//        else
+////            viewBinding.pdfView.setBackgroundColor(0xbcbcbc);
+        viewBinding.pdfView.setBackgroundColor(0xcccccc);
+
+
+        Log.i(TAG, "Color.LTGRAY" + String.format("#%06X", (0xFFFFFF & Color.LTGRAY)));
     }
 
     private void hidePickFileLayer() {
@@ -837,26 +849,16 @@ public class MainActivity extends CyaneaAppCompatActivity {
         // TODO: This will overwrite the user's app theme, it should be fixed
         getCyanea().edit(editor -> {
             if (isDark) { // Material Light Theme
-                editor.background(Color.parseColor("#F3F3F3"));
-                editor.backgroundDark(Color.parseColor("#CECECE"));
+                editor.background(Color.parseColor("#cccccc"));  // behind pages
                 editor.backgroundLight(Color.parseColor("#F4F4F4"));
-                editor.primary(Color.parseColor("#263238"));
             }
             else { // Material Dark Theme
-                editor.background(Color.parseColor("#000000"));
-                editor.backgroundDark(Color.parseColor("#000000"));
+                editor.background(Color.parseColor("#323232")); // behind pages
                 editor.backgroundLight(Color.parseColor("#262626"));
-                // editor.primary(Color.parseColor("#FDF9F9"));
             }
             editor.apply();
             return Unit.INSTANCE;
         }).recreate(this);
-
-//        if (isDark)
-//            viewBinding.pdfView.setBackgroundColor(R.color.bright);
-//        else
-//            viewBinding.pdfView.setBackgroundColor(R.color.dark);
-
     }
 
     public static class PdfMetaDialog extends DialogFragment {
