@@ -4,14 +4,13 @@ import android.content.ComponentName;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-
-import com.jaredrummler.cyanea.app.CyaneaPreferenceActivity;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -20,13 +19,13 @@ import static android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
 import static android.content.pm.PackageManager.DONT_KILL_APP;
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 
-public class SettingsActivity extends CyaneaPreferenceActivity {
+public class SettingsActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setupActionBar();
+        //setupActionBar(); //TODO FIX
         addPreferencesFromResource(R.xml.preferences);
         setupShowInLauncherPreference();
     }
@@ -64,12 +63,12 @@ public class SettingsActivity extends CyaneaPreferenceActivity {
                 DONT_KILL_APP
         );
     }
-
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
-    }
+// TODO: FIX
+//    private void setupActionBar() {
+//        ActionBar actionBar = getSupportActionBar();
+//        if (actionBar != null)
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//    }
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
@@ -83,8 +82,9 @@ public class SettingsActivity extends CyaneaPreferenceActivity {
         return super.onMenuItemSelected(featureId, item);
     }
 
-    @Override
-    public void setSupportActionBar(@Nullable Toolbar toolbar) {
-        getDelegate().setSupportActionBar(toolbar);
-    }
+    // TODO FIX
+//    @Override
+//    public void setSupportActionBar(@Nullable Toolbar toolbar) {
+//        getDelegate().setSupportActionBar(toolbar);
+//    }
 }

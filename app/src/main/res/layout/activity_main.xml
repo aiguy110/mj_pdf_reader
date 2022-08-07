@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:text="@string/pick_file"
         android:layout_gravity="center"
-        android:backgroundTint="@color/cyaneaPrimary" />
+        android:backgroundTint="@color/colorPrimary" />
 
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfView"

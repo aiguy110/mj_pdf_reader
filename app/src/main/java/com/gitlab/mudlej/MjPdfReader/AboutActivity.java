@@ -39,13 +39,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import com.franmontiel.attributionpresenter.AttributionPresenter;
 import com.franmontiel.attributionpresenter.entities.Attribution;
 import com.franmontiel.attributionpresenter.entities.License;
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityAboutBinding;
-import com.jaredrummler.cyanea.app.CyaneaAppCompatActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,12 +53,11 @@ import java.util.Objects;
 
 import kotlin.Unit;
 
-public class AboutActivity extends CyaneaAppCompatActivity {
+public class AboutActivity extends AppCompatActivity {
 
     private ActivityAboutBinding viewBinding;
-    private final String APP_VERSION_RELEASE = "Version " + Utils.getAppVersion();   //contains Version + the version number
-    private final String APP_VERSION_DEBUG = "Version " + Utils.getAppVersion() + "-debug";   //contains Version + the version number + debug
-    private boolean isColorFixed = false;
+    private final String APP_VERSION_RELEASE = "Version " + Utils.getAppVersion();
+    private final String APP_VERSION_DEBUG = "Version " + Utils.getAppVersion() + "-debug";
 
 
     @Override
@@ -68,9 +67,6 @@ public class AboutActivity extends CyaneaAppCompatActivity {
         setContentView(viewBinding.getRoot());
         setVersionText();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
-        // just for fun
-        viewBinding.aboutAppLogo.setOnClickListener(view -> fixColors());
     }
 
     private void setVersionText() {
@@ -143,13 +139,6 @@ public class AboutActivity extends CyaneaAppCompatActivity {
                                 .setWebsite("https://materialdesignicons.com/")
                                 .build()
                 )
-                .addAttributions(
-                        new Attribution.Builder("Cyanea")
-                                .addCopyrightNotice("Copyright 2018 Jared Rummler")
-                                .addLicense(License.APACHE)
-                                .setWebsite("https://github.com/jaredrummler/Cyanea")
-                                .build()
-                )
                 .build();
 
         //show license dialogue
@@ -192,48 +181,6 @@ public class AboutActivity extends CyaneaAppCompatActivity {
                     .setPositiveButton(R.string.ok, (dialog, which) -> {})
                     .setIcon(R.drawable.privacy_icon)
                     .create();
-        }
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        // To fix icons colors right after the activity is fully visible
-        fixColors();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // To fix AppName TextView color (doesn't work in onWindowFocusChanged)
-        fixColors();
-    }
-
-    private void fixColors() {
-        List<TextView> views = Arrays.asList(
-                viewBinding.introView, viewBinding.changeView, viewBinding.codeView,
-                viewBinding.emailView, viewBinding.libView, viewBinding.gitView,
-                viewBinding.privacyView, viewBinding.versionTextView, viewBinding.licenseView
-        );
-
-        SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isDark = prefManager.getBoolean("isDarkTheme", false);
-
-        int color = isDark ? R.color.bright : R.color.dark;
-
-        for (TextView view : views) {
-            if (view.getCompoundDrawables()[0] != null)
-                view.getCompoundDrawables()[0].setTint(getResources().getColor(color));
-        }
-        viewBinding.aboutAppName.setTextColor(Color.parseColor(getResources().getString(color)));
-
-        if (!isColorFixed) {
-            isColorFixed = true;
-            if (!isDark) getCyanea().edit(editor -> {
-                editor.background(Color.parseColor("#f3f3f3")).apply();
-                return Unit.INSTANCE;
-            }).recreate(this);
-
         }
     }
 }

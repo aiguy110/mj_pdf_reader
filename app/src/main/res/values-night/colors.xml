@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<!--    <color name="colorPrimary">#9A9A9A</color>-->
-<!--    <color name="colorPrimaryDark">#737373</color>-->
-<!--    <color name="colorAccent">#009688</color>-->
-
-<!--    <color name="cyaneaPrimaryLight">#C9D787</color>-->
-<!--    <color name="cyaneaAccentDark">#007F73</color>-->
-<!--    <color name="cyaneaAccentLight">#FFC0A9</color>-->
-<!--    <color name="cyaneaBackground">#000000</color>-->
-<!--    <color name="cyaneaBackgroundDark">#000000</color>-->
-<!--    <color name="cyaneaBackgroundLight">#262626</color>-->
-<!--    <color name="colorWhite">#ffffff</color>-->
+    <color name="colorPrimary">#9A9A9A</color>
+    <color name="colorPrimaryDark">#737373</color>
+    <color name="colorAccent">#009688</color>
 </resources>

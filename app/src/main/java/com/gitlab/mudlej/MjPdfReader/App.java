@@ -3,14 +3,11 @@ package com.gitlab.mudlej.MjPdfReader;
 import android.app.Application;
 import android.content.res.Configuration;
 
-import com.jaredrummler.cyanea.Cyanea;
-
 public class App extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Cyanea.init(this, getResources());
     }
 
     @Override

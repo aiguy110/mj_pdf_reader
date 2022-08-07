@@ -39,7 +39,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 30
-        versionName "1.0.2"
+        versionName "1.1.0"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -88,8 +88,5 @@ dependencies {
 
     //License Presenter Library (Proguard config not needed)
     implementation 'com.github.franmontiel:AttributionPresenter:1.0.1'
-
-    //Theme Engine
-    implementation 'com.jaredrummler:cyanea:1.0.2'
 
 }

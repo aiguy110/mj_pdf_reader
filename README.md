@@ -35,7 +35,6 @@ The following permissions are required to provide specific features in the app:
 ## Things I would like to do for MJ PDF Reader
 - [ ] Refactor the unholy code. (I am not the culprit for the most part, though.)
 - [ ] Rewrite it in Kotlin would be even better.
-- [ ] At least correct the way colors are handled internally in this app. (and obliterate Cyanea)
 - [ ] Adding search functionality. Though, it looks like this is not an easy task, since the android-pdf-viewer library doesn't support that. (and of course OCR is not an option)
 - [ ] Adding highlight functionality. I don't use it personally, so I don't think I'll work on it any time soon. But feel free to create a pull request.
 - [ ] Take a look at this (https://github.com/JavaCafe01/PdfViewer/issues/175)
@@ -47,6 +46,7 @@ The following permissions are required to provide specific features in the app:
 - [x] Supports new versions of Android (test)
 - [x] Removed the Bottom Bar & placed its options in the action menu.
 - [x] Changed the Default Theme to the Material theme.
+- [x] App's light / dark theme follows phone's theme.
 - [x] A Shortcut to switch the theme for the app and PDF in the action menu.
 - [x] Placed the toggle full screen button in the top bar.
 - [x] True full screen mode
@@ -59,7 +59,8 @@ The following permissions are required to provide specific features in the app:
 - [x] Changed the title format in the top bar to show the pages count first, and removed the '.pdf' form it.
 - [x] Fixed the (very annoying) issue with full screen mode being lost when the screen gets rotated.
 - [x] Added the functionality to restore the zoom level when rotating the device via a Snackbar prompt.
-- [x] Removed WhatsNew dependency (https://github.com/TonnyL/WhatsNew) 
+- [x] Removed WhatsNew dependency. (https://github.com/TonnyL/WhatsNew) 
+- [x] Removed Cyanea dependency. (https://github.com/jaredrummler/Cyanea)
 - [x] Fixed light / dark theming consistency problem by removing the ability to choose many different themes for the app. (in theory it could be added, but I don't want to spend time on it)
 - [x] Made the already unholy code further from cleanliness. (I went along with style, it really needs to be refactored) 
 - [x] Forked and changed android-pdf-viewer library to achieve some of the above modifications.

@@ -60,12 +60,12 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
 
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
@@ -75,8 +75,6 @@ import com.github.barteksc.pdfviewer.util.FitPolicy;
 import com.google.android.material.snackbar.Snackbar;
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding;
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding;
-import com.jaredrummler.cyanea.app.CyaneaAppCompatActivity;
-import com.jaredrummler.cyanea.prefs.CyaneaSettingsActivity;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfPasswordException;
 
@@ -98,7 +96,7 @@ import static com.gitlab.mudlej.MjPdfReader.Utils.showAppFeaturesDialog;
 
 import kotlin.Unit;
 
-public class MainActivity extends CyaneaAppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -155,7 +153,6 @@ public class MainActivity extends CyaneaAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // To disable auto dark mode since it won't work properly
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
 
         viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -249,11 +246,19 @@ public class MainActivity extends CyaneaAppCompatActivity {
             hidePickFileLayer();
         }
 
-        // It needs this to fix the background color after Cyanea theme changing (any color would work)
-        viewBinding.pdfView.setBackgroundColor(0xcccccc);
+    }
 
-
-        Log.i(TAG, "Color.LTGRAY" + String.format("#%06X", (0xFFFFFF & Color.LTGRAY)));
+    private void fixColors() {
+        boolean isDark = prefManager.getBoolean("isDarkTheme", false);
+        prefManager.edit().putBoolean("isDarkTheme", !isDark).apply();
+        if (isDark) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            viewBinding.pdfView.setBackgroundColor(0x323232);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            viewBinding.pdfView.setBackgroundColor(0xcccccc);
+        }
     }
 
     private void hidePickFileLayer() {
@@ -281,20 +286,6 @@ public class MainActivity extends CyaneaAppCompatActivity {
 
         if (isFirstRun) {
             startActivity(new Intent(this, MainIntroActivity.class));
-
-            // apply the theme
-            getCyanea().edit(themeEditor -> { // Material Light Theme
-                themeEditor.primary(Color.parseColor("#263238"));
-                themeEditor.primaryDark(Color.parseColor("#202A2F"));
-                themeEditor.primaryLight(Color.parseColor("#C9D787"));
-                themeEditor.accent(Color.parseColor("#009688"));
-                themeEditor.accentDark(Color.parseColor("#007F73"));
-                themeEditor.accentLight(Color.parseColor("#FFC0A9"));
-                themeEditor.background(Color.parseColor("#F3F3F3"));
-                themeEditor.backgroundDark(Color.parseColor("#CECECE"));
-                themeEditor.backgroundLight(Color.parseColor("#F4F4F4"));
-                return Unit.INSTANCE;
-            }).recreate(this);
 
             prefManager.edit()
                     .putBoolean("FIRST_INSTALL", false)
@@ -409,17 +400,11 @@ public class MainActivity extends CyaneaAppCompatActivity {
     }
 
     void configurePdfViewAndLoadWithPageNumber(PDFView.Configurator viewConfigurator, int pageNum) {
-//        boolean isPrefThemeDark = prefManager.getBoolean("isDarkTheme", false);
-//
-//        String currentBackgroundColor = String.format(
-//                "#%06X", (0xFFFFFF & getCyanea().getBackgroundColor())
-//        );
-//        String darkBackground = "#000000";
-//
-//        if (isPrefThemeDark && !currentBackgroundColor.equals(darkBackground)) {
-//            switchTheme();
-//        }
-
+        if (!prefManager.getBoolean("isDarkTheme", false)) {
+            viewBinding.pdfView.setBackgroundColor(0xffcecece);   // grey background behind pages
+        } else {
+            viewBinding.pdfView.setBackgroundColor(0xff323232);   // dark background behind pages
+        }
         viewBinding.pdfView.useBestQuality(prefManager.getBoolean("quality_pref", false));
         viewBinding.pdfView.setMinZoom(0.5f);
         viewBinding.pdfView.setMidZoom(2.0f);
@@ -802,7 +787,7 @@ public class MainActivity extends CyaneaAppCompatActivity {
                 startActivity(Utils.navIntent(this, AboutActivity.class));
                 return true;
             case R.id.theme:
-                startActivity(Utils.navIntent(getApplicationContext(), CyaneaSettingsActivity.class));
+                startActivity(Utils.navIntent(getApplicationContext(), SettingsActivity.class));
                 return true;
             case R.id.settings:
                 navToSettings();
@@ -836,24 +821,8 @@ public class MainActivity extends CyaneaAppCompatActivity {
     private void switchTheme() {
         boolean isDark = prefManager.getBoolean("isDarkTheme", false);
         prefManager.edit().putBoolean("isDarkTheme", !isDark).apply();
-        // configurePdfViewAndLoadWithPageNumber(viewBinding.pdfView.fromUri(uri), pageNumber);
 
-        // change Cyanea Theme
-        // TODO: This will overwrite the user's app theme, it should be fixed
-        getCyanea().edit(editor -> {
-            if (isDark) { // Material Light Theme
-                editor.background(Color.parseColor("#cccccc"));  // behind pages
-//                editor.backgroundDark(Color.parseColor("#CECECE")); // e.g. action menu
-                editor.backgroundLight(Color.parseColor("#F4F4F4"));
-            }
-            else { // Material Dark Theme
-                editor.background(Color.parseColor("#323232")); // behind pages                editor.backgroundDark(Color.parseColor("#000000"));
-//                editor.backgroundDark(Color.parseColor("#000000"));
-                editor.backgroundLight(Color.parseColor("#262626"));
-            }
-            editor.apply();
-            return Unit.INSTANCE;
-        }).recreate(this);
+        configurePdfViewAndLoadWithPageNumber(viewBinding.pdfView.fromUri(uri), pageNumber);
     }
 
     public static class PdfMetaDialog extends DialogFragment {
