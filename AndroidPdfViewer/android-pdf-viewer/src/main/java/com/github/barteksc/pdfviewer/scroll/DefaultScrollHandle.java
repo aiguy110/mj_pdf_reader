@@ -282,8 +282,8 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
         handler.removeCallbacks(hidePageScrollerRunnable);
     }
 
-    public void updatePageLength() {
-        if (pdfView == null || pageLengthText == null) return;
-        pageLengthText.setText(pdfView.getCurrentPage() + "/" + pdfView.getPageCount());
+    @Override
+    public void activateHandlerHideDelayed() {
+        hideDelayed();
     }
 }

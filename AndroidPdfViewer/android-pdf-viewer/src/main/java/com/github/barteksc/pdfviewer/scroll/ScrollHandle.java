@@ -66,5 +66,6 @@ public interface ScrollHandle {
     void customHide();
     void customShow();
     void cancelHideRunner();
+    void activateHandlerHideDelayed();
     TextView getPageLengthText();
 }

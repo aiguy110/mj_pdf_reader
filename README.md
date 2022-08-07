@@ -64,6 +64,7 @@ The following permissions are required to provide specific features in the app:
 - [x] Fixed light / dark theming consistency problem by removing the ability to choose many different themes for the app. (in theory it could be added, but I don't want to spend time on it)
 - [x] Made the already unholy code further from cleanliness. (I went along with style, it really needs to be refactored) 
 - [x] Forked and changed android-pdf-viewer library to achieve some of the above modifications.
+- [x] Added TextView that will be visible only when scrolling, so you can see the page number while scrolling.
 
 ## Project status
 I made this mainly for myself, and I am happy with its current state. I don't think I will give it a lot of attention.

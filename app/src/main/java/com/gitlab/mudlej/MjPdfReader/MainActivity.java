@@ -32,9 +32,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,7 +50,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -65,7 +62,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.DialogFragment;
@@ -96,8 +92,6 @@ import java.util.concurrent.Executors;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import static com.gitlab.mudlej.MjPdfReader.Utils.showAppFeaturesDialog;
-
-import kotlin.Unit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -448,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
         // stop any previous timer to hide them
         tappingHandler.removeCallbacksAndMessages(null);
 
-        if (handle != null) handle.customHide();
+        if (handle != null) handle.activateHandlerHideDelayed();
         viewBinding.exitFullScreenButton.setVisibility(View.INVISIBLE);
         viewBinding.rotateScreenButton.setVisibility(View.INVISIBLE);
     }
