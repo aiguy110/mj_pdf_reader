@@ -1,6 +1,5 @@
 <p align="center">
   <img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="120" />
-  <h1 align="center"> Pdf Viewer Plus </h1>
 </p>
 
 # MJ PDF Reader
