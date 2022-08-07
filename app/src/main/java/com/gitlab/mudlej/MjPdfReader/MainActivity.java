@@ -249,14 +249,7 @@ public class MainActivity extends CyaneaAppCompatActivity {
             hidePickFileLayer();
         }
 
-//        // fix the background color after Cyanea theme changing
-//        boolean isDark = prefManager.getBoolean("isDarkTheme", false);
-//        if (isDark)
-////            viewBinding.pdfView.setBackgroundColor(0x696868);
-////            viewBinding.pdfView.setBackgroundColor(0xff0000);
-//            viewBinding.pdfView.setBackgroundColor(0xbcbcbc);
-//        else
-////            viewBinding.pdfView.setBackgroundColor(0xbcbcbc);
+        // It needs this to fix the background color after Cyanea theme changing (any color would work)
         viewBinding.pdfView.setBackgroundColor(0xcccccc);
 
 
