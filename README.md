@@ -32,10 +32,6 @@ The following permissions are required to provide specific features in the app:
 * *Internet*: For opening PDFs through links
 * *Storage*: For saving downloading PDFs and opening them from storage
 
-## Project status
-I made this mainly for myself, and I am happy with its current state. I don't think I will give it a lot of attention.
-The code could be written much more cleanly.
-
 ## Things I would like to do for MJ PDF Reader
 - [ ] Refactor the unholy code. (I am not the culprit for the most part, though.)
 - [ ] Rewrite it in Kotlin would be even better.
@@ -66,6 +62,10 @@ The code could be written much more cleanly.
 - [x] Fixed light / dark theming consistency problem by removing the ability to choose many different themes for the app. (in theory it could be added, but I don't want to spend time on it)
 - [x] Made the already unholy code further from cleanliness. (I went along with style, it really needs to be refactored) 
 - [x] Forked and changed android-pdf-viewer library to achieve some of the above modifications.
+
+## Project status
+I made this mainly for myself, and I am happy with its current state. I don't think I will give it a lot of attention.
+The code could be written much more cleanly.
 
 ## Authors and acknowledgment
 - MJ PDF Reader is made by @mudlej.
