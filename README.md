@@ -1,6 +1,6 @@
-<p align="center">
+<div align="center">
   <img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="120" />
-</p>
+</div>
 
 # MJ PDF Reader
 
