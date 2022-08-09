@@ -110,7 +110,7 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
         layoutParams.setMargins(margin, margin, margin, margin);
 
         pageLengthText = new TextView(context);
-        pageLengthText.setText(pdfView.getCurrentPage() + "/" + pdfView.getPageCount());
+        pageLengthText.setText((pdfView.getCurrentPage() + 1) + "/" + pdfView.getPageCount());
         pageLengthText.setTextSize(32);
         pageLengthText.setTextColor(Color.parseColor("#263238"));
         pageLengthText.setTextAlignment(TEXT_ALIGNMENT_CENTER);
@@ -254,7 +254,7 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
                     currentPos = event.getRawX() - getX();
                 }
                 pageLengthText.setVisibility(VISIBLE);
-                pageLengthText.setText(pdfView.getCurrentPage() + "/" + pdfView.getPageCount());
+                pageLengthText.setText(pdfView.getCurrentPage() + 1 + "/" + pdfView.getPageCount());
             case MotionEvent.ACTION_MOVE:
                 if (pdfView.isSwipeVertical()) {
                     setPosition(event.getRawY() - currentPos + relativeHandlerMiddle);
@@ -263,7 +263,7 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
                     setPosition(event.getRawX() - currentPos + relativeHandlerMiddle);
                     pdfView.setPositionOffset(relativeHandlerMiddle / (float) getWidth(), false);
                 }
-                pageLengthText.setText(pdfView.getCurrentPage() + "/" + pdfView.getPageCount());
+                pageLengthText.setText(pdfView.getCurrentPage() + 1 + "/" + pdfView.getPageCount());
                 return true;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:

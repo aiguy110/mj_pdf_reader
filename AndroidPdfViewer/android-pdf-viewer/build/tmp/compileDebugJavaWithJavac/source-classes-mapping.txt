@@ -31,9 +31,8 @@ com/github/barteksc/pdfviewer/util/Util.java
  com.github.barteksc.pdfviewer.util.Util
 com/github/barteksc/pdfviewer/util/FileUtils.java
  com.github.barteksc.pdfviewer.util.FileUtils
-com/github/barteksc/pdfviewer/scroll/DefaultScrollHandle.java
- com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
- com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle$1
+com/github/barteksc/pdfviewer/DragPinchManager.java
+ com.github.barteksc.pdfviewer.DragPinchManager
 com/github/barteksc/pdfviewer/listener/OnLoadCompleteListener.java
  com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
 com/github/barteksc/pdfviewer/listener/OnErrorListener.java
@@ -97,5 +96,6 @@ com/github/barteksc/pdfviewer/listener/OnPageErrorListener.java
  com.github.barteksc.pdfviewer.listener.OnPageErrorListener
 com/github/barteksc/pdfviewer/link/DefaultLinkHandler.java
  com.github.barteksc.pdfviewer.link.DefaultLinkHandler
-com/github/barteksc/pdfviewer/DragPinchManager.java
- com.github.barteksc.pdfviewer.DragPinchManager
+com/github/barteksc/pdfviewer/scroll/DefaultScrollHandle.java
+ com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
+ com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle$1

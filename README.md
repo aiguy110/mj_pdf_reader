@@ -46,7 +46,7 @@ The following permissions are required to provide specific features in the app:
 - [x] Supports new versions of Android
 - [x] Removed the Bottom Bar & placed its options in the action menu.
 - [x] Changed the Default Theme to the Material theme.
-- [ ] (Disabled this temporarily) App's light / dark theme follows phone's theme.
+- [x] App's light / dark theme follows phone's theme. (You've to enable this option, disabled by default due to https://github.com/barteksc/AndroidPdfViewer/issues/914)
 - [x] A Shortcut to switch the theme for the app and PDF in the action menu.
 - [x] Placed the toggle full screen button in the top bar.
 - [x] True full screen mode
@@ -65,6 +65,7 @@ The following permissions are required to provide specific features in the app:
 - [x] Made the already unholy code further from cleanliness. (I went along with style, it really needs to be refactored) 
 - [x] Forked and changed android-pdf-viewer library to achieve some of the above modifications.
 - [x] Added TextView that will be visible only when scrolling, so you can see the page number while scrolling.
+- [x] Removed deprecated PreferenceActivity and replaced it with AndroidX Preference library and rewrote the entire thin in Kotlin.
 
 ## Project status
 I made this mainly for myself, and I am happy with its current state. I don't think I will give it a lot of attention.

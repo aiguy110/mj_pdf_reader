@@ -367,7 +367,8 @@ public class MainActivity extends AppCompatActivity {
         // stop any previous timer to hide them
         tappingHandler.removeCallbacksAndMessages(null);
 
-        if (handle != null) handle.activateHandlerHideDelayed();
+//        if (handle != null) handle.activateHandlerHideDelayed();
+        if (handle != null) handle.customHide();
         viewBinding.exitFullScreenButton.setVisibility(View.INVISIBLE);
         viewBinding.rotateScreenButton.setVisibility(View.INVISIBLE);
     }
@@ -390,8 +391,8 @@ public class MainActivity extends AppCompatActivity {
         tappingHandler.postDelayed(() -> {
             exitButton.setVisibility(View.INVISIBLE);
             rotateButton.setVisibility(View.INVISIBLE);
+            handle.customHide();
         }, pref.getHideDelay());
-        handle.hideDelayed();
 
         if (!handle.customShown()) {
             handle.customShow();
