@@ -1,27 +1,3 @@
-/*
- * MIT License
- *
- * Copyright (c) 2018 Gokul Swaminathan
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package com.gitlab.mudlej.MjPdfReader;
 
 import android.Manifest;
@@ -29,11 +5,13 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -57,7 +35,6 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -103,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler tappingHandler = new Handler();
 
     private PrintManager mgr;
     private AppDatabase appDb;
@@ -115,41 +93,17 @@ public class MainActivity extends AppCompatActivity {
     private String pdfFileName = "";
     private float pdfZoom = 1;
     private Boolean isPortrait = true;
-;
 
     private byte[] downloadedPdfFileContent;
     private String fileContentHash = null;
     private boolean isFullscreenToggled = false;
 
-    private final Handler tappingHandler = new Handler();
-
     private ActivityMainBinding viewBinding;
 
-    private final ActivityResultLauncher<String[]> documentPickerLauncher = registerForActivityResult(
-        new OpenDocument(),
-        this::openSelectedDocument
-    );
-
-    private final ActivityResultLauncher<String> saveToDownloadPermissionLauncher = registerForActivityResult(
-        new RequestPermission(),
-        this::saveDownloadedFileAfterPermissionRequest
-    );
-
-    private final ActivityResultLauncher<String> readFileErrorPermissionLauncher = registerForActivityResult(
-        new RequestPermission(),
-        this::restartAppIfGranted
-    );
-
-    private final ActivityResultLauncher<Intent> settingsLauncher = registerForActivityResult(
-        new StartActivityForResult(),
-        result -> displayFromUri(uri)
-    );
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // To disable auto dark mode since it won't work properly
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
 
         viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -198,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
                 // exitFullScreenButton will put it in Unspecified
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-            // opposite the value of isPortrait
             isPortrait = !isPortrait;
         });
 
@@ -351,12 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
     void configurePdfViewAndLoadWithPageNumber(PDFView.Configurator viewConfigurator, int pageNum) {
         PDFView pdfView = viewBinding.pdfView;
-
-        // set background color behind pages
-        if (!pref.getPdfDarkTheme())
-            pdfView.setBackgroundColor(Preferences.pdfDarkBackgroundColor);
-        else
-            pdfView.setBackgroundColor(Preferences.pdfLightBackgroundColor);
+        configureTheme();
 
         pdfView.useBestQuality(pref.getHighQuality());
         pdfView.setMinZoom(Preferences.minZoomDefault);
@@ -387,6 +335,25 @@ public class MainActivity extends AppCompatActivity {
         pdfView.performTap();
         tappingHandler.postDelayed(() ->
                 hideButtons(pdfView.getScrollHandle()), pref.getHideDelay());
+    }
+
+    private void configureTheme() {
+        PDFView pdfView = viewBinding.pdfView;
+
+        // set background color behind pages
+        if (!pref.getPdfDarkTheme())
+            pdfView.setBackgroundColor(Preferences.pdfDarkBackgroundColor);
+        else
+            pdfView.setBackgroundColor(Preferences.pdfLightBackgroundColor);
+
+        if (pref.getAppFollowSystemTheme()) {
+            if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
+        else {
+            if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_NO)
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
     }
 
     private void reportLoadPageError(int page, Throwable error) {
@@ -745,5 +712,35 @@ public class MainActivity extends AppCompatActivity {
                 .setIcon(R.drawable.info_icon)
                 .create();
         }
+    }
+
+
+    private final ActivityResultLauncher<String[]> documentPickerLauncher = registerForActivityResult(
+            new OpenDocument(),
+            this::openSelectedDocument
+    );
+
+    private final ActivityResultLauncher<String> saveToDownloadPermissionLauncher = registerForActivityResult(
+            new RequestPermission(),
+            this::saveDownloadedFileAfterPermissionRequest
+    );
+
+    private final ActivityResultLauncher<String> readFileErrorPermissionLauncher = registerForActivityResult(
+            new RequestPermission(),
+            this::restartAppIfGranted
+    );
+
+    private final ActivityResultLauncher<Intent> settingsLauncher = registerForActivityResult(
+            new StartActivityForResult(),
+            result -> displayFromUri(uri)
+    );
+
+    public static void restartApp(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
+        ComponentName componentName = intent.getComponent();
+        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
+        context.startActivity(mainIntent);
+        Runtime.getRuntime().exit(0);
     }
 }

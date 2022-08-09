@@ -15,7 +15,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val pageSnapKey = "pageSnap"
         const val pageFlingKey = "pageFling"
         const val pdfDarkThemeKey = "pdfDarkTheme"
-        const val appDarkThemeKey = "appDarkTheme"
+        const val appFollowSystemTheme = "appFollowSystemTheme"
         const val screenOnKey = "screenOn"
         const val hideDelayKey = "hideDelay"
         const val showInLauncherKey = "showInLauncher"
@@ -29,10 +29,9 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val pageSnapDefault = false
         const val pageFlingDefault = false
         const val pdfDarkThemeDefault = false
-        const val appDarkThemeDefault = false
+        const val appFollowSystemThemeDefault = false
         const val annotationRenderingDefault = true
         const val screenOnDefault = false
-
         const val hideDelayDefault = 4000
         const val spacingDefault = 10          // in dp
         const val minZoomDefault = 0.5f;
@@ -54,7 +53,7 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getPageSnap() = prefMan.getBoolean(pageSnapKey, pageSnapDefault)
     fun getPageFling() = prefMan.getBoolean(pageFlingKey, pageFlingDefault)
     fun getPdfDarkTheme() = prefMan.getBoolean(pdfDarkThemeKey, pdfDarkThemeDefault)
-    fun getAppDarkTheme() = prefMan.getBoolean(appDarkThemeKey, appDarkThemeDefault)
+    fun getAppFollowSystemTheme() = prefMan.getBoolean(appFollowSystemTheme, appFollowSystemThemeDefault)
     fun getScreenOn() = prefMan.getBoolean(screenOnKey, screenOnDefault)
     fun getAppVersion() = prefMan.getBoolean(Utils.getAppVersion(), firstInstallDefault)
     fun getHideDelay() = prefMan.getInt(hideDelayKey, hideDelayDefault)
@@ -68,20 +67,8 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setPageSnap(value: Boolean) = prefMan.edit().putBoolean(pageSnapKey, value).apply()
     fun setPageFling(value: Boolean) = prefMan.edit().putBoolean(pageFlingKey, value).apply()
     fun setPdfDarkTheme(value: Boolean) = prefMan.edit().putBoolean(pdfDarkThemeKey, value).apply()
-    fun setAppDarkTheme(value: Boolean) = prefMan.edit().putBoolean(appDarkThemeKey, value).apply()
+    fun setAppFollowSystemTheme(value: Boolean) = prefMan.edit().putBoolean(appFollowSystemTheme, value).apply()
     fun setScreenOn(value: Boolean) = prefMan.edit().putBoolean(screenOnKey, value).apply()
     fun setAppVersion(value: Boolean) = prefMan.edit().putBoolean(Utils.getAppVersion(), value).apply()
     fun setHideDelay(value: Int) = prefMan.edit().putInt(hideDelayKey, value).apply()
-
-
-
-
-
-
-
-
-
-
-
-
 }

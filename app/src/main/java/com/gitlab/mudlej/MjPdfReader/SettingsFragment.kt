@@ -1,10 +1,12 @@
 package com.gitlab.mudlej.MjPdfReader
 
 import android.app.AlertDialog
-import android.content.DialogInterface
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import androidx.preference.*
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.*
+import androidx.preference.PreferenceCategory
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -84,21 +86,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // Configure and add Keep Screen On Switch
         val appDarkThemeSwitch = SwitchPreferenceCompat(context)
         appDarkThemeSwitch.title = getString(R.string.dark_theme_for_app)
-        appDarkThemeSwitch.setDefaultValue(Preferences.appDarkThemeDefault)
-        appDarkThemeSwitch.key = Preferences.appDarkThemeKey
+        appDarkThemeSwitch.setDefaultValue(Preferences.appFollowSystemThemeDefault)
+        appDarkThemeSwitch.key = Preferences.appFollowSystemTheme
         appDarkThemeSwitch.summary = getString(R.string.app_dark_theme_summary)
         appDarkThemeSwitch.isIconSpaceReserved = false
 
         // set a caution dialog to show for this option
         appDarkThemeSwitch.setOnPreferenceClickListener {
             // don't show the dialog when turning it off
-            if (!appDarkThemeSwitch.isChecked)
+            if (!appDarkThemeSwitch.isChecked) {
+                AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
                 return@setOnPreferenceClickListener true
+            }
 
             AlertDialog.Builder(context)
                 .setTitle(getString(R.string.caution))
                 .setMessage(getString(R.string.app_dark_dialog_message))
-                .setPositiveButton("Ok") { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton("Ok") { dialog, _ ->
+                    dialog.dismiss()
+                    setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
+                }
                 .setNegativeButton("Cancel") {_, _ -> appDarkThemeSwitch.isChecked = false }
                 .create().show()
             return@setOnPreferenceClickListener true
