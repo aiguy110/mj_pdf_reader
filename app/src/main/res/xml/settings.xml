@@ -10,4 +10,8 @@
         android:key="secondSection"
         android:title="@string/scroll_settings" />
 
+    <PreferenceCategory
+        android:key="thirdSection"
+        android:title="@string/experimental" />
+
 </PreferenceScreen>

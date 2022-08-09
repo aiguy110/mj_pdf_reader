@@ -149,4 +149,31 @@
     <string name="permission_denied">Permission denied</string>
     <string name="error_load_file_name">Couldn\'t retrieve file name</string>
     <string name="cannot_load_page">\"Cannot load page \"</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="dark_theme_for_app">Allow Dark Theme for the app</string>
+    <string name="app_dark_theme_summary">The app (other than the PDF\'s pages) will follow phone\'s theme. This option may cause problems on some devices.</string>
+    <string name="experimental">Experimental</string>
+    <string name="caution">Caution</string>
+    <string name="app_dark_dialog_message">On some devices, this option may cause black rectangles to show when reading PDFs, if that happens turn this option off</string>
 </resources>
