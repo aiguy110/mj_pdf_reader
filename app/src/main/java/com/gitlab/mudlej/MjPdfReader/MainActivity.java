@@ -5,11 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -47,6 +44,7 @@ import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
 import com.github.barteksc.pdfviewer.scroll.ScrollHandle;
 import com.github.barteksc.pdfviewer.util.Constants;
 import com.github.barteksc.pdfviewer.util.FitPolicy;
+import com.gitlab.mudlej.MjPdfReader.data.PDF;
 import com.gitlab.mudlej.MjPdfReader.data.Preferences;
 import com.google.android.material.snackbar.Snackbar;
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding;
@@ -74,9 +72,9 @@ import static com.gitlab.mudlej.MjPdfReader.Utils.showAppFeaturesDialog;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private ActivityMainBinding viewBinding;
 
     /* For performance reasons, we won't hash the entire PDF but only up to this many bytes. */
-    private static final int HASH_SIZE = 1024 * 1024;
 
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -84,21 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
     private PrintManager mgr;
     private AppDatabase appDb;
-
     private Preferences pref;
-    private Uri uri;
-
-    private int pageNumber = 0;
-    private String pdfPassword;
-    private String pdfFileName = "";
-    private float pdfZoom = 1;
-    private Boolean isPortrait = true;
 
     private byte[] downloadedPdfFileContent;
-    private String fileContentHash = null;
-    private boolean isFullscreenToggled = false;
-
-    private ActivityMainBinding viewBinding;
+    private final PDF pdf = new PDF();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +110,11 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
         } else {
-            uri = getIntent().getData();
-            if (uri == null)
+            pdf.setUri(getIntent().getData());
+            if (pdf.getUri() == null)
                 pickFile();
         }
-        displayFromUri(uri);
+        displayFromUri(pdf.getUri());
 
         setButtonsFunctionalities();
         showAppFeaturesDialogOnFirstRun();
@@ -144,13 +131,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         viewBinding.rotateScreenButton.setOnClickListener(view -> {
-            if (isPortrait)
+            if (pdf.isPortrait())
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             else
                 // exitFullScreenButton will put it in Unspecified
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-            isPortrait = !isPortrait;
+            pdf.togglePortrait();
         });
 
         viewBinding.pickFile.setOnClickListener(view -> pickFile());
@@ -164,20 +151,23 @@ public class MainActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // restore the full screen mode if was toggled On
-        if (isFullscreenToggled) toggleFullscreen(true);
+        if (pdf.isFullScreenToggled()) toggleFullscreen(true);
 
         // Prompt the user to restore the previous zoom if there is one saved other than the default
         // pdfZoom != viewBinding.pdfView.getZoom())   // doesn't work for some peculiar reason
-        if (pdfZoom != 1) {
-            Snackbar.make(findViewById(R.id.main), "Restore zoom?", Snackbar.LENGTH_LONG)
-                .setAction("Restore", view -> viewBinding.pdfView.zoomWithAnimation(pdfZoom))
+        if (pdf.getZoom() != 1) {
+            Snackbar.make(findViewById(R.id.main),
+                            getString(R.string.ask_restore_zoom), Snackbar.LENGTH_LONG
+            )
+                .setAction(getString(R.string.restore), view ->
+                        viewBinding.pdfView.zoomWithAnimation(pdf.getZoom()))
                 .show();
         }
 
         fixButtonsColor();
 
         // if there data in the pdf source variable (local path or url), hide the pickFile Button
-        if (uri != null) viewBinding.pickFile.setVisibility(View.GONE);
+        if (pdf.getUri() != null) viewBinding.pickFile.setVisibility(View.GONE);
     }
 
     private void fixButtonsColor() {
@@ -211,29 +201,31 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelable("uri", uri);
-        outState.putInt("pageNumber", pageNumber);
-        outState.putString("pdfPassword", pdfPassword);
-        outState.putBoolean("isFullscreenToggled", isFullscreenToggled);
-        outState.putFloat("pdfZoom", viewBinding.pdfView.getZoom());
-        outState.putFloat("pdfOldPositionOffset", viewBinding.pdfView.getPositionOffset());
+        outState.putParcelable(PDF.uriKey, pdf.getUri());
+        outState.putInt(PDF.pageNumberKey, pdf.getPageNumber());
+        outState.putString(PDF.passwordKey, pdf.getPassword());
+        outState.putBoolean(PDF.isFullScreenToggledKey, pdf.isFullScreenToggled());
+        //outState.putFloat(PDF.zoomKey, viewBinding.pdfView.getZoom());
+        outState.putFloat(PDF.zoomKey, viewBinding.pdfView.getZoom());
         super.onSaveInstanceState(outState);
     }
 
     private void restoreInstanceState(Bundle savedState) {
-        uri = savedState.getParcelable("uri");
-        pageNumber = savedState.getInt("pageNumber");
-        pdfPassword = savedState.getString("pdfPassword");
-        isFullscreenToggled = savedState.getBoolean("isFullscreenToggled");
-        pdfZoom = savedState.getFloat("pdfZoom");
+        pdf.setUri(savedState.getParcelable(PDF.uriKey));
+        pdf.setPageNumber(savedState.getInt(PDF.pageNumberKey));
+        pdf.setPassword(savedState.getString(PDF.passwordKey));
+        pdf.setFullScreenToggled(savedState.getBoolean(PDF.isFullScreenToggledKey));
+        pdf.setZoom(savedState.getFloat(PDF.zoomKey));
     }
 
     void shareFile() {
         Intent sharingIntent;
-        if (uri.getScheme() != null && uri.getScheme().startsWith("http"))
-            sharingIntent = Utils.plainTextShareIntent(getString(R.string.share), uri.toString());
+        if (pdf.getUri() == null) return;   // notify user?
+
+        if (pdf.getUri().getScheme() != null && pdf.getUri().getScheme().startsWith("http"))
+            sharingIntent = Utils.plainTextShareIntent(getString(R.string.share), pdf.getUri().toString());
         else
-            sharingIntent = Utils.fileShareIntent(getString(R.string.share), pdfFileName, uri);
+            sharingIntent = Utils.fileShareIntent(getString(R.string.share), pdf.getName(), pdf.getUri());
 
         startActivity(sharingIntent);
     }
@@ -241,9 +233,9 @@ public class MainActivity extends AppCompatActivity {
     private void openSelectedDocument(Uri selectedDocumentUri) {
         if (selectedDocumentUri == null) return;
 
-        if (uri == null || selectedDocumentUri.equals(uri)) {
-            uri = selectedDocumentUri;
-            displayFromUri(uri);
+        if (pdf.getUri() == null || selectedDocumentUri.equals(pdf.getUri())) {
+            pdf.setUri(selectedDocumentUri);
+            displayFromUri(pdf.getUri());
         } else {
             Intent intent = new Intent(this, getClass());
             intent.setData(selectedDocumentUri);
@@ -253,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void pickFile() {
         try {
-            documentPickerLauncher.launch(new String[] { "application/pdf" });
+            documentPickerLauncher.launch(new String[] { PDF.FILE_TYPE });
         } catch (ActivityNotFoundException e) {
             //alert user that file manager not working
             Toast.makeText(this, R.string.toast_pick_file_error, Toast.LENGTH_SHORT).show();
@@ -264,11 +256,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             MessageDigest digester = MessageDigest.getInstance("MD5");
             if (downloadedPdfFileContent != null) {
-                int size = Math.min(HASH_SIZE, downloadedPdfFileContent.length);
+                int size = Math.min(PDF.HASH_SIZE, downloadedPdfFileContent.length);
                 digester.update(downloadedPdfFileContent, 0, size);
             } else {
-                InputStream inputStream = getContentResolver().openInputStream(uri);
-                byte[] buffer = new byte[HASH_SIZE];
+                InputStream inputStream = getContentResolver().openInputStream(pdf.getUri());
+                byte[] buffer = new byte[PDF.HASH_SIZE];
                 int amountRead = inputStream.read(buffer);
                 if (amountRead == -1) {
                     return null;
@@ -282,12 +274,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void configurePdfViewAndLoad(PDFView.Configurator viewConfigurator) {
-        if (pageNumber == 0) { // attempt to find a saved location
+        if (pdf.getPageNumber() == 0) { // attempt to find a saved location
             executor.execute(() -> { // off UI thread
-                fileContentHash = computeHash();
-                Integer maybePageNumber = fileContentHash == null
+                pdf.setContentHash(computeHash());
+                Integer maybePageNumber = pdf.getContentHash() == null
                         ? Integer.valueOf(0)
-                        : appDb.savedLocationDao().findSavedPage(fileContentHash);
+                        : appDb.savedLocationDao().findSavedPage(pdf.getContentHash());
                 handler.post(() -> // back on UI thread
                     configurePdfViewAndLoadWithPageNumber(
                         viewConfigurator,
@@ -296,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                 );
             });
         } else {
-            configurePdfViewAndLoadWithPageNumber(viewConfigurator, pageNumber);
+            configurePdfViewAndLoadWithPageNumber(viewConfigurator, pdf.getPageNumber());
         }
     }
 
@@ -308,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
         pdfView.setMinZoom(Preferences.minZoomDefault);
         pdfView.setMidZoom(Preferences.midZoomDefault);
         pdfView.setMaxZoom(Preferences.maxZoomDefault);
-        pdfView.zoomTo(pdfZoom);
+        pdfView.zoomTo(pdf.getZoom());
 
         viewConfigurator
             .defaultPage(pageNum)
@@ -321,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
             .onError(this::handleFileOpeningError)
             .onPageError(this::reportLoadPageError)
             .pageFitPolicy(FitPolicy.WIDTH)
-            .password(pdfPassword)
+            .password(pdf.getPassword())
             .swipeHorizontal(pref.getHorizontalScroll())
             .autoSpacing(pref.getHorizontalScroll())
             .pageSnap(pref.getPageSnap())
@@ -396,12 +388,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (!handle.customShown()) {
             handle.customShow();
-            if (isFullscreenToggled) {
+            if (pdf.isFullScreenToggled()) {
                 exitButton.setVisibility(View.VISIBLE);
                 rotateButton.setVisibility(View.VISIBLE);
             }
         }
-        else if (exitButton.getVisibility() == View.GONE && isFullscreenToggled) {
+        else if (exitButton.getVisibility() == View.GONE && pdf.isFullScreenToggled()) {
             exitButton.setVisibility(View.VISIBLE);
             rotateButton.setVisibility(View.VISIBLE);
         }
@@ -412,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void toggleButtonsVisibility() {
-        if (!isFullscreenToggled) return;
+        if (!pdf.isFullScreenToggled()) return;
         LinearLayout exitButton = viewBinding.exitFullScreenButton;
         LinearLayout rotateButton = viewBinding.rotateScreenButton;
 
@@ -428,9 +420,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleFileOpeningError(Throwable exception) {
         if (exception instanceof PdfPasswordException) {
-            if (pdfPassword != null) {
+            if (pdf.getPassword() != null) {
                 Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show();
-                pdfPassword = null;  // prevent the toast if the user rotates the screen
+                pdf.setPassword(null);  // prevent the toast if the user rotates the screen
             }
             askForPdfPassword();
         } else if (couldNotOpenFileDueToMissingPermission(exception)) {
@@ -461,13 +453,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
     private void toggleFullscreen(boolean fixFullScreen) {
         final View view = viewBinding.pdfView;
-        if (!isFullscreenToggled || fixFullScreen) {
+        if (!pdf.isFullScreenToggled() || fixFullScreen) {
             Objects.requireNonNull(getSupportActionBar()).hide();
-            isFullscreenToggled = true;
+            pdf.setFullScreenToggled(true);
             view.setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -483,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
             if (pref.getShowFeaturesDialog()) showHowToExitFullscreenDialog();
         } else {
             Objects.requireNonNull(getSupportActionBar()).show();
-            isFullscreenToggled = false;
+            pdf.setFullScreenToggled(false);
             view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
@@ -494,9 +484,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        pdfFileName = getFileName(uri);
-        setTitle(pdfFileName);
-        setTaskDescription(new ActivityManager.TaskDescription(pdfFileName));
+        pdf.setName(getFileName(uri));
+        setTitle(pdf.getName());
+        setTaskDescription(new ActivityManager.TaskDescription(pdf.getName()));
 
         String scheme = uri.getScheme();
 
@@ -547,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
     private void trySaveToDownloadFolder(byte[] fileContent, boolean showSuccessMessage) {
         try {
             File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            Utils.writeBytesToFile(downloadDirectory, pdfFileName, fileContent);
+            Utils.writeBytesToFile(downloadDirectory, pdf.getName(), fileContent);
             if (showSuccessMessage) {
                 Toast.makeText(this, R.string.saved_to_download, Toast.LENGTH_SHORT).show();
             }
@@ -570,21 +560,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setCurrentPage(int page, int pageCount) {
-        String hash = fileContentHash; // Don't want fileContentHash to change out from under us
-        if (hash != null) {
+        String hash = pdf.getContentHash(); // Don't want fileContentHash to change out from under us
+        if (hash != null)
             executor.execute(() -> // off UI thread
-                appDb.savedLocationDao().insert(new SavedLocation(hash, pageNumber))
+                appDb.savedLocationDao().insert(new SavedLocation(hash, pdf.getPageNumber()))
             );
-        }
 
-        pageNumber = page;
-
-        int extensionIndex = pdfFileName.lastIndexOf('.') == -1
-                ? pdfFileName.length()
-                : pdfFileName.lastIndexOf('.');
-
-        setTitle(String.format("[%s/%s] %s", page + 1, pageCount,
-                pdfFileName.substring(0, extensionIndex)));
+        pdf.setPageNumber(page);
+        pdf.setPageCount(viewBinding.pdfView.getPageCount());
+        setTitle(pdf.getTitle());
     }
 
     public String getFileName(Uri uri) {
@@ -608,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void printDocument() {
-        mgr.print(pdfFileName, new PdfDocumentAdapter(this, uri), null);
+        mgr.print(pdf.getName(), new PdfDocumentAdapter(this, pdf.getUri()), null);
     }
 
     void askForPdfPassword() {
@@ -617,8 +601,8 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle(R.string.protected_pdf)
                 .setView(dialogBinding.getRoot())
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
-                    pdfPassword = dialogBinding.passwordInput.getText().toString();
-                    displayFromUri(uri);
+                    pdf.setPassword(dialogBinding.passwordInput.getText().toString());
+                    displayFromUri(pdf.getUri());
                 })
                 .setIcon(R.drawable.lock_icon)
                 .create();
@@ -676,11 +660,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(Utils.navIntent(getApplicationContext(), SettingsActivity.class));
         }
         else if (itemId == R.id.settings) { navToSettings(); }
-        else if (itemId == R.id.share_file) { if (uri != null) shareFile(); }
+        else if (itemId == R.id.share_file) { if (pdf.getUri() != null) shareFile(); }
         else if (itemId == R.id.fullscreen_option) { toggleFullscreen(false); }
         else if (itemId == R.id.switch_theme) { switchPdfTheme(); }
         else if (itemId == R.id.open_file)  { pickFile(); }
-        else if (itemId == R.id.meta_data) { if (uri != null) showPdfMetaDialog(); }
+        else if (itemId == R.id.meta_data) { if (pdf.getUri() != null) showPdfMetaDialog(); }
         else if (itemId == R.id.print_file) { printDocument(); }
         else { return super.onOptionsItemSelected(item); }
 
@@ -731,15 +715,6 @@ public class MainActivity extends AppCompatActivity {
 
     private final ActivityResultLauncher<Intent> settingsLauncher = registerForActivityResult(
             new StartActivityForResult(),
-            result -> displayFromUri(uri)
+            result -> displayFromUri(pdf.getUri())
     );
-
-    public static void restartApp(Context context) {
-        PackageManager packageManager = context.getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
-        ComponentName componentName = intent.getComponent();
-        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
-        context.startActivity(mainIntent);
-        Runtime.getRuntime().exit(0);
-    }
 }
