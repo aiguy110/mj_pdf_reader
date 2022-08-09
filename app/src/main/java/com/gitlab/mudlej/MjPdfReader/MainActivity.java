@@ -102,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // To disable auto dark mode since it won't work properly
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
 
         viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
