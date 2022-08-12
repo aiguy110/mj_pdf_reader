@@ -45,19 +45,27 @@ package com.gitlab.mudlej.MjPdfReader.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
+import android.view.MenuItem
+import android.view.View
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.*
+import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
+import kotlin.math.log
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings, rootKey)
-        setUpSwitches();
+        setUpSwitches()
     }
 
     private fun setUpSwitches() {

@@ -43,11 +43,16 @@
 
 package com.gitlab.mudlej.MjPdfReader.ui
 
+import android.R.attr.tag
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivitySettingsBinding
+
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -63,13 +68,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            // enable the back function to the button on press
-            R.id.home -> {
-                finish()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
+        // well, there is one button, and I couldn't find its id
+        finish()
+        return true
     }
 }
