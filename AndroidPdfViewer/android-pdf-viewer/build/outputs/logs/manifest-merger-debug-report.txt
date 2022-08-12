@@ -3,21 +3,9 @@ manifest
 ADDED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
 INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
 INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
-INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
-INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
-INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
-INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
 	package
 		ADDED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:3:7-46
 		INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml
-		INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml
-	android:versionName
-		INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml
-		ADDED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
-		INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml
-	android:versionCode
-		INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml
-		ADDED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:1-5:12
 		INJECTED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /mnt/data/Mine/Codes/Repo/Android Apps/mj_pdf_reader/AndroidPdfViewer/android-pdf-viewer/src/main/AndroidManifest.xml:2:11-69

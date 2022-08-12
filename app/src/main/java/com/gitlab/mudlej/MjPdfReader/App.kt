@@ -41,53 +41,9 @@
  *  SOFTWARE.
  */
 
-package com.gitlab.mudlej.MjPdfReader.data
+package com.gitlab.mudlej.MjPdfReader
 
-import android.net.Uri
+import android.app.Application
+import android.content.res.Configuration
 
-class PDF(
-    var uri: Uri? = null,
-    var name: String = "",
-    var password: String? = null,
-    var pageNumber: Int = 0,
-    var length: Int = 0,
-    var zoom: Float = 1F,
-    var isPortrait: Boolean = true,
-    var isFullScreenToggled: Boolean = false,
-    var fileHash: String? = null,
-    var downloadedPdf: ByteArray? = null
-) {
-
-    companion object {
-        // constants
-        const val FILE_TYPE = "application/pdf"
-        const val HASH_SIZE = 1024 * 1024
-
-        // keys
-        const val nameKey = "name"
-        const val passwordKey = "password"
-        const val pageNumberKey = "pageNumber"
-        const val lengthKey = "length"
-        const val uriKey = "uri"
-        const val zoomKey = "zoom"
-        const val isPortraitKey = "isPortrait"
-        const val isFullScreenToggledKey = "isFullScreenToggled"
-    }
-
-    fun getTitle(): String {
-        // get .pdf start index (the dot)
-        val extensionIndex: Int =
-            if (name.lastIndexOf('.') == -1) name.length else name.lastIndexOf('.')
-
-        return String.format(
-            "[%s/%s] %s", pageNumber + 1, length, name.substring(0, extensionIndex))
-    }
-    fun togglePortrait() { isPortrait = !isPortrait }
-
-    fun setPageCount(count: Int) {
-        if (count == length || count < 1) return
-        length = count
-    }
-
-    fun hasFile() = uri != null
-}
+class App : Application()

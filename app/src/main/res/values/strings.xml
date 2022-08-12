@@ -1,31 +1,46 @@
-<!--
-  ~ MIT License
-  ~
-  ~ Copyright (c) 2018 Gokul Swaminathan
-  ~
-  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
-  ~ of this software and associated documentation files (the "Software"), to deal
-  ~ in the Software without restriction, including without limitation the rights
-  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  ~ copies of the Software, and to permit persons to whom the Software is
-  ~ furnished to do so, subject to the following conditions:
-  ~
-  ~ The above copyright notice and this permission notice shall be included in all
-  ~ copies or substantial portions of the Software.
-  ~
-  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  ~ SOFTWARE.
-  -->
-
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+    ~ MJ PDF Reader
+    ~ Copyright (C) 2022 Mudlej
+    ~
+    ~ This program is free software: you can redistribute it and/or modify
+    ~ it under the terms of the GNU General Public License as published by
+    ~ the Free Software Foundation, either version 3 of the License, or
+    ~ (at your option) any later version.
+    ~ This program is distributed in the hope that it will be useful,
+    ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+    ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    ~ GNU General Public License for more details.
+    ~ You should have received a copy of the GNU General Public License
+    ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    ~
+    ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~ This code was previously licensed under
+    ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~
+    ~ MIT License
+    ~ Copyright (c) 2018 Gokul Swaminathan
+    ~ Copyright (c) 2022 Mudlej
+    ~
+    ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+    ~ of this software and associated documentation files (the "Software"), to deal
+    ~ in the Software without restriction, including without limitation the rights
+    ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    ~ copies of the Software, and to permit persons to whom the Software is
+    ~ furnished to do so, subject to the following conditions:
+    ~ The above copyright notice and this permission notice shall be included in all
+    ~ copies or substantial portions of the Software.
+    ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    ~ SOFTWARE.
+-->
     <string name="app_name" translatable="false">MJ PDF Reader</string>
     <string name="pick_file">Pick File</string>
-    <string name="toast_pick_file_error">Unable to pick file. Check status of file manager.</string>
+    <string name="toast_pick_file_error">Unable to pick file! Check your file manager on your phone.</string>
     <string name="toast_http_code_error">Remote server responded with an error.</string>
     <string name="toast_generic_download_error">We couldn\'t download this file for some reason.</string>
     <string name="toast_ssl_error">Secure connection failed.</string>
@@ -118,9 +133,9 @@
     <string name="buttonLog">CONTINUE</string>
     <string name="show_in_launcher">Show app in launcher</string>
     <string name="show_in_launcher_summary">You may need to restart your launcher for this option to take effect</string>
-    <string name="pdf_title">Title: %1$s</string>
-    <string name="pdf_author">Author: %1$s</string>
-    <string name="pdf_creation_date">Creation Date: %1$s</string>
+    <string name="pdf_title">Title</string>
+    <string name="pdf_author">Author</string>
+    <string name="pdf_creation_date">Creation Date</string>
 
     <string name="file_opening_error">Error opening the pdf. (storage permission? free space?)</string>
     <string name="protected_pdf">Protected PDF</string>
@@ -170,10 +185,13 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="dark_theme_for_app">Let app follow phone\'s theme</string>
-    <string name="app_dark_theme_summary">The app (not the PDF\'s pages) will follow phone\'s theme. This option may cause problems on some devices.</string>
+    <string name="dark_theme_for_app">Let the app follow phone\'s theme</string>
+    <string name="app_dark_theme_summary">The app (not the PDF\'s pages) will follow phone\'s theme. This option may cause problems with pdf background colors on some devices.</string>
     <string name="experimental">Experimental</string>
     <string name="caution">Caution</string>
     <string name="app_dark_dialog_message">On some devices, this option may cause black rectangles to show when reading PDFs. If that happens, just turn this option off.</string>
     <string name="restore">Restore</string>
+    <string name="no_pdf_in_app">There is no PDF open in the app</string>
+    <string name="no_print_manager">Error: Can\'t get PrintManager</string>
+
 </resources>

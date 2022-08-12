@@ -41,53 +41,35 @@
  *  SOFTWARE.
  */
 
-package com.gitlab.mudlej.MjPdfReader.data
+package com.gitlab.mudlej.MjPdfReader.ui
 
-import android.net.Uri
+import android.os.Bundle
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import com.gitlab.mudlej.MjPdfReader.R
+import com.gitlab.mudlej.MjPdfReader.databinding.ActivitySettingsBinding
 
-class PDF(
-    var uri: Uri? = null,
-    var name: String = "",
-    var password: String? = null,
-    var pageNumber: Int = 0,
-    var length: Int = 0,
-    var zoom: Float = 1F,
-    var isPortrait: Boolean = true,
-    var isFullScreenToggled: Boolean = false,
-    var fileHash: String? = null,
-    var downloadedPdf: ByteArray? = null
-) {
+class SettingsActivity : AppCompatActivity() {
 
-    companion object {
-        // constants
-        const val FILE_TYPE = "application/pdf"
-        const val HASH_SIZE = 1024 * 1024
+    private lateinit var binding: ActivitySettingsBinding
 
-        // keys
-        const val nameKey = "name"
-        const val passwordKey = "password"
-        const val pageNumberKey = "pageNumber"
-        const val lengthKey = "length"
-        const val uriKey = "uri"
-        const val zoomKey = "zoom"
-        const val isPortraitKey = "isPortrait"
-        const val isFullScreenToggledKey = "isFullScreenToggled"
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // add back button to the action bar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    fun getTitle(): String {
-        // get .pdf start index (the dot)
-        val extensionIndex: Int =
-            if (name.lastIndexOf('.') == -1) name.length else name.lastIndexOf('.')
-
-        return String.format(
-            "[%s/%s] %s", pageNumber + 1, length, name.substring(0, extensionIndex))
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            // enable the back function to the button on press
+            R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
-    fun togglePortrait() { isPortrait = !isPortrait }
-
-    fun setPageCount(count: Int) {
-        if (count == length || count < 1) return
-        length = count
-    }
-
-    fun hasFile() = uri != null
 }

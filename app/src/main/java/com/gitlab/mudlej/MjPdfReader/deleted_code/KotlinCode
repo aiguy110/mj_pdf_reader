@@ -1,0 +1,56 @@
+package com.gitlab.mudlej.MjPdfReader.deleted_code
+
+import android.app.Dialog
+import android.content.Context
+import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import com.github.barteksc.pdfviewer.PDFView
+import com.gitlab.mudlej.MjPdfReader.R
+import com.gitlab.mudlej.MjPdfReader.data.PDF
+import com.google.android.material.snackbar.Snackbar
+
+
+class PdfMetaDialog() : DialogFragment() {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val builder = AlertDialog.Builder(requireContext())
+        return builder.setTitle(R.string.meta)
+            .setMessage(
+                getString(R.string.pdf_title, requireArguments().getString(TITLE_ARGUMENT)) + "\n" +
+                        getString(
+                            R.string.pdf_author,
+                            requireArguments().getString(AUTHOR_ARGUMENT)
+                        ) + "\n" +
+                        getString(
+                            R.string.pdf_creation_date,
+                            requireArguments().getString(CREATION_DATE_ARGUMENT)
+                        )
+            )
+            .setPositiveButton(R.string.ok) { dialog, _ -> dialog.dismiss() }
+            .setIcon(R.drawable.info_icon)
+            .create()
+    }
+
+    companion object {
+        const val TITLE_ARGUMENT = "title"
+        const val AUTHOR_ARGUMENT = "author"
+        const val CREATION_DATE_ARGUMENT = "creation_date"
+    }
+}
+
+fun showPdfMetaDialog(pdf: PDF, pdfView: PDFView, context: Context): DialogFragment? {
+    if (!pdf.hasFile()) {
+        Snackbar.make(pdfView.rootView, context.getString(R.string.no_pdf_in_app),
+            Snackbar.LENGTH_LONG).show()
+        return null
+    }
+
+    val meta = pdfView.documentMeta ?: return null
+    val dialogArgs = Bundle()
+    dialogArgs.putString(PdfMetaDialog.TITLE_ARGUMENT, meta.title)
+    dialogArgs.putString(PdfMetaDialog.AUTHOR_ARGUMENT, meta.author)
+    dialogArgs.putString(PdfMetaDialog.CREATION_DATE_ARGUMENT, meta.creationDate)
+    val dialog: DialogFragment = PdfMetaDialog()
+    dialog.arguments = dialogArgs
+    return dialog
+}

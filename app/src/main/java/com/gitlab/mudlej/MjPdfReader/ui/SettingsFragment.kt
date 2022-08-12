@@ -1,4 +1,47 @@
-package com.gitlab.mudlej.MjPdfReader
+/*
+ *   MJ PDF Reader
+ *   Copyright (C) 2022 Mudlej
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *  --------------------------
+ *  This code was previously licensed under
+ *
+ *  MIT License
+ *
+ *  Copyright (c) 2018 Gokul Swaminathan
+ *  Copyright (c) 2022 Mudlej
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
+
+package com.gitlab.mudlej.MjPdfReader.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -7,6 +50,7 @@ import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -20,21 +64,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // ----------------- First Section -------------------
 
         // Configure and add Anti Aliasing Switch
-        val qualitySwitch = SwitchPreferenceCompat(context)
+        val qualitySwitch = SwitchPreferenceCompat(requireContext())
         qualitySwitch.title = getString(R.string.quality)
         qualitySwitch.setDefaultValue(Preferences.highQualityDefault)
         qualitySwitch.key = Preferences.highQualityKey
         qualitySwitch.isIconSpaceReserved = false
 
         // Configure and add Anti Aliasing Switch
-        val aliasSwitch = SwitchPreferenceCompat(context)
+        val aliasSwitch = SwitchPreferenceCompat(requireContext())
         aliasSwitch.title = getString(R.string.alias)
         aliasSwitch.setDefaultValue(Preferences.antiAliasingDefault)
         aliasSwitch.key = Preferences.antiAliasingKey
         aliasSwitch.isIconSpaceReserved = false
 
         // Configure and add Keep Screen On Switch
-        val screenOnSwitch = SwitchPreferenceCompat(context)
+        val screenOnSwitch = SwitchPreferenceCompat(requireContext())
         screenOnSwitch.title = getString(R.string.keep_screen_on)
         screenOnSwitch.setDefaultValue(Preferences.screenOnDefault)
         screenOnSwitch.key = Preferences.screenOnKey
@@ -51,14 +95,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // ----------------- Second Section ------------------
 
         // Configure and add Keep Screen On Switch
-        val horizontalScrollSwitch = SwitchPreferenceCompat(context)
+        val horizontalScrollSwitch = SwitchPreferenceCompat(requireContext())
         horizontalScrollSwitch.title = getString(R.string.scroll)
         horizontalScrollSwitch.setDefaultValue(Preferences.horizontalScrollDefault)
         horizontalScrollSwitch.key = Preferences.horizontalScrollKey
         horizontalScrollSwitch.isIconSpaceReserved = false
 
         // Configure and add Page Snap Switch
-        val pageSnapSwitch = SwitchPreferenceCompat(context)
+        val pageSnapSwitch = SwitchPreferenceCompat(requireContext())
         pageSnapSwitch.title = getString(R.string.snap)
         pageSnapSwitch.setDefaultValue(Preferences.pageSnapDefault)
         pageSnapSwitch.key = Preferences.pageSnapKey
@@ -66,7 +110,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         pageSnapSwitch.isIconSpaceReserved = false
 
         // Configure and add Page Snap Switch
-        val pageFlingSwitch = SwitchPreferenceCompat(context)
+        val pageFlingSwitch = SwitchPreferenceCompat(requireContext())
         pageFlingSwitch.title = getString(R.string.fling)
         pageFlingSwitch.setDefaultValue(Preferences.pageFlingDefault)
         pageFlingSwitch.key = Preferences.pageFlingKey
@@ -84,7 +128,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // ----------------- Third Section ------------------
 
         // Configure and add Keep Screen On Switch
-        val appDarkThemeSwitch = SwitchPreferenceCompat(context)
+        val appDarkThemeSwitch = SwitchPreferenceCompat(requireContext())
         appDarkThemeSwitch.title = getString(R.string.dark_theme_for_app)
         appDarkThemeSwitch.setDefaultValue(Preferences.appFollowSystemThemeDefault)
         appDarkThemeSwitch.key = Preferences.appFollowSystemTheme
@@ -99,7 +143,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 return@setOnPreferenceClickListener true
             }
 
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.caution))
                 .setMessage(getString(R.string.app_dark_dialog_message))
                 .setPositiveButton("Ok") { dialog, _ ->
