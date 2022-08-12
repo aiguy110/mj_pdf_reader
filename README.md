@@ -40,12 +40,11 @@ The following permissions are required to provide specific features in the app:
 - [ ] Take a look at this (https://github.com/JavaCafe01/PdfViewer/issues/175)
 
 ## What is different from PDF Viewer Plus
-
 - [x] Great refactoring of the code. (still needs more)
 - [x] Converted the code to Kotlin. (except for two files)
 - [x] Extracted almost all the resources from the logic files.
 - [x] Support for the new versions of Android.
-- [x] Forked and changed android-pdf-viewer library to achieve some of the above modifications.
+- [x] Forked and changed android-pdf-viewer library to achieve some of the below modifications.
 - [x] Removed WhatsNew dependency. (https://github.com/TonnyL/WhatsNew)
 - [x] Removed Cyanea dependency. (https://github.com/jaredrummler/Cyanea)
 - [x] Removed deprecated PreferenceActivity and replaced it with AndroidX Preference library and rewrote all the files.
