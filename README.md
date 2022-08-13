@@ -10,13 +10,13 @@ I made significant modifications to the app, see the section below (What is diff
 
 ## Screenshots
 
-| Light Mode | Dark Mode |
-|:-:|:-:|
-| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_light.jpg" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_dark.jpg" width="190" height="400"/> |
+| Light Mode                                                                                                                           | Dark Mode                                                                                                                     |
+| :-:                                                                                                                                  | :-:                                                                                                                           |
+| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed%20(1).png" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png" width="190" height="400"/> |
 
-| Full Screen (No Buttons)                                                                                                       | Full Screen (Buttons)                                                                                                         |
-| :-:                                                                                                                            | :-:                                                                                                                           |
-| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_light.jpg" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/normal_dark.jpg" width="190" height="400"/> |
+| Full Screen (No Buttons)                                                                                                                | Full Screen (Buttons)                                                                                                                 |
+| :-:                                                                                                                                     | :-:                                                                                                                                   |
+| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/full_no_buttons%20(1).png" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/full_buttons_framed.png" width="190" height="400"/> |
 
 ## MJ PDF Reader Features
 * Fast & smooth experience.
