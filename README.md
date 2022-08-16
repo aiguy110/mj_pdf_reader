@@ -1,6 +1,13 @@
 <div align="center">
-  <img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="120" />
+  <img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="120" />
 </div>
+
+# Download
+- [ ] Play Store (waiting for approval)
+    https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader
+- [x] Direct Link
+    
+- [ ] F-droid (coming)
 
 # MJ PDF Reader
 
