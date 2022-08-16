@@ -3,10 +3,8 @@
 </div>
 
 # Download
-- [ ] Play Store (waiting for approval)
-    https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader
-- [x] Direct Link
-    
+- [ ] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader) (waiting for approval)
+- [x] [Gitlab APK Link] (https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/app/release/app-release.apk)
 - [ ] F-droid (coming)
 
 # MJ PDF Reader
@@ -38,7 +36,7 @@ I made significant modifications to the app, see the section below (What is diff
 * FOSS and totally private
 
 ## Permissions and privacy
-This app does not collect any data.  
+This app does not collect any data.
 The following permissions are required to provide specific features in the app:
 * *Internet*: For opening PDFs through links
 * *Storage*: For saving downloading PDFs and opening them from storage
@@ -46,6 +44,7 @@ The following permissions are required to provide specific features in the app:
 ## Things I would like to do for MJ PDF Reader
 - [ ] Add a home page with three tabs (PDFs folders, Recent, Favorite)
 - [ ] Adding search functionality. Though, it looks like this is not an easy task, since the android-pdf-viewer library doesn't support that. (and of course OCR is not an option)
+- [ ] Adding the ability to click on hyperlinks.
 - [ ] Adding highlight functionality. I don't use it personally, so I don't think I'll work on it any time soon. But feel free to create a pull request.
 - [ ] Adding auto-scroll mode.
 - [ ] Take a look at this (https://github.com/JavaCafe01/PdfViewer/issues/175)
