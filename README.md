@@ -47,16 +47,17 @@ The following permissions are required to provide specific features in the app:
 - [ ] Adding the ability to click on hyperlinks.
 - [ ] Adding highlight functionality. I don't use it personally, so I don't think I'll work on it any time soon. But feel free to create a pull request.
 - [ ] Adding auto-scroll mode.
-- [ ] Take a look at this (https://github.com/JavaCafe01/PdfViewer/issues/175)
 
 ## What is different from PDF Viewer Plus
 - [x] Great refactoring of the code. (still needs more)
 - [x] Converted the code to Kotlin. (except for two files)
+- [x] Removed many security vulnerabilities. ([see Forking PdfiumAndroid](https://gitlab.com/mudlej_android/mj_pdf_reader#forking-pdfiumandroid))
 - [x] Extracted almost all the resources from the logic files.
 - [x] Support for the new versions of Android.
 - [x] Forked and changed android-pdf-viewer library to achieve some of the below modifications.
-- [x] Removed WhatsNew dependency. (https://github.com/TonnyL/WhatsNew)
-- [x] Removed Cyanea dependency. (https://github.com/jaredrummler/Cyanea)
+- [x] Forked [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) to update its core libraries. ([see Forking PdfiumAndroid](https://gitlab.com/mudlej_android/mj_pdf_reader#forking-pdfiumandroid))
+- [x] Removed [WhatsNew](https://github.com/TonnyL/WhatsNew) dependency.
+- [x] Removed [Cyanea](https://github.com/jaredrummler/Cyanea) dependency.
 - [x] Removed deprecated PreferenceActivity and replaced it with AndroidX Preference library and rewrote all the files.
 - [x] Changed the license to GPLv3
 - [x] Remembers the last opened page of each PDF. (credits to @Derekelkins)
@@ -75,6 +76,12 @@ The following permissions are required to provide specific features in the app:
 - [x] App's light / dark theme follows phone's theme. (You've to enable this option, disabled by default due to https://github.com/barteksc/AndroidPdfViewer/issues/914)
 - [x] A shortcut to switch the theme for the PDF in the action menu.
 
+## Forking PdfiumAndroid
+I Forked [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) to update its core libraries that were years behind and had too many security vulnerabilities.
+
+* Updated PDFium to 106.0.5241.0 ([source code](https://pdfium.googlesource.com/pdfium/+/refs/heads/main), [building script](https://github.com/bblanchon/pdfium-binaries))
+* Updated libpng to 1.6.37 ([source code](https://sourceforge.net/projects/libpng/files/libpng16/1.6.37/), [building script](https://github.com/kota-kota/libpng-build))
+* Updated Freetype to 2.12.1 ([source code](https://github.com/freetype/freetype), [building script](https://github.com/kota-kota/freetype-build))
 
 ## Authors and acknowledgment
 - MJ PDF Reader is made by @mudlej.
