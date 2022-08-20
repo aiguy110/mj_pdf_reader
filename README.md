@@ -75,6 +75,7 @@ The following permissions are required to provide specific features in the app:
 - [x] Changed the Default Theme to the Material theme.
 - [x] App's light / dark theme follows phone's theme. (You've to enable this option, disabled by default due to https://github.com/barteksc/AndroidPdfViewer/issues/914)
 - [x] A shortcut to switch the theme for the PDF in the action menu.
+- [x] Decreased the size of the app from 20 MB to 14.9 MB. (MJ PDF Reader v1.3)
 
 ## Forking PdfiumAndroid
 I Forked [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) to update its core libraries that were years behind and had too many security vulnerabilities.
