@@ -18,9 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
         android:usesCleartextTraffic="true">
-
         <activity
-            android:name="com.gitlab.mudlej.MjPdfReader.ui.MainActivity"
+            android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:documentLaunchMode="intoExisting"
             android:exported="true">
@@ -73,14 +72,12 @@
                 <data android:scheme="content" />
                 <data android:mimeType="application/pdf" />
             </intent-filter>
-        </activity>
-
-        <!-- Alias to allow the user to hide the app from launcher on Android < 10 -->
+        </activity> <!-- Alias to allow the user to hide the app from launcher on Android < 10 -->
         <activity-alias
             android:name=".LauncherAlias"
             android:enabled="true"
             android:exported="true"
-            android:targetActivity="com.gitlab.mudlej.MjPdfReader.ui.MainActivity">
+            android:targetActivity=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -89,13 +86,12 @@
         </activity-alias>
 
         <activity
-            android:name="com.gitlab.mudlej.MjPdfReader.ui.AboutActivity"
+            android:name=".ui.AboutActivity"
             android:exported="true"
             android:label="@string/action_about"
-            android:parentActivityName="com.gitlab.mudlej.MjPdfReader.ui.MainActivity" />
-
+            android:parentActivityName=".ui.MainActivity" />
         <activity
-            android:name="com.gitlab.mudlej.MjPdfReader.ui.MainIntroActivity"
+            android:name=".ui.MainIntroActivity"
             android:exported="true"
             android:label="@string/intro"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
@@ -103,7 +99,7 @@
             android:name=".ui.SettingsActivity"
             android:exported="true"
             android:label="@string/settings"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
     </application>
 
 </manifest>

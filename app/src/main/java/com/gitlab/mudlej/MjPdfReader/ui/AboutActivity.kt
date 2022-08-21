@@ -65,17 +65,17 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityAboutBinding
 import java.util.*
 
 class AboutActivity : AppCompatActivity() {
-    private lateinit var viewBinding: ActivityAboutBinding
+    private lateinit var binding: ActivityAboutBinding
     
     private val APP_VERSION_RELEASE = "Version " + getAppVersion()
     private val APP_VERSION_DEBUG = "Version " + getAppVersion() + "-debug"
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding = ActivityAboutBinding.inflate(
+        binding = ActivityAboutBinding.inflate(
             layoutInflater
         )
-        setContentView(viewBinding.root)
+        setContentView(binding.root)
         setVersionText()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
@@ -83,9 +83,9 @@ class AboutActivity : AppCompatActivity() {
     private fun setVersionText() {
         // check if app is debug
         if (BuildConfig.DEBUG) {
-            viewBinding.versionTextView.text = APP_VERSION_DEBUG
+            binding.versionTextView.text = APP_VERSION_DEBUG
         } else {   //if app is release
-            viewBinding.versionTextView.text = APP_VERSION_RELEASE
+            binding.versionTextView.text = APP_VERSION_RELEASE
         }
     }
 

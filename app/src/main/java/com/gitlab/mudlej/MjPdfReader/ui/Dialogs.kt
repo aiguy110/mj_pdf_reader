@@ -54,12 +54,14 @@ import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.github.barteksc.pdfviewer.PDFView
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.shockwave.pdfium.PdfDocument
 
+private const val TAG = "Dialogs"
 
 fun showAppFeaturesDialog(context: Context) {
     val end = "\n\n"
@@ -86,7 +88,7 @@ fun showAppFeaturesDialog(context: Context) {
 
 fun showMetaDialog(context: Context, meta: PdfDocument.Meta) {
     AlertDialog.Builder(context)
-        .setTitle(R.string.meta)
+        .setTitle(R.string.metadata)
         .setMessage(
             "${context.getString(R.string.pdf_title)}: ${meta.title}\n" +
             "${context.getString(R.string.pdf_author)}: ${meta.author}\n" +
@@ -196,3 +198,22 @@ fun showPartSizeDialog(activity: MainActivity, pref: Preferences) {
 
     dialog.show()
 }
+
+fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
+    // get bookmarks or set an appropriate message for the user
+    var bookmarks = pdfView.tableOfContents.map { "${it.title} - P${it.pageIdx + 1}" }
+    if (bookmarks.isEmpty()) bookmarks = listOf(activity.getString(R.string.no_bookmarks))
+
+    // create and show the bookmarks dialog
+    AlertDialog.Builder(activity)
+        .setTitle(activity.getString(R.string.bookmarks))
+        .setItems(bookmarks.toTypedArray()) { dialog, which ->
+            if (pdfView.tableOfContents.isEmpty()) return@setItems
+
+            val page = pdfView.tableOfContents[which].pageIdx
+            pdfView.jumpTo(page.toInt())
+            dialog.dismiss()
+        }
+        .show()
+}
+

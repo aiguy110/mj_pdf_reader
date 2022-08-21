@@ -12,7 +12,7 @@
     <item
         android:id="@+id/metaFile"
         android:icon="@drawable/meta_info"
-        android:title="@string/meta"
+        android:title="@string/metadata"
         android:orderInCategory="4"
         app:showAsAction="always" />
 
@@ -26,7 +26,7 @@
     <item
         android:id="@+id/printFile"
         android:icon="@drawable/print_icon"
-        android:title="@string/print"
+        android:title="@string/print_file"
         android:orderInCategory="6"
         app:showAsAction="always"  />
 

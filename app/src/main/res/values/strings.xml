@@ -93,7 +93,7 @@
     <string name="code">Source Code</string>
 
     <string name="share">Share</string>
-    <string name="print">Print</string>
+    <string name="print_file">Print File</string>
     <string name="full_screen">Full Screen</string>
     <string name="devnotice">Developer Notice</string>
     <string name="theme_picker">Change Theme</string>
@@ -118,7 +118,8 @@
 
     <string name="pref_colored_navigation_bar_title">Navigation bar color</string>
     <string name="pref_colored_navigation_bar_summary">Apply the primary color to the navigation bar</string>
-    <string name="meta">File Info</string>
+    <string name="metadata">File Info</string>
+    <string name="app_settings">App Settings</string>
     <string name="quality">High Quality Rendering</string>
     <string name="settings">Settings</string>
     <string name="alias">Anti-Aliasing</string>
@@ -149,7 +150,6 @@
     <string name="app_theme">App Theme</string>
     <string name="switch_theme">Toggle PDF Theme</string>
     <string name="open_another_pdf">Open Another PDF</string>
-    <string name="print_pdf">Print</string>
     <string name="show_pdf_metadata">Metadata</string>
     <string name="close_character">X</string>
     <string name="exit_fullscreen_button">Exit Fullscreen Button</string>
@@ -195,10 +195,14 @@
     <string name="no_print_manager">Error: Can\'t get PrintManager</string>
     <string name="slow_loading">Slow loading?</string>
     <string name="advanced">Advanced</string>
+    <string name="advanced_config">Advanced Configuration</string>
     <string name="part_size_value">PART SIZE value</string>
     <string name="max_zoom_value">MAX ZOOM value</string>
     <string name="apply">Apply</string>
     <string name="reset">Reset</string>
     <string name="cancel">Cancel</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="no_bookmarks">This file doesn\'t contain bookmarks</string>
+    <string name="additional_options">Additional Options</string>
 
 </resources>

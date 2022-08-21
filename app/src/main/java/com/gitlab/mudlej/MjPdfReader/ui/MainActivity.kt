@@ -56,12 +56,10 @@ import android.net.Uri
 import android.os.*
 import android.print.PrintManager
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
@@ -90,8 +88,10 @@ import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
+    enum class AdditionalOptions{ METADATA, APP_SETTINGS, PRINT_FILE, ADVANCED_CONFIG }
+
     private val TAG = "MainActivity"
-    private lateinit var viewBinding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val handler = Handler(Looper.getMainLooper())
@@ -104,8 +104,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "-----------onCreate: ${pdf.name} ")
         super.onCreate(savedInstanceState)
-        viewBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(viewBinding.root)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // To avoid FileUriExposedException, (https://stackoverflow.com/questions/38200282/)
         StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().build())
@@ -133,6 +133,23 @@ class MainActivity : AppCompatActivity() {
         displayFromUri(pdf.uri)
         setButtonsFunctionalities()
         showAppFeaturesDialogOnFirstRun()
+    }
+
+    private fun f() {
+        // trying to get table of contents
+        val bookmarks = binding.pdfView.tableOfContents
+        for (bookmark in bookmarks) {
+            Log.i(TAG, "bk: ${bookmark.title}")
+            Log.i(TAG, "bk: ${bookmark.pageIdx}")
+            Log.i(TAG, "bk: ----------------")
+        }
+
+        for (i in 0 until binding.pdfView.pageCount)
+            for (link in binding.pdfView.getLinks(i)) {
+                Log.i(TAG, "link: ${link.uri}")
+                Log.i(TAG, "link: ${link.destPageIdx}")
+                Log.i(TAG, "------------------")
+            }
     }
 
     private fun onFirstInstall() {
@@ -176,7 +193,7 @@ class MainActivity : AppCompatActivity() {
         if (scheme != null && scheme.contains("http")) {
             downloadOrShowDownloadedFile(uri)
         } else {
-            initPdfViewAndLoad(viewBinding.pdfView.fromUri(pdf.uri))
+            initPdfViewAndLoad(binding.pdfView.fromUri(pdf.uri))
         }
     }
 
@@ -200,7 +217,7 @@ class MainActivity : AppCompatActivity() {
     private fun initPdfViewAndLoad(viewConfigurator: Configurator, pageNumber: Int) {
         configureTheme()
 
-        val pdfView = viewBinding.pdfView
+        val pdfView = binding.pdfView
         pdfView.useBestQuality(pref.getHighQuality())
         pdfView.minZoom = Preferences.minZoomDefault
         pdfView.midZoom = Preferences.midZoomDefault
@@ -234,20 +251,20 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SourceLockedOrientationActivity")
     private fun setButtonsFunctionalities() {
-        viewBinding.exitFullScreenButton.setOnClickListener {
+        binding.exitFullScreenButton.setOnClickListener {
             // set orientation to unspecified so that the screen rotation will be unlocked
             // this is because PORTRAIT / LANDSCAPE modes will lock the app in them
             toggleFullscreen(false)
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
             hideButtons(null)
         }
-        viewBinding.rotateScreenButton.setOnClickListener {
+        binding.rotateScreenButton.setOnClickListener {
             requestedOrientation =
                 if (pdf.isPortrait) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                 else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             pdf.togglePortrait()
         }
-        viewBinding.pickFile.setOnClickListener { pickFile() }
+        binding.pickFile.setOnClickListener { pickFile() }
     }
 
     public override fun onResume() {
@@ -259,18 +276,18 @@ class MainActivity : AppCompatActivity() {
         // check if there is a pdf at first
 //        if (pdf.uri == null) return
 
-        if (pdf.uri != null) viewBinding.pickFile.visibility = View.GONE
+        if (pdf.uri != null) binding.pickFile.visibility = View.GONE
 
         // restore the full screen mode if was toggled On
         if (pdf.isFullScreenToggled) toggleFullscreen(true)
 
         // Prompt the user to restore the previous zoom if there is one saved other than the default
-        // pdfZoom != viewBinding.pdfView.getZoom())   // doesn't work for some peculiar reason
+        // pdfZoom != binding.pdfView.getZoom())   // doesn't work for some peculiar reason
         if (pdf.zoom != 1f) {
             Snackbar.make(findViewById(R.id.main),
                 getString(R.string.ask_restore_zoom), Snackbar.LENGTH_LONG)
                 .setAction(getString(R.string.restore)) {
-                    viewBinding.pdfView.zoomWithAnimation(pdf.zoom)
+                    binding.pdfView.zoomWithAnimation(pdf.zoom)
                 }
                 .show()
         }
@@ -291,11 +308,11 @@ class MainActivity : AppCompatActivity() {
         // changes buttons color
         val color = if (pref.getPdfDarkTheme()) R.color.bright else R.color.dark
         DrawableCompat.setTint(
-            DrawableCompat.wrap(viewBinding.exitFullScreenImage.drawable),
+            DrawableCompat.wrap(binding.exitFullScreenImage.drawable),
             ContextCompat.getColor(this, color)
         )
         DrawableCompat.setTint(
-            DrawableCompat.wrap(viewBinding.rotateScreenImage.drawable),
+            DrawableCompat.wrap(binding.rotateScreenImage.drawable),
             ContextCompat.getColor(this, color)
         )
     }
@@ -319,7 +336,7 @@ class MainActivity : AppCompatActivity() {
         // This should be moved to the onCreate or xml files
         window.statusBarColor = Color.parseColor("#1a1b1b")
 
-        val pdfView = viewBinding.pdfView
+        val pdfView = binding.pdfView
 
         // set background color behind pages
         if (!pref.getPdfDarkTheme()) pdfView.setBackgroundColor(Preferences.pdfDarkBackgroundColor) else pdfView.setBackgroundColor(
@@ -347,14 +364,14 @@ class MainActivity : AppCompatActivity() {
         tappingHandler.removeCallbacksAndMessages(null)
 
         handle?.customHide()
-        viewBinding.exitFullScreenButton.visibility = View.INVISIBLE
-        viewBinding.rotateScreenButton.visibility = View.INVISIBLE
+        binding.exitFullScreenButton.visibility = View.INVISIBLE
+        binding.rotateScreenButton.visibility = View.INVISIBLE
     }
 
     private fun toggleScrollAndButtonsVisibility(): Boolean {
-        val handle = viewBinding.pdfView.scrollHandle
-        val exitButton = viewBinding.exitFullScreenButton
-        val rotateButton = viewBinding.rotateScreenButton
+        val handle = binding.pdfView.scrollHandle
+        val exitButton = binding.exitFullScreenButton
+        val rotateButton = binding.rotateScreenButton
         if (handle == null) {
             toggleButtonsVisibility()
             return true
@@ -363,6 +380,9 @@ class MainActivity : AppCompatActivity() {
         // timer to hide them. This timer will be canceled in the else branch
         tappingHandler.removeCallbacksAndMessages(null)
         handle.cancelHideRunner()
+
+        // try
+//        f()
 
         // set a new timer to hide
         tappingHandler.postDelayed({
@@ -387,8 +407,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleButtonsVisibility() {
         if (!pdf.isFullScreenToggled) return
-        val exitButton = viewBinding.exitFullScreenButton
-        val rotateButton = viewBinding.rotateScreenButton
+        val exitButton = binding.exitFullScreenButton
+        val rotateButton = binding.rotateScreenButton
         if (exitButton.visibility == View.VISIBLE) {
             exitButton.visibility = View.INVISIBLE
             rotateButton.visibility = View.INVISIBLE
@@ -433,7 +453,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun toggleFullscreen(fixFullScreen: Boolean) {
-        val view: View = viewBinding.pdfView
+        val view: View = binding.pdfView
         if (!pdf.isFullScreenToggled || fixFullScreen) {
             supportActionBar?.hide()
             pdf.isFullScreenToggled = true
@@ -443,7 +463,7 @@ class MainActivity : AppCompatActivity() {
 
             // hide the scroll handle
             if (!fixFullScreen) {
-                val handle = viewBinding.pdfView.scrollHandle
+                val handle = binding.pdfView.scrollHandle
                 handle?.customHide()
             }
 
@@ -461,10 +481,10 @@ class MainActivity : AppCompatActivity() {
             pdf.downloadedPdf = lastCustomNonConfigurationInstance as ByteArray?
         }
         if (pdf.downloadedPdf != null) {
-            initPdfViewAndLoad(viewBinding.pdfView.fromBytes(pdf.downloadedPdf))
+            initPdfViewAndLoad(binding.pdfView.fromBytes(pdf.downloadedPdf))
         } else {
             // we will get the pdf asynchronously with the DownloadPDFFile object
-            viewBinding.progressBar.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             val downloadPDFFile =
                 DownloadPDFFile(this)
             downloadPDFFile.execute(uri.toString())
@@ -476,13 +496,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun hideProgressBar() {
-        viewBinding.progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
     }
 
     fun saveToFileAndDisplay(pdfFileContent: ByteArray?) {
         pdf.downloadedPdf = pdfFileContent
         saveToDownloadFolderIfAllowed(pdfFileContent)
-        initPdfViewAndLoad(viewBinding.pdfView.fromBytes(pdfFileContent))
+        initPdfViewAndLoad(binding.pdfView.fromBytes(pdfFileContent))
     }
 
     private fun saveToDownloadFolderIfAllowed(fileContent: ByteArray?) {
@@ -515,7 +535,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun navToSettings() {
+    private fun navToAppSettings() {
         settingsLauncher.launch(Intent(this, SettingsActivity::class.java))
     }
 
@@ -530,7 +550,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun printDocument() {
+    private fun printFile() {
         if (checkHasFile()) {
             val mgr = getSystemService(Context.PRINT_SERVICE) as PrintManager
             mgr.print(pdf.name, PdfDocumentAdapter(this, pdf.uri), null)
@@ -556,30 +576,47 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_about -> {
-                startActivity(navIntent(this, AboutActivity::class.java))
-            }
-            R.id.theme -> {
-                startActivity(navIntent(applicationContext, SettingsActivity::class.java))
-            }
-            R.id.meta_data -> {
-                if (checkHasFile()) showMetaDialog(this, viewBinding.pdfView.documentMeta)
-            }
-            R.id.settings -> navToSettings()
-            R.id.share_file -> shareFile()
             R.id.fullscreen_option -> toggleFullscreen(false)
             R.id.switch_theme -> switchPdfTheme()
             R.id.open_file -> pickFile()
-            R.id.print_file -> printDocument()
-            R.id.advanced_config -> showPartSizeDialog(this, pref)
+            R.id.bookmarks_list -> showBookmarksDialog(this, binding.pdfView)
+            R.id.share_file -> shareFile()
+            R.id.additional_options -> showAdditionalOptions()
+            R.id.action_about -> {
+                startActivity(navIntent(this, AboutActivity::class.java))
+            }
             else -> return super.onOptionsItemSelected(item)
         }
         return true
     }
 
+    private fun showAdditionalOptions() {
+        // map an index to an option string
+        val settingsMap = mapOf(
+            AdditionalOptions.METADATA to getString(R.string.metadata),
+            AdditionalOptions.APP_SETTINGS to getString(R.string.app_settings),
+            AdditionalOptions.PRINT_FILE to getString(R.string.print_file),
+            AdditionalOptions.ADVANCED_CONFIG to getString(R.string.advanced_config)
+        )
+
+        // create a dialog for additional options and set their functionalities
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.settings))
+            .setItems(settingsMap.values.toTypedArray()) { dialog, which ->
+                when (which) {
+                    AdditionalOptions.METADATA.ordinal ->
+                        if (checkHasFile()) showMetaDialog(this, binding.pdfView.documentMeta)
+                    AdditionalOptions.APP_SETTINGS.ordinal -> navToAppSettings()
+                    AdditionalOptions.PRINT_FILE.ordinal -> printFile()
+                    AdditionalOptions.ADVANCED_CONFIG.ordinal -> showPartSizeDialog(this, pref)
+                }
+                dialog.dismiss()
+            }
+            .show()
+    }
     private fun checkHasFile(): Boolean {
         if (!pdf.hasFile()) {
-            Snackbar.make(viewBinding.root, getString(R.string.no_pdf_in_app),
+            Snackbar.make(binding.root, getString(R.string.no_pdf_in_app),
                 Snackbar.LENGTH_LONG).show()
             return false
         }
@@ -614,7 +651,7 @@ class MainActivity : AppCompatActivity() {
         outState.putInt(PDF.pageNumberKey, pdf.pageNumber)
         outState.putString(PDF.passwordKey, pdf.password)
         outState.putBoolean(PDF.isFullScreenToggledKey, pdf.isFullScreenToggled)
-        outState.putFloat(PDF.zoomKey, viewBinding.pdfView.zoom)
+        outState.putFloat(PDF.zoomKey, binding.pdfView.zoom)
         super.onSaveInstanceState(outState)
     }
 
