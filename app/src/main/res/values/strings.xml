@@ -204,5 +204,9 @@
     <string name="bookmarks">Bookmarks</string>
     <string name="no_bookmarks">This file doesn\'t contain bookmarks</string>
     <string name="additional_options">Additional Options</string>
+    <string name="text_mode">Text Mode</string>
+    <string name="text_mode_loading">Text Mode (loading...)</string>
+    <string name="left_arrow"><![CDATA[<-]]></string>
+    <string name="right_arrow"><![CDATA[->]]></string>
 
 </resources>

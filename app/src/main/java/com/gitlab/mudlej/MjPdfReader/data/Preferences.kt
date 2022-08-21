@@ -63,6 +63,8 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val partSizeKey = "partSize"
         const val thumbnailRatioKey = "thumbnailRatio"
         const val maxZoomKey = "maxZoom"
+        const val pdfTextKey = "pdfText"
+        const val pdfLengthKey = "pdfLength"
 
         // Default values
         const val firstInstallDefault = true
@@ -83,6 +85,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val maxZoomDefault = 5.0f
         const val partSizeDefault = 256f
         const val thumbnailRatioDefault = 0.3f
+        const val pdfLengthDefault = 0
 
         // Colors
         const val pdfDarkBackgroundColor = -0x313132          // -0x313132 = 0xffcecece

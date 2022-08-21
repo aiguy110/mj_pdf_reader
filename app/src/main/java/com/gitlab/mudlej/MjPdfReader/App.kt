@@ -45,5 +45,13 @@ package com.gitlab.mudlej.MjPdfReader
 
 import android.app.Application
 import android.content.res.Configuration
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 
-class App : Application()
+class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        // init PDFBox
+        PDFBoxResourceLoader.init(applicationContext);
+    }
+}

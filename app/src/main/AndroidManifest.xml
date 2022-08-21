@@ -19,6 +19,9 @@
         android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.TextMode"
+            android:exported="false" />
+        <activity
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:documentLaunchMode="intoExisting"

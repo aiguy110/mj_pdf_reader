@@ -55,7 +55,9 @@ class PDF(
     var isPortrait: Boolean = true,
     var isFullScreenToggled: Boolean = false,
     var fileHash: String? = null,
-    var downloadedPdf: ByteArray? = null
+    var downloadedPdf: ByteArray? = null,
+    val pagesText: MutableMap<Int, String> = mutableMapOf(),
+    var isExtractingTextFinished: Boolean = false
 ) {
 
     companion object {

@@ -46,9 +46,7 @@ package com.gitlab.mudlej.MjPdfReader.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ActivityManager
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -57,6 +55,7 @@ import android.os.*
 import android.print.PrintManager
 import android.util.Log
 import android.view.*
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.appcompat.app.AlertDialog
@@ -80,7 +79,10 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.gitlab.mudlej.MjPdfReader.util.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.shockwave.pdfium.PdfPasswordException
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.text.PDFTextStripper
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.concurrent.Executor
@@ -99,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var pref: Preferences
     private lateinit var database: AppDatabase
-    private var pdf = PDF()
+    private val pdf = PDF()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "-----------onCreate: ${pdf.name} ")
@@ -133,23 +135,6 @@ class MainActivity : AppCompatActivity() {
         displayFromUri(pdf.uri)
         setButtonsFunctionalities()
         showAppFeaturesDialogOnFirstRun()
-    }
-
-    private fun f() {
-        // trying to get table of contents
-        val bookmarks = binding.pdfView.tableOfContents
-        for (bookmark in bookmarks) {
-            Log.i(TAG, "bk: ${bookmark.title}")
-            Log.i(TAG, "bk: ${bookmark.pageIdx}")
-            Log.i(TAG, "bk: ----------------")
-        }
-
-        for (i in 0 until binding.pdfView.pageCount)
-            for (link in binding.pdfView.getLinks(i)) {
-                Log.i(TAG, "link: ${link.uri}")
-                Log.i(TAG, "link: ${link.destPageIdx}")
-                Log.i(TAG, "------------------")
-            }
     }
 
     private fun onFirstInstall() {
@@ -198,6 +183,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initPdfViewAndLoad(viewConfigurator: Configurator) {
+        // start extracting text in the background
+        extractPdfText()
+
         // attempt to find a saved location for the pdf else assign zero
         if (pdf.pageNumber == 0) {
             executor.execute {
@@ -230,6 +218,7 @@ class MainActivity : AppCompatActivity() {
             .enableAnnotationRendering(Preferences.annotationRenderingDefault)
             .enableAntialiasing(pref.getAntiAliasing())
             .onTap { toggleScrollAndButtonsVisibility() }
+            .onLongPress { showPageTextDialog() }
             .scrollHandle(DefaultScrollHandle(this))
             .spacing(Preferences.spacingDefault)
             .onError { exception: Throwable -> handleFileOpeningError(exception) }
@@ -247,6 +236,79 @@ class MainActivity : AppCompatActivity() {
         pdfView.performTap()
         tappingHandler.postDelayed({ hideButtons(pdfView.scrollHandle) },
             pref.getHideDelay().toLong())
+    }
+
+    private fun showPageTextDialog() {
+        // TODO: create an option to disable this dialog
+        // if (pref.getIsPageTextDialogDisabled) return
+
+        // copy page's text or set an appropriate message
+        val pageText = (pdf.pagesText[pdf.pageNumber + 1] ?: "")
+            .ifEmpty { "Couldn't extract text from this page"}
+
+        // create a custom view to make the text selectable
+        val pageTextView = TextView(this)
+        pageTextView.setPadding(30, 10, 30, 10)
+        pageTextView.setTextIsSelectable(true)
+        pageTextView.text = pageText
+        pageTextView.textSize = 16f
+
+        AlertDialog.Builder(this)
+            .setView(pageTextView)
+            .setTitle("Page #${pdf.pageNumber + 1} Selectable Text (experimental)")
+            .setPositiveButton("Copy All") { dialog, _ ->
+                // copy page's text to clipboard
+                val clipboard: ClipboardManager =
+                    getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip: ClipData = ClipData.newPlainText(
+                    "Page #${pdf.pageNumber} Text", pageText
+                )
+                clipboard.setPrimaryClip(clip)
+
+                // show message to user before closing
+                Toast.makeText(this, "Text copied to clipboard", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Close") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
+    private fun extractPdfText() {
+        var document: PDDocument? = null
+        val pdfStripper = PDFTextStripper()
+        pdf.pagesText.clear()
+
+        Executors.newSingleThreadExecutor().execute {
+            // off UI thread
+            try {
+                document = PDDocument.load(contentResolver.openInputStream(pdf.uri as Uri))
+                val pagesCount = document?.numberOfPages ?: 0
+
+                for (i in 0..pagesCount) {      // <= intentional
+                    pdfStripper.startPage = i
+                    pdfStripper.endPage = i
+                    pdf.pagesText[i] = pdfStripper.getText(document)
+                }
+                // back to UI thread
+                handler.post {
+                    Log.d(TAG, "extractPdfText: finished")
+                    pdf.isExtractingTextFinished = true
+                    invalidateOptionsMenu()     // update Text-Mode option in action bar
+                }
+            }
+            catch (e: IOException) {
+                Log.e("PdfBox", "Exception thrown while stripping text", e)
+            }
+            finally {
+                try {
+                    document?.close()
+                }
+                catch (e: IOException) {
+                    Log.e("PdfBox", "Exception thrown while closing document", e)
+                }
+            }
+        }
+
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -580,6 +642,7 @@ class MainActivity : AppCompatActivity() {
             R.id.switch_theme -> switchPdfTheme()
             R.id.open_file -> pickFile()
             R.id.bookmarks_list -> showBookmarksDialog(this, binding.pdfView)
+            R.id.text_mode -> navToTextMode()
             R.id.share_file -> shareFile()
             R.id.additional_options -> showAdditionalOptions()
             R.id.action_about -> {
@@ -588,6 +651,30 @@ class MainActivity : AppCompatActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        if (pdf.isExtractingTextFinished) {
+            val textModeItem = menu.findItem(R.id.text_mode)
+            textModeItem.title = getString(R.string.text_mode)
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    private fun navToTextMode() {
+        if (!checkHasFile()) return
+
+        if (!pdf.isExtractingTextFinished) {
+            Toast.makeText(this,
+                "The app is still extracting text from the PDF file", Toast.LENGTH_LONG).show()
+
+            return
+        }
+        val intent = Intent(this, TextMode::class.java)
+        // this can easily crash the app, the transaction is too big
+        intent.putExtra(Preferences.pdfTextKey, Gson().toJson(pdf.pagesText))
+        intent.putExtra(Preferences.pdfLengthKey, pdf.length)
+        startActivity(intent)
     }
 
     private fun showAdditionalOptions() {
@@ -614,6 +701,7 @@ class MainActivity : AppCompatActivity() {
             }
             .show()
     }
+
     private fun checkHasFile(): Boolean {
         if (!pdf.hasFile()) {
             Snackbar.make(binding.root, getString(R.string.no_pdf_in_app),
