@@ -19,7 +19,7 @@
     <item
         android:id="@+id/shareFile"
         android:icon="@drawable/share_icon"
-        android:title="@string/share"
+        android:title="@string/share_file"
         android:orderInCategory="2"
         app:showAsAction="always"  />
 

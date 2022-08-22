@@ -55,7 +55,9 @@ import android.os.*
 import android.print.PrintManager
 import android.util.Log
 import android.view.*
-import android.widget.TextView
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.appcompat.app.AlertDialog
@@ -69,6 +71,7 @@ import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.github.barteksc.pdfviewer.scroll.ScrollHandle
 import com.github.barteksc.pdfviewer.util.Constants
 import com.github.barteksc.pdfviewer.util.FitPolicy
+import com.github.barteksc.pdfviewer.util.Util
 import com.gitlab.mudlej.MjPdfReader.PdfDocumentAdapter
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.AppDatabase
@@ -79,7 +82,6 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.gitlab.mudlej.MjPdfReader.util.*
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import com.shockwave.pdfium.PdfPasswordException
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
@@ -89,8 +91,9 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
+
 class MainActivity : AppCompatActivity() {
-    enum class AdditionalOptions{ METADATA, APP_SETTINGS, PRINT_FILE, ADVANCED_CONFIG }
+    enum class AdditionalOptions{ APP_SETTINGS, TEXT_MODE, METADATA, PRINT_FILE, ADVANCED_CONFIG }
 
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
@@ -102,6 +105,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pref: Preferences
     private lateinit var database: AppDatabase
     private val pdf = PDF()
+    private val extras = ExtendedDataHolder.instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "-----------onCreate: ${pdf.name} ")
@@ -118,7 +122,6 @@ class MainActivity : AppCompatActivity() {
 
         Constants.THUMBNAIL_RATIO = pref.getThumbnailRation()
         Constants.PART_SIZE = pref.getPartSize()
-
 
         // Show Into Activity and Features Dialog on the first install
         onFirstInstall()
@@ -218,7 +221,7 @@ class MainActivity : AppCompatActivity() {
             .enableAnnotationRendering(Preferences.annotationRenderingDefault)
             .enableAntialiasing(pref.getAntiAliasing())
             .onTap { toggleScrollAndButtonsVisibility() }
-            .onLongPress { showPageTextDialog() }
+            .onLongPress { showPageTextDialog(this, pdf, pref) }
             .scrollHandle(DefaultScrollHandle(this))
             .spacing(Preferences.spacingDefault)
             .onError { exception: Throwable -> handleFileOpeningError(exception) }
@@ -236,41 +239,6 @@ class MainActivity : AppCompatActivity() {
         pdfView.performTap()
         tappingHandler.postDelayed({ hideButtons(pdfView.scrollHandle) },
             pref.getHideDelay().toLong())
-    }
-
-    private fun showPageTextDialog() {
-        // TODO: create an option to disable this dialog
-        // if (pref.getIsPageTextDialogDisabled) return
-
-        // copy page's text or set an appropriate message
-        val pageText = (pdf.pagesText[pdf.pageNumber + 1] ?: "")
-            .ifEmpty { "Couldn't extract text from this page"}
-
-        // create a custom view to make the text selectable
-        val pageTextView = TextView(this)
-        pageTextView.setPadding(30, 10, 30, 10)
-        pageTextView.setTextIsSelectable(true)
-        pageTextView.text = pageText
-        pageTextView.textSize = 16f
-
-        AlertDialog.Builder(this)
-            .setView(pageTextView)
-            .setTitle("Page #${pdf.pageNumber + 1} Selectable Text (experimental)")
-            .setPositiveButton("Copy All") { dialog, _ ->
-                // copy page's text to clipboard
-                val clipboard: ClipboardManager =
-                    getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip: ClipData = ClipData.newPlainText(
-                    "Page #${pdf.pageNumber} Text", pageText
-                )
-                clipboard.setPrimaryClip(clip)
-
-                // show message to user before closing
-                Toast.makeText(this, "Text copied to clipboard", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-            }
-            .setNegativeButton("Close") { dialog, _ -> dialog.dismiss() }
-            .show()
     }
 
     private fun extractPdfText() {
@@ -293,7 +261,9 @@ class MainActivity : AppCompatActivity() {
                 handler.post {
                     Log.d(TAG, "extractPdfText: finished")
                     pdf.isExtractingTextFinished = true
-                    invalidateOptionsMenu()     // update Text-Mode option in action bar
+                    // TODO: remove this
+                    Toast.makeText(this, "Finished extracting text", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             catch (e: IOException) {
@@ -387,9 +357,9 @@ class MainActivity : AppCompatActivity() {
         }
         val sharingIntent: Intent = 
             if (uri.scheme != null && uri.scheme!!.startsWith("http"))
-                plainTextShareIntent(getString(R.string.share), pdf.uri.toString())
+                plainTextShareIntent(getString(R.string.share_file), pdf.uri.toString())
             else 
-                fileShareIntent(getString(R.string.share), pdf.name, uri)
+                fileShareIntent(getString(R.string.share_file), pdf.name, uri)
         
         startActivity(sharingIntent)
     }
@@ -632,7 +602,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
@@ -642,7 +612,7 @@ class MainActivity : AppCompatActivity() {
             R.id.switch_theme -> switchPdfTheme()
             R.id.open_file -> pickFile()
             R.id.bookmarks_list -> showBookmarksDialog(this, binding.pdfView)
-            R.id.text_mode -> navToTextMode()
+            R.id.search -> showSearchDialog()
             R.id.share_file -> shareFile()
             R.id.additional_options -> showAdditionalOptions()
             R.id.action_about -> {
@@ -653,12 +623,81 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        if (pdf.isExtractingTextFinished) {
-            val textModeItem = menu.findItem(R.id.text_mode)
-            textModeItem.title = getString(R.string.text_mode)
+    private fun showSearchDialog() {
+        if (!pdf.isExtractingTextFinished) {
+            Toast.makeText(this,
+                "Try again few seconds later, still extracting the text from the PDF",
+                Toast.LENGTH_LONG).show()
+            return
         }
-        return super.onPrepareOptionsMenu(menu)
+
+        val resultMap = mutableMapOf<Int, MutableList<String>>()
+
+        val searchInput = EditText(this)
+        val layout = LinearLayout(this)
+        centerEditTextInLinearLayout(searchInput, layout)
+
+        AlertDialog.Builder(this)
+            .setTitle("Search (experimental)")
+            .setMessage("This app tries to extract text from PDF, so it may not be accurate or correct")
+            .setView(layout)
+            .setPositiveButton("Search") { dialog, _ ->
+                dialog.dismiss()
+                binding.progressBar.visibility = View.VISIBLE
+                Executors.newSingleThreadExecutor().execute {
+                    val offset = 27
+                    val query = searchInput.text.toString().lowercase().trim()
+
+                    for ((page, text) in pdf.pagesText) {
+                        //val index = text.lowercase().indexOf(query)
+                        for (index in text.lowercase().indexesOf(query)) {
+                            // slice the query with some text (offset) before or after if there are
+                            val startIndex = if (index - offset < 0) 0 else index - offset
+                            val lastIndex = if (index + offset >= text.length) text.lastIndex
+                                else index + offset
+
+                            // marked text is: " this query indeed" -> " this [query] indeed"
+                            val markedText = text.substring(0, index) + "[" +
+                                    text.substring(index, index + query.length) + "]" +
+                                    text.substring(index + query.length, text.length)
+
+                            val result = markedText
+                                .substring(startIndex + 1, lastIndex + 1)
+                                .replace("\n", " ")    // remove newlines
+
+                            // create result list for the page if there is none
+                            if (resultMap[page] == null) resultMap[page] = mutableListOf()
+                            resultMap[page]?.add(result)
+                        }
+                    }
+                    handler.post {
+                        binding.progressBar.visibility = View.GONE
+                        showSearchResultDialog(resultMap)
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun showSearchResultDialog(resultMap: MutableMap<Int, MutableList<String>>) {
+        val resultList = mutableListOf<String>()
+        for ((page, results) in resultMap)
+            for (text in results)
+                resultList.add("Page #$page: ..$text..")
+
+        AlertDialog.Builder(this)
+            .setTitle("Search Results: ${resultList.size} found.")
+            .setItems(resultList.toTypedArray()) { dialog, i ->
+                dialog.dismiss()
+
+                // slice page number (e.g. 213) from -> Page #213: ..this is one..
+                val pageNumber = resultList[i].substring(
+                    resultList[i].indexOf("#") + 1, resultList[i].indexOf(":")).toInt()
+                binding.pdfView.jumpTo(pageNumber - 1)
+
+                Toast.makeText(this, resultList[i], Toast.LENGTH_LONG).show()
+            }
+            .show()
     }
 
     private fun navToTextMode() {
@@ -670,9 +709,9 @@ class MainActivity : AppCompatActivity() {
 
             return
         }
-        val intent = Intent(this, TextMode::class.java)
-        // this can easily crash the app, the transaction is too big
-        intent.putExtra(Preferences.pdfTextKey, Gson().toJson(pdf.pagesText))
+        val intent = Intent(this, TextModeActivity::class.java)
+        extras.putExtra(pdf.uri.toString(), pdf.pagesText)
+        intent.putExtra("uri", pdf.uri.toString())
         intent.putExtra(Preferences.pdfLengthKey, pdf.length)
         startActivity(intent)
     }
@@ -680,8 +719,11 @@ class MainActivity : AppCompatActivity() {
     private fun showAdditionalOptions() {
         // map an index to an option string
         val settingsMap = mapOf(
-            AdditionalOptions.METADATA to getString(R.string.metadata),
             AdditionalOptions.APP_SETTINGS to getString(R.string.app_settings),
+            AdditionalOptions.TEXT_MODE to
+                    if (pdf.isExtractingTextFinished) getString(R.string.text_mode_experimental)
+                    else getString(R.string.text_mode_loading),
+            AdditionalOptions.METADATA to getString(R.string.file_metadata),
             AdditionalOptions.PRINT_FILE to getString(R.string.print_file),
             AdditionalOptions.ADVANCED_CONFIG to getString(R.string.advanced_config)
         )
@@ -691,9 +733,10 @@ class MainActivity : AppCompatActivity() {
             .setTitle(getString(R.string.settings))
             .setItems(settingsMap.values.toTypedArray()) { dialog, which ->
                 when (which) {
+                    AdditionalOptions.APP_SETTINGS.ordinal -> navToAppSettings()
+                    AdditionalOptions.TEXT_MODE.ordinal -> navToTextMode()
                     AdditionalOptions.METADATA.ordinal ->
                         if (checkHasFile()) showMetaDialog(this, binding.pdfView.documentMeta)
-                    AdditionalOptions.APP_SETTINGS.ordinal -> navToAppSettings()
                     AdditionalOptions.PRINT_FILE.ordinal -> printFile()
                     AdditionalOptions.ADVANCED_CONFIG.ordinal -> showPartSizeDialog(this, pref)
                 }

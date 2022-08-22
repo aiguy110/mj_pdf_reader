@@ -52,6 +52,11 @@ import android.net.Uri
 import android.os.Build
 import android.provider.OpenableColumns
 import android.util.Log
+import android.view.Gravity
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
@@ -145,7 +150,6 @@ fun canWriteToDownloadFolder(context: Context?): Boolean =
     else ContextCompat.checkSelfPermission(context!!,
         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
 
-
 @Throws(IOException::class)
 fun readBytesToEnd(inputStream: InputStream): ByteArray? {
     val output = ByteArrayOutputStream()
@@ -155,4 +159,44 @@ fun readBytesToEnd(inputStream: InputStream): ByteArray? {
         output.write(buffer, 0, bytesRead)
     }
     return output.toByteArray()
+}
+
+class ExtendedDataHolder private constructor() {
+    companion object {
+        val instance = ExtendedDataHolder()
+    }
+
+    private val extras: MutableMap<String, Any> = HashMap()
+
+    fun putExtra(name: String, obj: Any) {
+        extras[name] = obj
+    }
+
+    fun getExtra(name: String): Any? = extras[name]
+
+    fun hasExtra(name: String): Boolean = extras.containsKey(name)
+
+    fun clear() = extras.clear()
+}
+
+fun ignoreCaseOpt(ignoreCase: Boolean) =
+    if (ignoreCase) setOf(RegexOption.IGNORE_CASE) else emptySet()
+
+fun String?.indexesOf(pat: String, ignoreCase: Boolean = true): List<Int> =
+    pat.toRegex(ignoreCaseOpt(ignoreCase))
+        .findAll(this?: "")
+        .map { it.range.first }
+        .toList()
+
+fun centerEditTextInLinearLayout(searchInput: EditText, layout: LinearLayout) {
+    val layoutParams = LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+    )
+    layoutParams.setMargins(16, 0, 16, 0)
+    layout.layoutParams = layoutParams
+    layout.gravity = Gravity.CENTER
+    //searchInput.minEms = 10
+    searchInput.hint = "Enter text to look up"
+    searchInput.layoutParams = layoutParams
+    layout.addView(searchInput)
 }

@@ -19,7 +19,7 @@
         android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.TextMode"
+            android:name=".ui.TextModeActivity"
             android:exported="false" />
         <activity
             android:name=".ui.MainActivity"

@@ -69,15 +69,15 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/text_mode"
+        android:id="@+id/search"
         android:orderInCategory="5"
-        android:title="@string/text_mode_loading"
+        android:title="@string/search_experimental"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/share_file"
         android:orderInCategory="6"
-        android:title="@string/share"
+        android:title="@string/share_file"
         app:showAsAction="never" />
 
     <item

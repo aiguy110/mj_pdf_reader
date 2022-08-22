@@ -92,7 +92,7 @@
     <string name="git" translatable="false">Github</string>
     <string name="code">Source Code</string>
 
-    <string name="share">Share</string>
+    <string name="share_file">Share File</string>
     <string name="print_file">Print File</string>
     <string name="full_screen">Full Screen</string>
     <string name="devnotice">Developer Notice</string>
@@ -119,6 +119,7 @@
     <string name="pref_colored_navigation_bar_title">Navigation bar color</string>
     <string name="pref_colored_navigation_bar_summary">Apply the primary color to the navigation bar</string>
     <string name="metadata">File Info</string>
+    <string name="file_metadata">File Metadata</string>
     <string name="app_settings">App Settings</string>
     <string name="quality">High Quality Rendering</string>
     <string name="settings">Settings</string>
@@ -152,6 +153,7 @@
     <string name="open_another_pdf">Open Another PDF</string>
     <string name="show_pdf_metadata">Metadata</string>
     <string name="close_character">X</string>
+    <string name="close">Close</string>
     <string name="exit_fullscreen_button">Exit Fullscreen Button</string>
     <string name="ask_restore_zoom">Restore zoom?</string>
     <string name="rotate_screen">Rotate Screen</string>
@@ -204,9 +206,15 @@
     <string name="bookmarks">Bookmarks</string>
     <string name="no_bookmarks">This file doesn\'t contain bookmarks</string>
     <string name="additional_options">Additional Options</string>
-    <string name="text_mode">Text Mode</string>
-    <string name="text_mode_loading">Text Mode (loading...)</string>
+    <string name="text_mode_experimental">Text Mode (experimental)</string>
+    <string name="text_mode_loading">Text Mode (try later, still loading...)</string>
     <string name="left_arrow"><![CDATA[<-]]></string>
     <string name="right_arrow"><![CDATA[->]]></string>
+    <string name="search">Search</string>
+    <string name="search_experimental">Search (experimental)</string>
+    <string name="copied_to_clipboard">Text copied to clipboard</string>
+    <string name="copy_all">Copy All</string>
+    <string name="increase_font">Increase Font</string>
+    <string name="decrease_font">Decrease Font</string>
 
 </resources>

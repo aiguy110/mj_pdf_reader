@@ -44,6 +44,8 @@
 package com.gitlab.mudlej.MjPdfReader.ui
 
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.DialogInterface
@@ -53,6 +55,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.github.barteksc.pdfviewer.PDFView
 import com.gitlab.mudlej.MjPdfReader.R
@@ -217,3 +220,47 @@ fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
         .show()
 }
 
+fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences) {
+    // TODO: create an option to disable this dialog
+    // if (pref.getIsPageTextDialogDisabled) return
+
+    // copy page's text or set an appropriate message
+    val pageText = (pdf.pagesText[pdf.pageNumber + 1] ?: "")
+        .ifEmpty { "Couldn't extract text from this page"}
+
+    // create a custom view to make the text selectable
+    val pageTextView = TextView(activity)
+    pageTextView.setPadding(30, 20, 30, 0)
+    pageTextView.setTextIsSelectable(true)
+    pageTextView.text = pageText
+    pageTextView.textSize = 16f
+
+    AlertDialog.Builder(activity)
+        .setView(pageTextView)
+        .setTitle("Selectable Text of Page #${pdf.pageNumber + 1} (experimental)")
+        .setPositiveButton(activity.getString(R.string.copy_all)) { dialog, _ ->
+            // copy page's text to clipboard
+            val clipboard: ClipboardManager =
+                activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip: ClipData = ClipData.newPlainText(
+                "Page #${pdf.pageNumber} Text", pageText
+            )
+            clipboard.setPrimaryClip(clip)
+
+            // show message to user before closing
+            Toast.makeText(activity, activity.getString(R.string.copied_to_clipboard),
+                Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        .setNegativeButton(activity.getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
+        .show()
+}
+
+fun showUnderDevelopmentDialog(activity: TextModeActivity) {
+    AlertDialog.Builder(activity)
+        .setTitle("This is experimental")
+        .setMessage("This feature of the app is still under development and is not stable or fully correct.")
+        .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()}
+        .setNegativeButton("Go Back") { dialog, _ -> dialog.dismiss(); activity.finish()}
+        .show()
+}

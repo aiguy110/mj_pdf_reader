@@ -54,3 +54,19 @@ fun showPdfMetaDialog(pdf: PDF, pdfView: PDFView, context: Context): DialogFragm
     dialog.arguments = dialogArgs
     return dialog
 }
+
+
+ override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        if (pdf.isExtractingTextFinished) {
+            val textModeItem = menu.findItem(R.id.text_mode)
+            textModeItem.title = getString(R.string.text_mode_experimental)
+        }
+        return super.onPrepareOptionsMenu(menu)
+        // then call this. when it gets updated
+        // invalidateOptionsMenu()     // update Text-Mode option in action bar
+    }
+
+
+// convert pdf from Json to a Kotlin object using Gson
+// val pdfType = object : TypeToken<PDF>() {}.type
+// pdf = Gson().fromJson(intent.getStringExtra("pdfJson"), pdfType)
