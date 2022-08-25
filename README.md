@@ -38,8 +38,8 @@ The new app is significantly different and is called MJ PDF Reader. ([see What i
 
 ## What is new in MJ PDF Reader V1.4.0
 * Updated the core libraries and fixed the security issue.
-* Added Search functionality. (experimental) ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text_mode_and_search))
-* Added Text mode to view PDFs like E-readers. (experimental) ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text_mode_and_search))
+* Added Search functionality. (experimental) ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text-mode-and-search))
+* Added Text mode to view PDFs like E-readers. (experimental) ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text-mode-and-search))
 * Added the ability to copy text from the PDF via a dialog.
 * Reorganized action bar's options and added Additional Options. 
 
