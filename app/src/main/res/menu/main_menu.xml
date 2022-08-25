@@ -44,51 +44,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/fullscreen_option"
+        android:id="@+id/fullscreenOption"
         android:orderInCategory="1"
         android:title="@string/full_screen"
         android:icon="@drawable/fullscreen_white_icon"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/switch_theme"
+        android:id="@+id/switchThemeOption"
         android:orderInCategory="2"
         android:title="@string/switch_theme"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/open_file"
+        android:id="@+id/openFileOption"
         android:orderInCategory="3"
         android:title="@string/open_another_pdf"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/bookmarks_list"
+        android:id="@+id/bookmarksListOption"
         android:orderInCategory="4"
         android:title="@string/bookmarks"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/search"
+        android:id="@+id/searchOption"
         android:orderInCategory="5"
-        android:title="@string/search_experimental"
+        android:title="@string/search_loading"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/share_file"
+        android:id="@+id/copyPageText"
         android:orderInCategory="6"
+        android:title="@string/copy_page_text"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/shareFileOption"
+        android:orderInCategory="7"
         android:title="@string/share_file"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/additional_options"
+        android:id="@+id/additionalOptionsOption"
         android:title="@string/additional_options"
-        android:orderInCategory="7"
+        android:orderInCategory="8"
         app:showAsAction="never"  />
 
     <item
-        android:id="@+id/action_about"
-        android:orderInCategory="8"
+        android:id="@+id/actionAboutOption"
+        android:orderInCategory="9"
         android:title="@string/action_about"
         app:showAsAction="never" />
 

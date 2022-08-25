@@ -65,6 +65,9 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val maxZoomKey = "maxZoom"
         const val pdfTextKey = "pdfText"
         const val pdfLengthKey = "pdfLength"
+        const val uriKey = "uri"
+        const val finishedExtractionDialogKey = "finishedExtraction"
+        const val copyTextDialogKey = "copyTextDialog"
 
         // Default values
         const val firstInstallDefault = true
@@ -86,6 +89,8 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val partSizeDefault = 256f
         const val thumbnailRatioDefault = 0.3f
         const val pdfLengthDefault = 0
+        const val finishedExtractionDialogDefault = false
+        const val copyTextDialogDefault = true
 
         // Colors
         const val pdfDarkBackgroundColor = -0x313132          // -0x313132 = 0xffcecece
@@ -96,7 +101,6 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val maxMaxZoom = 10f
         const val minPartSize = 5f
         const val maxPartSize = 1000f
-
     }
 
     // get values saved in Shared Preferences or return the default values
@@ -114,6 +118,8 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getPartSize() = prefMan.getFloat(partSizeKey, partSizeDefault)
     fun getThumbnailRation() = prefMan.getFloat(thumbnailRatioKey, thumbnailRatioDefault)
     fun getMaxZoom() = prefMan.getFloat(maxZoomKey, maxZoomDefault)
+    fun getFinishedExtractionDialog() = prefMan.getBoolean(finishedExtractionDialogKey, finishedExtractionDialogDefault)
+    fun getCopyTextDialog() = prefMan.getBoolean(copyTextDialogKey, copyTextDialogDefault)
 
     // put values in Shared Preferences
     fun setFirstInstall(value: Boolean) = prefMan.edit().putBoolean(firstInstallKey, value).apply()
@@ -130,4 +136,6 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setPartSize(value: Float) = prefMan.edit().putFloat(partSizeKey, value).apply()
     fun setThumbnailRatio(value: Float) = prefMan.edit().putFloat(thumbnailRatioKey, value).apply()
     fun setMaxZoom(value: Float) = prefMan.edit().putFloat(maxZoomKey, value).apply()
+    fun setFinishedExtractionDialog(value: Boolean) = prefMan.edit().putBoolean(finishedExtractionDialogKey, value).apply()
+    fun setCopyTextDialog(value: Boolean) = prefMan.edit().putBoolean(copyTextDialogKey, value).apply()
 }

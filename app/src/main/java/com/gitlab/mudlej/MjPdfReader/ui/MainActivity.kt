@@ -55,9 +55,6 @@ import android.os.*
 import android.print.PrintManager
 import android.util.Log
 import android.view.*
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.appcompat.app.AlertDialog
@@ -71,7 +68,6 @@ import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.github.barteksc.pdfviewer.scroll.ScrollHandle
 import com.github.barteksc.pdfviewer.util.Constants
 import com.github.barteksc.pdfviewer.util.FitPolicy
-import com.github.barteksc.pdfviewer.util.Util
 import com.gitlab.mudlej.MjPdfReader.PdfDocumentAdapter
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.AppDatabase
@@ -149,19 +145,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openSelectedDocument(selectedDocumentUri: Uri?) {
-        if (selectedDocumentUri == null) return
-
-        if (pdf.uri == null || selectedDocumentUri == pdf.uri) {
-            pdf.uri = selectedDocumentUri
-            displayFromUri(pdf.uri)
-        } else {
-            val intent = Intent(this, javaClass)
-            intent.data = selectedDocumentUri
-            startActivity(intent)
-        }
-    }
-
     private fun pickFile() {
         try {
             documentPickerLauncher.launch(arrayOf(PDF.FILE_TYPE))
@@ -171,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun displayFromUri(uri: Uri?) {
+    fun displayFromUri(uri: Uri?) {
         if (uri == null) return
 
         pdf.name = getFileName(this, uri)
@@ -259,11 +242,19 @@ class MainActivity : AppCompatActivity() {
                 }
                 // back to UI thread
                 handler.post {
-                    Log.d(TAG, "extractPdfText: finished")
+                    Log.i(TAG, "extractPdfText: finished")
                     pdf.isExtractingTextFinished = true
-                    // TODO: remove this
-                    Toast.makeText(this, "Finished extracting text", Toast.LENGTH_SHORT)
+                    invalidateOptionsMenu() // to update (search loading) in action bar
+                    if (pref.getFinishedExtractionDialog()) {
+                        Snackbar.make(
+                            binding.root, getString(R.string.finished_extracting_text),
+                            Snackbar.LENGTH_SHORT
+                        )
+                        .setAction(getString(R.string.search)) {
+                            showSearchDialog(this, pdf, binding, handler)
+                        }
                         .show()
+                    }
                 }
             }
             catch (e: IOException) {
@@ -278,7 +269,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -306,7 +296,7 @@ class MainActivity : AppCompatActivity() {
         if (pref.getScreenOn()) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         // check if there is a pdf at first
-//        if (pdf.uri == null) return
+        // if (pdf.uri == null) return
 
         if (pdf.uri != null) binding.pickFile.visibility = View.GONE
 
@@ -324,16 +314,6 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
         fixButtonsColor()
-    }
-
-    override fun onPause() {
-        Log.i(TAG, "-----------onPause: ${pdf.name} ")
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-        Log.i(TAG, "-----------onDestroy: ${pdf.name} ")
-        super.onDestroy()
     }
 
     private fun fixButtonsColor() {
@@ -413,15 +393,13 @@ class MainActivity : AppCompatActivity() {
         tappingHandler.removeCallbacksAndMessages(null)
         handle.cancelHideRunner()
 
-        // try
-//        f()
-
         // set a new timer to hide
         tappingHandler.postDelayed({
             exitButton.visibility = View.INVISIBLE
             rotateButton.visibility = View.INVISIBLE
             handle.customHide()
         }, pref.getHideDelay().toLong())
+
         if (!handle.customShown()) {
             handle.customShow()
             if (pdf.isFullScreenToggled) {
@@ -601,6 +579,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        if (pdf.isExtractingTextFinished) {
+            val textModeItem = menu.findItem(R.id.searchOption)
+            textModeItem.title = getString(R.string.search_experimental)
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
@@ -608,14 +594,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.fullscreen_option -> toggleFullscreen(false)
-            R.id.switch_theme -> switchPdfTheme()
-            R.id.open_file -> pickFile()
-            R.id.bookmarks_list -> showBookmarksDialog(this, binding.pdfView)
-            R.id.search -> showSearchDialog()
-            R.id.share_file -> shareFile()
-            R.id.additional_options -> showAdditionalOptions()
-            R.id.action_about -> {
+            R.id.fullscreenOption -> toggleFullscreen(false)
+            R.id.switchThemeOption -> switchPdfTheme()
+            R.id.openFileOption -> pickFile()
+            R.id.bookmarksListOption -> showBookmarksDialog(this, binding.pdfView)
+            R.id.searchOption -> showSearchDialog(this, pdf, binding, handler)
+            R.id.copyPageText -> showPageTextDialog(this, pdf, pref)
+            R.id.shareFileOption -> shareFile()
+            R.id.additionalOptionsOption -> showAdditionalOptions()
+            R.id.actionAboutOption -> {
                 startActivity(navIntent(this, AboutActivity::class.java))
             }
             else -> return super.onOptionsItemSelected(item)
@@ -623,95 +610,18 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun showSearchDialog() {
-        if (!pdf.isExtractingTextFinished) {
-            Toast.makeText(this,
-                "Try again few seconds later, still extracting the text from the PDF",
-                Toast.LENGTH_LONG).show()
-            return
-        }
-
-        val resultMap = mutableMapOf<Int, MutableList<String>>()
-
-        val searchInput = EditText(this)
-        val layout = LinearLayout(this)
-        centerEditTextInLinearLayout(searchInput, layout)
-
-        AlertDialog.Builder(this)
-            .setTitle("Search (experimental)")
-            .setMessage("This app tries to extract text from PDF, so it may not be accurate or correct")
-            .setView(layout)
-            .setPositiveButton("Search") { dialog, _ ->
-                dialog.dismiss()
-                binding.progressBar.visibility = View.VISIBLE
-                Executors.newSingleThreadExecutor().execute {
-                    val offset = 27
-                    val query = searchInput.text.toString().lowercase().trim()
-
-                    for ((page, text) in pdf.pagesText) {
-                        //val index = text.lowercase().indexOf(query)
-                        for (index in text.lowercase().indexesOf(query)) {
-                            // slice the query with some text (offset) before or after if there are
-                            val startIndex = if (index - offset < 0) 0 else index - offset
-                            val lastIndex = if (index + offset >= text.length) text.lastIndex
-                                else index + offset
-
-                            // marked text is: " this query indeed" -> " this [query] indeed"
-                            val markedText = text.substring(0, index) + "[" +
-                                    text.substring(index, index + query.length) + "]" +
-                                    text.substring(index + query.length, text.length)
-
-                            val result = markedText
-                                .substring(startIndex + 1, lastIndex + 1)
-                                .replace("\n", " ")    // remove newlines
-
-                            // create result list for the page if there is none
-                            if (resultMap[page] == null) resultMap[page] = mutableListOf()
-                            resultMap[page]?.add(result)
-                        }
-                    }
-                    handler.post {
-                        binding.progressBar.visibility = View.GONE
-                        showSearchResultDialog(resultMap)
-                    }
-                }
-            }
-            .show()
-    }
-
-    private fun showSearchResultDialog(resultMap: MutableMap<Int, MutableList<String>>) {
-        val resultList = mutableListOf<String>()
-        for ((page, results) in resultMap)
-            for (text in results)
-                resultList.add("Page #$page: ..$text..")
-
-        AlertDialog.Builder(this)
-            .setTitle("Search Results: ${resultList.size} found.")
-            .setItems(resultList.toTypedArray()) { dialog, i ->
-                dialog.dismiss()
-
-                // slice page number (e.g. 213) from -> Page #213: ..this is one..
-                val pageNumber = resultList[i].substring(
-                    resultList[i].indexOf("#") + 1, resultList[i].indexOf(":")).toInt()
-                binding.pdfView.jumpTo(pageNumber - 1)
-
-                Toast.makeText(this, resultList[i], Toast.LENGTH_LONG).show()
-            }
-            .show()
-    }
-
     private fun navToTextMode() {
         if (!checkHasFile()) return
 
         if (!pdf.isExtractingTextFinished) {
             Toast.makeText(this,
-                "The app is still extracting text from the PDF file", Toast.LENGTH_LONG).show()
+                getString(R.string.app_still_extracting_text), Toast.LENGTH_LONG).show()
 
             return
         }
         val intent = Intent(this, TextModeActivity::class.java)
         extras.putExtra(pdf.uri.toString(), pdf.pagesText)
-        intent.putExtra("uri", pdf.uri.toString())
+        intent.putExtra(Preferences.uriKey, pdf.uri.toString())
         intent.putExtra(Preferences.pdfLengthKey, pdf.length)
         startActivity(intent)
     }
@@ -761,22 +671,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val documentPickerLauncher = registerForActivityResult(OpenDocument()) {
-            selectedDocumentUri: Uri? -> openSelectedDocument(selectedDocumentUri)
-    }
-
-    private val saveToDownloadPermissionLauncher = registerForActivityResult(RequestPermission()) {
-            isPermissionGranted: Boolean -> saveDownloadedFileAfterPermissionRequest(isPermissionGranted)
-    }
-
-    private val readFileErrorPermissionLauncher = registerForActivityResult(RequestPermission()) {
-            isPermissionGranted: Boolean -> restartAppIfGranted(isPermissionGranted)
-    }
-
-    private val settingsLauncher = registerForActivityResult(StartActivityForResult()) {
-        displayFromUri(pdf.uri)
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(PDF.uriKey, pdf.uri)
         outState.putInt(PDF.pageNumberKey, pdf.pageNumber)
@@ -792,6 +686,22 @@ class MainActivity : AppCompatActivity() {
         pdf.password = savedState.getString(PDF.passwordKey)
         pdf.isFullScreenToggled = savedState.getBoolean(PDF.isFullScreenToggledKey)
         pdf.zoom = savedState.getFloat(PDF.zoomKey)
+    }
+
+    private val documentPickerLauncher = registerForActivityResult(OpenDocument()) {
+            selectedDocumentUri: Uri? -> openSelectedDocument(this, pdf, selectedDocumentUri)
+    }
+
+    private val saveToDownloadPermissionLauncher = registerForActivityResult(RequestPermission()) {
+            isPermissionGranted: Boolean -> saveDownloadedFileAfterPermissionRequest(isPermissionGranted)
+    }
+
+    private val readFileErrorPermissionLauncher = registerForActivityResult(RequestPermission()) {
+            isPermissionGranted: Boolean -> restartAppIfGranted(isPermissionGranted)
+    }
+
+    private val settingsLauncher = registerForActivityResult(StartActivityForResult()) {
+        displayFromUri(pdf.uri)
     }
 }
 

@@ -42,15 +42,19 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:key="firstSection"
+        android:key="visualSection"
         android:title="@string/quality_settings" />
 
     <PreferenceCategory
-        android:key="secondSection"
+        android:key="scrollSection"
         android:title="@string/scroll_settings" />
 
     <PreferenceCategory
-        android:key="thirdSection"
+        android:key="textSection"
+        android:title="Text Extraction" />
+
+    <PreferenceCategory
+        android:key="experimentalSection"
         android:title="@string/experimental" />
 
 </PreferenceScreen>

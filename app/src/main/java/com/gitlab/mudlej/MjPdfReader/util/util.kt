@@ -45,27 +45,45 @@ package com.gitlab.mudlej.MjPdfReader.util
 
 import android.Manifest
 import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.OpenableColumns
+import android.text.InputType
 import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
+import com.gitlab.mudlej.MjPdfReader.ui.MainActivity
 import java.io.*
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import kotlin.math.min
+import com.gitlab.mudlej.MjPdfReader.ui.MainActivity.*
+
+fun openSelectedDocument(activity: MainActivity, pdf: PDF, selectedDocumentUri: Uri?) {
+    if (selectedDocumentUri == null) return
+
+    if (pdf.uri == null || selectedDocumentUri == pdf.uri) {
+        pdf.uri = selectedDocumentUri
+        activity.displayFromUri(pdf.uri)
+    } else {
+        val intent = Intent(activity, activity.javaClass)
+        intent.data = selectedDocumentUri
+        activity.startActivity(intent)
+    }
+}
 
 fun computeHash(context: Context, pdf: PDF): String? {
     if (pdf.uri == null) return null
@@ -145,9 +163,9 @@ fun writeBytesToFile(directory: File, fileName: String, fileContent: ByteArray?)
     FileOutputStream(file).use { stream -> stream.write(fileContent) }
 }
 
-fun canWriteToDownloadFolder(context: Context?): Boolean =
+fun canWriteToDownloadFolder(context: Context): Boolean =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) true
-    else ContextCompat.checkSelfPermission(context!!,
+    else ContextCompat.checkSelfPermission(context,
         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
 
 @Throws(IOException::class)
@@ -168,14 +186,9 @@ class ExtendedDataHolder private constructor() {
 
     private val extras: MutableMap<String, Any> = HashMap()
 
-    fun putExtra(name: String, obj: Any) {
-        extras[name] = obj
-    }
-
+    fun putExtra(name: String, obj: Any) { extras[name] = obj }
     fun getExtra(name: String): Any? = extras[name]
-
     fun hasExtra(name: String): Boolean = extras.containsKey(name)
-
     fun clear() = extras.clear()
 }
 
@@ -183,20 +196,33 @@ fun ignoreCaseOpt(ignoreCase: Boolean) =
     if (ignoreCase) setOf(RegexOption.IGNORE_CASE) else emptySet()
 
 fun String?.indexesOf(pat: String, ignoreCase: Boolean = true): List<Int> =
-    pat.toRegex(ignoreCaseOpt(ignoreCase))
+    Regex.escape(pat)       // to disable any special meaning of query's characters
+        .toRegex(ignoreCaseOpt(ignoreCase))
         .findAll(this?: "")
         .map { it.range.first }
         .toList()
 
-fun centerEditTextInLinearLayout(searchInput: EditText, layout: LinearLayout) {
+
+fun putEditTextInLinearLayout(activity: MainActivity, searchInput: EditText, layout: LinearLayout) {
     val layoutParams = LinearLayout.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
     )
     layoutParams.setMargins(16, 0, 16, 0)
     layout.layoutParams = layoutParams
     layout.gravity = Gravity.CENTER
-    //searchInput.minEms = 10
-    searchInput.hint = "Enter text to look up"
+    
+    searchInput.maxLines = 1
+    searchInput.inputType = InputType.TYPE_CLASS_TEXT
+    searchInput.hint = activity.getString(R.string.enter_text_to_search)
     searchInput.layoutParams = layoutParams
+    
     layout.addView(searchInput)
+}
+
+
+fun copyToClipboard(activity: MainActivity, label: String, text: String) {
+    val clipboard: ClipboardManager = activity.getSystemService(Context.CLIPBOARD_SERVICE)
+            as ClipboardManager
+    val clip: ClipData = ClipData.newPlainText(label, text)
+    clipboard.setPrimaryClip(clip)
 }

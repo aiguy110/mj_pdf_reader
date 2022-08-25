@@ -131,6 +131,7 @@
     <string name="fling_summary">Perform a quick swipe to jump directly to the next page</string>
     <string name="quality_settings">Visual</string>
     <string name="scroll_settings">Scrolling</string>
+    <string name="text_extraction">Text Extraction</string>
     <string name="title_activity_settings">Settings</string>
     <string name="buttonLog">CONTINUE</string>
     <string name="show_in_launcher">Show app in launcher</string>
@@ -162,7 +163,7 @@
     <string name="exit_fullscreen_message">Tapping the screen will show an X button in the top-left corner. Click it to exit full screen.</string>
     <string name="exit_fullscreen_title">To Exit Full Screen</string>
     <string name="exit_fullscreen_positive">Don\'t show again</string>
-    <string name="about_app">This is a fork mady by (@mudlej) from PDF Viewer Plus by Gokul Swaminathan (@JavaCafe01).\n\n I made several modifications and fixes to the UI, UX and functionality, and called the new version MJ PDF Reader.\n\nCredits to (@Derekelkins) for adding the ability to remember last opened page.</string>
+    <string name="about_app">This is a fork mady by (@mudlej) from PDF Viewer Plus by Gokul Swaminathan (@JavaCafe01).\n\n I added, fixed and modified many things in the app and its core libraries. The new app is significantly different and is called MJ PDF Reader.\n\nCredits to (@Derekelkins) for adding the ability to remember last opened page.</string>
     <string name="permission_denied">Permission denied</string>
     <string name="error_load_file_name">Couldn\'t retrieve file name</string>
     <string name="cannot_load_page">\"Cannot load page \"</string>
@@ -203,18 +204,41 @@
     <string name="apply">Apply</string>
     <string name="reset">Reset</string>
     <string name="cancel">Cancel</string>
+    <string name="page">Page</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="no_bookmarks">This file doesn\'t contain bookmarks</string>
     <string name="additional_options">Additional Options</string>
     <string name="text_mode_experimental">Text Mode (experimental)</string>
-    <string name="text_mode_loading">Text Mode (try later, still loading...)</string>
+    <string name="text_mode_loading">Text Mode (try later, still loading…)</string>
+    <string name="search_loading">Search (loading…)</string>
     <string name="left_arrow"><![CDATA[<-]]></string>
     <string name="right_arrow"><![CDATA[->]]></string>
     <string name="search">Search</string>
+    <string name="found">found</string>
+    <string name="line">line</string>
     <string name="search_experimental">Search (experimental)</string>
+    <string name="search_results">Search Results:</string>
     <string name="copied_to_clipboard">Text copied to clipboard</string>
     <string name="copy_all">Copy All</string>
     <string name="increase_font">Increase Font</string>
     <string name="decrease_font">Decrease Font</string>
+    <string name="search_input_empty">No input! To see a text version of the PDF, try Text Mode.</string>
+    <string name="search_dialog_title">Search (experimental)</string>
+    <string name="search_dialog_message">This app tries to extract text from PDF, so it may not be accurate or correct</string>
+    <string name="app_still_extracting_text">Try again few seconds later, still extracting the text from the PDF</string>
+    <string name="finished_extracting_text">Finished extracting text</string>
+    <string name="empty_page">Empty page</string>
+    <string name="enter_text_to_search">Enter text to look up</string>
+    <string name="this_is_experimental">This is experimental</string>
+    <string name="this_is_experimental_message">This feature of the app is still under development and is not stable or fully correct.</string>
+    <string name="go_back">Go Back</string>
+    <string name="selectable_text">Selectable Text of Page</string>
+    <!-- TODO: Remove this after solving the issu   -->
+    <string name="could_not_text">Couldn\'t extract text from this page (center th page in the middle if you want another page then try again)</string>
+    <string name="finished_extraction_dialog_title">Show Extraction Finished Dialog</string>
+    <string name="finished_extraction_dialog_summary">Show a message when the app finishes extracting text from the PDF.</string>
+    <string name="show_copy_dialog_summary">Show a pop up that has the extracted text of the page when pressing and hold.</string>
+    <string name="show_copy_dialog_title">Show Copy Text Dialog</string>
+    <string name="copy_page_text">Copy Page\'s Text</string>
 
 </resources>

@@ -69,7 +69,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun setUpSwitches() {
-        // ----------------- First Section -------------------
+        // ----------------- Visual Section -------------------
 
         // Configure and add Anti Aliasing Switch
         val qualitySwitch = SwitchPreferenceCompat(requireContext())
@@ -93,14 +93,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         screenOnSwitch.isIconSpaceReserved = false
 
         // add the switches to the first section
-        val firstSection: PreferenceCategory? = findPreference("firstSection")
+        val firstSection: PreferenceCategory? = findPreference("visualSection")
         firstSection?.isIconSpaceReserved = false
         firstSection?.addPreference(qualitySwitch)
         firstSection?.addPreference(aliasSwitch)
         firstSection?.addPreference(screenOnSwitch)
 
 
-        // ----------------- Second Section ------------------
+        // ----------------- Scroll Section ------------------
 
         // Configure and add Keep Screen On Switch
         val horizontalScrollSwitch = SwitchPreferenceCompat(requireContext())
@@ -126,14 +126,38 @@ class SettingsFragment : PreferenceFragmentCompat() {
         pageFlingSwitch.isIconSpaceReserved = false
 
         // add the switches to the second section
-        val secondSection: PreferenceCategory? = findPreference("secondSection")
+        val secondSection: PreferenceCategory? = findPreference("scrollSection")
         secondSection?.isIconSpaceReserved = false
         secondSection?.addPreference(horizontalScrollSwitch)
         secondSection?.addPreference(pageSnapSwitch)
         secondSection?.addPreference(pageFlingSwitch)
 
 
-        // ----------------- Third Section ------------------
+        // ----------------- Text Section ------------------
+        // Configure and add Finished Extraction Dialog Switch
+        val finishedExtractionDialogSwitch = SwitchPreferenceCompat(requireContext())
+        finishedExtractionDialogSwitch.title = getString(R.string.finished_extraction_dialog_title)
+        finishedExtractionDialogSwitch.setDefaultValue(Preferences.finishedExtractionDialogDefault)
+        finishedExtractionDialogSwitch.key = Preferences.finishedExtractionDialogKey
+        finishedExtractionDialogSwitch.summary = getString(R.string.finished_extraction_dialog_summary)
+        finishedExtractionDialogSwitch.isIconSpaceReserved = false
+
+        // Configure and add Show Copy Text Dialog Switch
+        val showCopyTextDialogSwitch = SwitchPreferenceCompat(requireContext())
+        showCopyTextDialogSwitch.title = getString(R.string.show_copy_dialog_title)
+        showCopyTextDialogSwitch.setDefaultValue(Preferences.copyTextDialogDefault)
+        showCopyTextDialogSwitch.key = Preferences.copyTextDialogKey
+        showCopyTextDialogSwitch.summary = getString(R.string.show_copy_dialog_summary)
+        showCopyTextDialogSwitch.isIconSpaceReserved = false
+
+        // add the switches to the second section
+        val textSection: PreferenceCategory? = findPreference("textSection")
+        textSection?.isIconSpaceReserved = false
+        textSection?.addPreference(finishedExtractionDialogSwitch)
+        textSection?.addPreference(showCopyTextDialogSwitch)
+
+
+        // ----------------- Experimental Section ------------------
 
         // Configure and add Keep Screen On Switch
         val appDarkThemeSwitch = SwitchPreferenceCompat(requireContext())
@@ -154,17 +178,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
             AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.caution))
                 .setMessage(getString(R.string.app_dark_dialog_message))
-                .setPositiveButton("Ok") { dialog, _ ->
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                     dialog.dismiss()
                     setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
                 }
-                .setNegativeButton("Cancel") {_, _ -> appDarkThemeSwitch.isChecked = false }
+                .setNegativeButton(getString(R.string.cancel)) {_, _ -> appDarkThemeSwitch.isChecked = false }
                 .create().show()
             return@setOnPreferenceClickListener true
         }
 
-        // add the switches to the third section
-        val thirdSection: PreferenceCategory? = findPreference("thirdSection")
+        // add the switches to the Experimental section
+        val thirdSection: PreferenceCategory? = findPreference("experimentalSection")
         thirdSection?.isIconSpaceReserved = false
         thirdSection?.addPreference(appDarkThemeSwitch)
 

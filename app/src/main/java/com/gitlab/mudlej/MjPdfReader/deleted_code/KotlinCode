@@ -70,3 +70,9 @@ fun showPdfMetaDialog(pdf: PDF, pdfView: PDFView, context: Context): DialogFragm
 // convert pdf from Json to a Kotlin object using Gson
 // val pdfType = object : TypeToken<PDF>() {}.type
 // pdf = Gson().fromJson(intent.getStringExtra("pdfJson"), pdfType)
+
+
+Handler(Looper.getMainLooper()).postAtFrontOfQueue {
+    Toast.makeText(this@MainActivity,
+        getString(R.string.search_input_empty), Toast.LENGTH_SHORT).show()
+}

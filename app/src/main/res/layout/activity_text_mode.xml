@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.TextModeActivity">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -15,26 +16,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:context=".ui.TextModeActivity">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ScrollView
             android:id="@+id/pageTextScrollView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1">
 
             <TextView
                 android:id="@+id/pageTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:textIsSelectable="true"
                 android:textSize="16sp"
                 tools:ignore="TouchTargetSizeCheck"
                 tools:text="page content" />
         </ScrollView>
 
+        <!-- Not being used currently -->
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/buttonsLayout"
             android:layout_width="match_parent"

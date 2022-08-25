@@ -142,6 +142,7 @@ class TextModeActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.increase_font -> increaseFontSize()
             R.id.decrease_font -> decreaseFontSize()
+            else -> finish()    // couldn't finc action_bar_back id
         }
         return true
     }
@@ -155,9 +156,9 @@ class TextModeActivity : AppCompatActivity() {
     }
 
     private fun initPdfText() {
-        if (intent.getStringExtra("uri") == null) finish()
+        if (intent.getStringExtra(Preferences.uriKey) == null) finish()
 
-        val key = intent.getStringExtra("uri") as String
+        val key = intent.getStringExtra(Preferences.uriKey) as String
         if (extras.hasExtra(key))
             try {
                 pdfText = extras.getExtra(key) as Map<Int, String>
@@ -215,10 +216,10 @@ class TextModeActivity : AppCompatActivity() {
     }
 
     private fun updatePageCounterView() {
-        binding.pageCounter.text = "Page: ${pageNum + 1}/${pdfLength}"
+        binding.pageCounter.text = "${getString(R.string.page)}: ${pageNum + 1}/${pdfLength}"
     }
 
     // if null or empty return Empty page, otherwise return it as it is
     private fun textOrEmpty(i: Int): String
-        = (pdfText[i] ?: "").ifEmpty { "Empty page" }
+        = (pdfText[i] ?: "").ifEmpty { getString(R.string.empty_page) }
 }

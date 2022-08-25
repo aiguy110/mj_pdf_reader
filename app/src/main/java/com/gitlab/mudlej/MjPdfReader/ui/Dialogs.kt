@@ -49,42 +49,50 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.SeekBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.github.barteksc.pdfviewer.PDFView
+import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
+import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
+import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
+import com.gitlab.mudlej.MjPdfReader.util.indexesOf
+import com.gitlab.mudlej.MjPdfReader.util.putEditTextInLinearLayout
+import com.google.android.material.snackbar.Snackbar
 import com.shockwave.pdfium.PdfDocument
+import java.util.concurrent.Executors
 
 private const val TAG = "Dialogs"
 
 fun showAppFeaturesDialog(context: Context) {
     val end = "\n\n"
     AlertDialog.Builder(context)
-        .setTitle(context.resources.getString(R.string.app_name) + " Features")
+        .setTitle(context.resources.getString(R.string.app_name) + BuildConfig.VERSION_NAME + " Features")
         .setMessage(
             "* Fast & smooth experience." + end +
-                    "* Minimalist & simple user interface." + end +
-                    "* Remembers the last opened page." + end +
-                    "* Dark mode for the app and the PDF." + end +
-                    "* True full screen with hidable buttons." + end +
-                    "* An option to keep the screen on." + end +
-                    "* Open online PDFs through links." + end +
-                    "* Share & print PDFs." + end +
-                    "* Open multiple PDFs." + end +
-                    "* FOSS and totally private. (see About)."
+            "* Minimalist & simple user interface." + end +
+            "* Remembers the last opened page." + end +
+            "* Dark mode for the app and the PDF." + end +
+            "* True full screen with hidable buttons." + end +
+            "* Search the PDF file. (experimental)" + end +
+            "* Text mode to view PDFs like E-readers. (experimental)" + end +
+            "* An option to keep the screen on." + end +
+            "* Open online PDFs through links." + end +
+            "* Share & print PDFs." + end +
+            "* Open multiple PDFs." + end +
+            "* FOSS and totally private. (see About)."
         )
-        .setPositiveButton(
-            context.resources.getString(R.string.ok)
-        ) { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
+        .setPositiveButton(context.resources.getString(R.string.ok)) { dialog, _ -> dialog.dismiss() }
         .create()
         .show()
 }
@@ -221,12 +229,15 @@ fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
 }
 
 fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences) {
-    // TODO: create an option to disable this dialog
-    // if (pref.getIsPageTextDialogDisabled) return
-
+    if (!pref.getCopyTextDialog()) return
+    var hasText = true
     // copy page's text or set an appropriate message
     val pageText = (pdf.pagesText[pdf.pageNumber + 1] ?: "")
-        .ifEmpty { "Couldn't extract text from this page"}
+        .trim()
+        .ifEmpty {
+            hasText = false
+            activity.getString(R.string.could_not_text)
+        }
 
     // create a custom view to make the text selectable
     val pageTextView = TextView(activity)
@@ -237,30 +248,153 @@ fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences) {
 
     AlertDialog.Builder(activity)
         .setView(pageTextView)
-        .setTitle("Selectable Text of Page #${pdf.pageNumber + 1} (experimental)")
-        .setPositiveButton(activity.getString(R.string.copy_all)) { dialog, _ ->
-            // copy page's text to clipboard
-            val clipboard: ClipboardManager =
-                activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip: ClipData = ClipData.newPlainText(
-                "Page #${pdf.pageNumber} Text", pageText
-            )
-            clipboard.setPrimaryClip(clip)
-
-            // show message to user before closing
-            Toast.makeText(activity, activity.getString(R.string.copied_to_clipboard),
-                Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-        }
+        .setTitle("${activity.getString(R.string.selectable_text)} " +
+                "#${pdf.pageNumber + 1} (${activity.getString(R.string.experimental)})")
         .setNegativeButton(activity.getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
+        .also {
+            if (hasText)
+                it.setPositiveButton(activity.getString(R.string.copy_all)) { dialog, _ ->
+                // copy page's text to clipboard
+                val copyLabel = "${activity.getString(R.string.page)} #${pdf.pageNumber} Text"
+                copyToClipboard(activity, copyLabel, pageText)
+
+                // show message to user before closing
+                Toast.makeText(activity, activity.getString(R.string.copied_to_clipboard),
+                    Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+        }
         .show()
 }
 
+
+
 fun showUnderDevelopmentDialog(activity: TextModeActivity) {
     AlertDialog.Builder(activity)
-        .setTitle("This is experimental")
-        .setMessage("This feature of the app is still under development and is not stable or fully correct.")
-        .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()}
-        .setNegativeButton("Go Back") { dialog, _ -> dialog.dismiss(); activity.finish()}
+        .setTitle(activity.getString(R.string.this_is_experimental))
+        .setMessage(activity.getString(R.string.this_is_experimental_message))
+        .setPositiveButton(activity.getString(R.string.ok)) { dialog, _ -> dialog.dismiss()}
+        .setNegativeButton(activity.getString(R.string.go_back)) { dialog, _ ->
+            dialog.dismiss(); activity.finish()
+        }
         .show()
+}
+
+fun showSearchDialog(
+    activity: MainActivity,
+    pdf: PDF,
+    binding: ActivityMainBinding,
+    handler: Handler)
+{
+    if (!pdf.isExtractingTextFinished) {
+        Toast.makeText(activity, activity.getString(R.string.app_still_extracting_text),
+            Toast.LENGTH_LONG).show()
+        return
+    }
+
+    val resultMap = mutableMapOf<Int, MutableList<String>>()
+    val lineNumbers = mutableListOf<Int>()
+
+    val searchInput = EditText(activity)
+    val layout = LinearLayout(activity)
+    putEditTextInLinearLayout(activity, searchInput, layout)
+
+    AlertDialog.Builder(activity)
+        .setTitle(activity.getString(R.string.search_dialog_title))
+        .setMessage(activity.getString(R.string.search_dialog_message))
+        .setView(layout)
+        .setPositiveButton(activity.getString(R.string.search)) { dialog, _ ->
+            val query = searchInput.text.toString().lowercase().trim()
+
+            // check if the user provided input
+            if (query.isEmpty()) {
+                Toast.makeText(activity,
+                    activity.getString(R.string.search_input_empty), Toast.LENGTH_SHORT).show()
+                return@setPositiveButton
+            }
+
+            dialog.dismiss()
+            binding.progressBar.visibility = View.VISIBLE
+            Executors.newSingleThreadExecutor().execute {
+                val offset = 70
+
+                // search each page
+                for ((page, text) in pdf.pagesText) {
+
+                    // find the indexes of each match of the query in the page
+                    for (index in text.lowercase().indexesOf(query)) {
+                        // calculate the line number of the result and store it
+                        lineNumbers.add(text.substring(0, index).count { it == '\n'})
+
+                        // slice the query with some text (offset) after if there is
+                        // val startIndex = if (index - offset < 0) 0 else index - offset
+                        // start from the beginning of the line
+                        val lineStartIndex = text.substring(0, index).lastIndexOf("\n")
+                        val startIndex = if (lineStartIndex == -1) 0 else lineStartIndex
+                        val lastIndex = if (index + offset >= text.length) text.lastIndex
+                                        else index + offset
+
+                        // marked text is: " this query indeed" -> " this {query} indeed"
+                        // made it this way to key the original case of text
+                        val markedText = text.substring(0, index) + "{" +
+                                text.substring(index, index + query.length) + "}" +
+                                text.substring(index + query.length, text.length)
+
+                        val result = markedText
+                            .substring(startIndex + 1, lastIndex + 1)   // +1 because of marking
+                            .replace("\n", " ")         // remove newlines
+
+                        // create result list for the page if there is none
+                        if (resultMap[page] == null) resultMap[page] = mutableListOf()
+                        resultMap[page]?.add(result)
+                    }
+                }
+                handler.post {
+                    binding.progressBar.visibility = View.GONE
+                    showSearchResultDialog(resultMap, lineNumbers, activity, binding)
+                }
+            }
+        }
+        .show()
+}
+
+fun showSearchResultDialog(
+    resultMap: MutableMap<Int, MutableList<String>>,
+    lineNumbers: List<Int>,
+    activity: MainActivity,
+    binding: ActivityMainBinding,)
+{
+    val resultArrow = "->"
+    val dividerHeight = 3
+
+    // create a list of formatted results to show and a list of  their page numbers
+    var count = 0
+    val resultList = mutableListOf<String>()
+    val pageNumbers = mutableListOf<Int>()
+    for ((pageNumber, pages) in resultMap)
+        for (i in pages.indices) {
+            // format the result message. e.g. (Line 25 - Page 12) -> this is {query} text...
+            resultList.add(
+                "(${activity.getString(R.string.line)} ${lineNumbers[count++]} - " +
+                "${activity.getString(R.string.page)} $pageNumber) $resultArrow ${pages[i]}..."
+            )
+            pageNumbers.add(pageNumber)
+        }
+
+    val resultsDialog = AlertDialog.Builder(activity)
+        // title e.g. Search Results: 345 found.
+        .setTitle("${activity.getString(R.string.search_results)} ${resultList.size} ${activity.getString(R.string.found)}.")
+        .setItems(resultList.toTypedArray()) { dialog, i ->
+            dialog.dismiss()
+            binding.pdfView.jumpTo(pageNumbers[i] - 1)  // because starting from 0 and 1 thing
+
+            // show a message that will stay until the user dismiss so he can find the line in page
+            Snackbar.make(binding.root, resultList[i], Snackbar.LENGTH_INDEFINITE)
+                .setAction(activity.getString(R.string.ok)) { }
+                .show()
+        }
+        .create()
+    resultsDialog.listView.divider = ColorDrawable(Color.LTGRAY)    // create divider
+    resultsDialog.listView.dividerHeight = dividerHeight
+    resultsDialog.show()
 }
