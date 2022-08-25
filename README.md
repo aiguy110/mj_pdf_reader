@@ -3,17 +3,18 @@
 </div>
 
 # Download
+- [x] [Gitlab APK Link](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.0-stable/app/release/app-release.apk) (most up-to-date)
 - [ ] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader) (waiting for approval)
-- [x] [Gitlab APK Link](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.0-stable/app/release/app-release.apk)
+- [ ] [IzzyOnDroid Repo](https://apt.izzysoft.de/fdroid/index/apk/com.gitlab.mudlej.MjPdfReader)
 - [ ] F-droid (coming soon)
 
 # MJ PDF Reader
 This is a fork mady by Mudlej (@mudlej) from PDF Viewer Plus by Gokul Swaminathan (@JavaCafe01).
-I added, fixed and modified many things in the app and its core libraries. 
+I added, fixed and modified many things in the app and its core libraries.
 The new app is significantly different and is called MJ PDF Reader. ([see What is different from PDF Viewer Plus](https://gitlab.com/mudlej_android/mj_pdf_reader#what-is-different-from-pdf-viewer-plus))
 
 ## Screenshots
-| Light Mode | Dark Mode | 
+| Light Mode | Dark Mode |
 |:-:|:-:|
 | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed%20(1).png" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png" width="190" height="400"/> |
 
