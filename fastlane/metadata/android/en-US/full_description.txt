@@ -1,4 +1,35 @@
-MJ PDF Reader is a smooth PDF viewer written in Java.
-It contains a simple user interface, multiple themes, and the ability to share a PDF.
-Originally written by Gokul Swaminathan under the name of PDF Viewer Plus.
-This is a version build on it, made by Mudlej.
+MJ PDF Reader is a fork mady by Mudlej (@mudlej) from PDF Viewer Plus by Gokul Swaminathan (@JavaCafe01).
+I added, fixed and modified many things in the app and its core libraries.
+The new app is significantly different and is called MJ PDF Reader.
+
+
+-) MJ PDF Reader Features
+    * Fast & smooth experience.
+    * Minimalist & simple user interface.
+    * Remembers the last opened page.
+    * Dark mode for the app and the PDF.
+    * True full screen with hidable buttons.
+    * Search the PDF file. (experimental)
+    * Text mode to view PDFs like E-readers. (experimental)
+    * An option to keep the screen on.
+    * Open online PDFs through links.
+    * Share & print PDFs.
+    * Open multiple PDFs.
+    * FOSS and totally private
+
+
+-) Permissions and privacy
+This app does not collect any data.
+The following permissions are required to provide specific features in the app:
+    - Internet: For opening PDFs through links
+    - Storage: For saving downloading PDFs and opening them from storage
+
+
+-) Authors and acknowledgment
+* MJ PDF Reader is made by @mudlej.
+* The original app (PDF View Plus) was made by Gokul Swaminathan (@JavaCafe01).
+* Credits to (@Derekelkins)'s pull request for adding the ability to remember last opened page.
+
+
+-) License
+MJ PDF Reader uses the GPLv3 license, the original app (PDF View Plus) was under MIT license.
