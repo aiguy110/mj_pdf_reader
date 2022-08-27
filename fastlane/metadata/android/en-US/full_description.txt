@@ -1,6 +1,4 @@
-<i>MJ PDF Reader</i> is a smooth PDF viewer written in Kotlin. It contains a simple user interface, supports dark theme, true full screen mode and much more.
-
-<b>MJ PDF Reader Features</b>
+<i>MJ PDF Reader</i> is a smooth PDF viewer. It contains a simple user interface, supports dark theme, true full screen mode and much more.
 
 * Fast & smooth experience.
 * Minimalist & simple user interface.
@@ -23,7 +21,7 @@ The following permissions are required to provide specific features in the app:
 * Internet: For opening PDFs through links
 * Storage: For saving downloading PDFs and opening them from storage
 
-<b>Authors and acknowledgment</b>
+<b>Author and acknowledgment</b>
 
 * MJ PDF Reader is made by @mudlej.
 * The original app (PDF View Plus) was made by Gokul Swaminathan (@JavaCafe01).
