@@ -3,9 +3,9 @@
 </div>
 
 # Download
-- [x] [Gitlab APK Link (V1.4.0)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.0-stable/app/release/app-release.apk) (most up-to-date)
-- [ ] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader) (waiting for approval)
+- [x] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader)
 - [x] [IzzyOnDroid Repo](https://apt.izzysoft.de/fdroid/index/apk/com.gitlab.mudlej.MjPdfReader)
+- [x] [Direct Download (V1.4.0)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.0-stable/app/release/app-release.apk) (most up-to-date)
 - [ ] F-droid (coming soon)
 
 # MJ PDF Reader
