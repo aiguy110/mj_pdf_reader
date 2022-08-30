@@ -5,7 +5,7 @@
 # Download
 - [x] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader)
 - [x] [IzzyOnDroid Repo](https://apt.izzysoft.de/fdroid/index/apk/com.gitlab.mudlej.MjPdfReader)
-- [x] [Direct Download (V1.4.0)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.0-stable/app/release/app-release.apk)
+- [x] [Direct Download (V1.4.1)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.1-stable/app/release/app-release.apk)
 - [ ] F-droid (coming soon)
 
 # MJ PDF Reader
@@ -36,7 +36,7 @@ The new app is significantly different and is called MJ PDF Reader. ([see What i
 * Open multiple PDFs.
 * FOSS and totally private
 
-## What is new in MJ PDF Reader V1.4.0
+## What is new in MJ PDF Reader V1.4.1
 * V1.4.1 adds a workaround to prevent app from crashing when opening huge files
 * Updated the core libraries and fixed the security issue.
 * Added Search functionality. (experimental) ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text-mode-and-search))
