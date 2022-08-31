@@ -13,6 +13,7 @@
 - [ ] add a 'go to page' like Librera's
 - [ ] add an option to export saved reading progress
 - [ ] add an option to lock horizontal swipe
+- [ ] add a pop up after enabling Dark Mode for app to enable it for pdf as well
 - 
 ## DONE
 - [x] activate appDarkTheme in MainActivity
