@@ -242,7 +242,7 @@ fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences, bypa
     // copy page's text or set an appropriate message
     val pageText =
         if (!pdf.isExtractingTextFinished)
-            "Try few seconds later, still extracting text from the PDF."
+            activity.getString(R.string.try_later_still_extracting_text)
         else
             (pdf.pagesText[pdf.pageNumber + 1] ?: "").trim().ifEmpty {
                 hasText = false
@@ -262,6 +262,7 @@ fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences, bypa
                 "#${pdf.pageNumber + 1} (${activity.getString(R.string.experimental)})")
         .setNegativeButton(activity.getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
         .also {
+            // don't show copy option if there is no text
             if (hasText)
                 it.setPositiveButton(activity.getString(R.string.copy_all)) { dialog, _ ->
                 // copy page's text to clipboard
@@ -273,11 +274,16 @@ fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences, bypa
                     Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
+
+            // don't show this button if the click came from the acion bar
+            if (!bypass)
+                it.setNeutralButton(activity.getString(R.string.dont_pop_up)) { dialog, _ ->
+                    pref.setCopyTextDialog(false)
+                    dialog.dismiss()
+                }
         }
         .show()
 }
-
-
 
 fun showUnderDevelopmentDialog(activity: TextModeActivity) {
     AlertDialog.Builder(activity)

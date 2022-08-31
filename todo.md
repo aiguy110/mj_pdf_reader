@@ -8,7 +8,6 @@
 - [ ] create a scrollbar for textView in Text Mode
 - [ ] changing font size in text mode takes too much and freezes UI thread
 - [ ] add toggle to show a bottom bar
-- [ ] scrolling using the volume keys (a screen at a time, without smooth scrolling)?
 - [ ] only shows me the top level bookmarks and not the nested ones
 - [ ] add brightness control in fullscreen mode
 - [ ] add 'turn this off' in copy page dialog if shown by long press
@@ -35,6 +34,7 @@
 - [x] loading TextMode Activity blocks UI and can't dismiss the dialog until finished
 - [x] don't disable copy page's text option in action bar when long press is disabled in settings
 - [x] Reloading MainActivity restart text extraction, this should be solved someway
+- [x] scrolling using the volume keys
 
 ## IGNORED
 - [ ] adding a fullscreen button to restore default zoom

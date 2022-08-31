@@ -245,5 +245,7 @@
     <string name="no_search">No Search</string>
     <string name="turn_page_by_volume_buttons_title">Turn Page By Volume Buttons</string>
     <string name="turn_page_by_volume_buttons_summary">Go to the next or previous page using the physical volume buttons</string>
+    <string name="try_later_still_extracting_text">Try few seconds later, still extracting text from the PDF.</string>
+    <string name="dont_pop_up">Don\'t pop up!</string>
 
 </resources>
