@@ -164,7 +164,8 @@ class TextModeActivity : AppCompatActivity() {
 
                 // combine all text in one string off UI
                 Executors.newSingleThreadExecutor().execute {
-                    allText = pdfText.values
+                    if (pdfText.values.isEmpty()) allText = "No Text"
+                    else allText = pdfText.values
                         .reduce { acc, s -> "$acc $s" }
                         .replace("\n+", "\n")   // replace one or more newline
 

@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity() {
         val fileDescriptor: AssetFileDescriptor? =
             applicationContext.contentResolver.openAssetFileDescriptor(uri , "r")
         val fileSizeInBytes: Long = fileDescriptor?.length ?: 0
-        return "%.3f".format(fileSizeInBytes.toDouble() / (1024 * 1024)).toDouble()
+        return fileSizeInBytes.toDouble() / (1024 * 1024)
     }
 
     private fun initPdfViewAndLoad(viewConfigurator: Configurator) {
