@@ -68,6 +68,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val uriKey = "uri"
         const val finishedExtractionDialogKey = "finishedExtraction"
         const val copyTextDialogKey = "copyTextDialog"
+        const val turnPageByVolumeButtonsKey = "turnPageByVolumeButtons"
 
         // Default values
         const val firstInstallDefault = true
@@ -91,6 +92,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val pdfLengthDefault = 0
         const val finishedExtractionDialogDefault = false
         const val copyTextDialogDefault = true
+        const val turnPageByVolumeButtonsDefault = false
 
         // Colors
         const val pdfDarkBackgroundColor = -0x313132          // -0x313132 = 0xffcecece
@@ -120,6 +122,7 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getMaxZoom() = prefMan.getFloat(maxZoomKey, maxZoomDefault)
     fun getFinishedExtractionDialog() = prefMan.getBoolean(finishedExtractionDialogKey, finishedExtractionDialogDefault)
     fun getCopyTextDialog() = prefMan.getBoolean(copyTextDialogKey, copyTextDialogDefault)
+    fun getTurnPageByVolumeButtons() = prefMan.getBoolean(turnPageByVolumeButtonsKey, turnPageByVolumeButtonsDefault)
 
     // put values in Shared Preferences
     fun setFirstInstall(value: Boolean) = prefMan.edit().putBoolean(firstInstallKey, value).apply()
@@ -138,4 +141,5 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setMaxZoom(value: Float) = prefMan.edit().putFloat(maxZoomKey, value).apply()
     fun setFinishedExtractionDialog(value: Boolean) = prefMan.edit().putBoolean(finishedExtractionDialogKey, value).apply()
     fun setCopyTextDialog(value: Boolean) = prefMan.edit().putBoolean(copyTextDialogKey, value).apply()
+    fun setTurnPageByVolumeButtons(value: Boolean) = prefMan.edit().putBoolean(turnPageByVolumeButtonsKey, value).apply()
 }

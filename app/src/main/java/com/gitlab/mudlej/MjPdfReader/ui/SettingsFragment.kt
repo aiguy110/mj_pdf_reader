@@ -117,6 +117,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         pageFlingSwitch.summary = getString(R.string.fling_summary)
         pageFlingSwitch.isIconSpaceReserved = false
 
+        // Configure and add Turn Page By Volume Buttons Switch
+        val turnPageByVolumeButtonsSwitch = SwitchPreferenceCompat(requireContext())
+        pageFlingSwitch.title = getString(R.string.turn_page_by_volume_buttons_title)
+        pageFlingSwitch.setDefaultValue(Preferences.turnPageByVolumeButtonsDefault)
+        pageFlingSwitch.key = Preferences.turnPageByVolumeButtonsKey
+        pageFlingSwitch.summary = getString(R.string.turn_page_by_volume_buttons_summary)
+        pageFlingSwitch.isIconSpaceReserved = false
+
         // add the switches to the second section
         val secondSection: PreferenceCategory? = findPreference("scrollSection")
         secondSection?.isIconSpaceReserved = false

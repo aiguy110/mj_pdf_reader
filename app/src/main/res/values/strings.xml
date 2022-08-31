@@ -243,5 +243,7 @@
     <string name="no_seach_file_too_big">No Search (Huge File)</string>
     <string name="not_available_file_too_big">Not available! The File is too big.</string>
     <string name="no_search">No Search</string>
+    <string name="turn_page_by_volume_buttons_title">Turn Page By Volume Buttons</string>
+    <string name="turn_page_by_volume_buttons_summary">Go to the next or previous page using the physical volume buttons</string>
 
 </resources>

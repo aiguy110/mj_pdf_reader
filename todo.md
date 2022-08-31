@@ -5,7 +5,6 @@
 - [ ] add hyperlinks support
 - [ ] hide page handle when there is only one page
 - [ ] make copy page's text option in action bar more powerful (specify page number in name or choose it in dialog)
-- [ ] improve the app logo image
 - [ ] create a scrollbar for textView in Text Mode
 - [ ] changing font size in text mode takes too much and freezes UI thread
 - [ ] add toggle to show a bottom bar
@@ -40,3 +39,4 @@
 ## IGNORED
 - [ ] adding a fullscreen button to restore default zoom
 - [ ] elaborate the saving error message and suggest storage permission
+- [ ] improve the app logo image

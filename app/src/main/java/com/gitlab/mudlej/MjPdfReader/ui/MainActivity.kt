@@ -633,6 +633,17 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (pref.getTurnPageByVolumeButtons()) {
+            when (keyCode) {
+                KeyEvent.KEYCODE_VOLUME_DOWN -> binding.pdfView.jumpTo(++pdf.pageNumber)
+                KeyEvent.KEYCODE_VOLUME_UP -> binding.pdfView.jumpTo(--pdf.pageNumber)
+            }
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
     private fun navToTextMode() {
         if (!checkHasFile()) return
 
