@@ -26,6 +26,7 @@ int attr ttcIndex 0x0
 int color notification_action_color_filter 0x0
 int color notification_icon_bg_color 0x0
 int color notification_material_background_media_default_color 0x0
+int color primaryColor 0x0
 int color primary_text_default_material_dark 0x0
 int color ripple_material_light 0x0
 int color secondary_text_default_material_dark 0x0
@@ -52,6 +53,7 @@ int dimen notification_small_icon_size_as_large 0x0
 int dimen notification_subtext_size 0x0
 int dimen notification_top_pad 0x0
 int dimen notification_top_pad_large_text 0x0
+int dimen scrollHandleRadius 0x0
 int dimen subtitle_corner_radius 0x0
 int dimen subtitle_outline_width 0x0
 int dimen subtitle_shadow_offset 0x0

@@ -5,22 +5,19 @@
 # Download
 - [x] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader)
 - [x] [IzzyOnDroid Repo](https://apt.izzysoft.de/fdroid/index/apk/com.gitlab.mudlej.MjPdfReader)
-- [x] [Direct Download (V1.4.2)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.2-stable/app/release/app-release.apk)
-- [ ] F-droid (coming soon)
-
-# MJ PDF Reader
-This is a fork mady by Mudlej (@mudlej) from PDF Viewer Plus by Gokul Swaminathan (@JavaCafe01).
-I added, fixed and modified many things in the app and its core libraries.
-The new app is significantly different and is called MJ PDF Reader. ([see What is different from PDF Viewer Plus](https://gitlab.com/mudlej_android/mj_pdf_reader#what-is-different-from-pdf-viewer-plus))
+- [x] [Direct Download (V1.4.3)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.3-stable/app/release/app-release.apk)
+- [ ] F-droid (working on it...)
 
 ## Screenshots
 | Light Mode | Dark Mode |
 |:-:|:-:|
-| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed%20(1).png" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png" width="190" height="400"/> |
+| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png" width="190" height="400"/> |
 
-| Full Screen (No Buttons) | Full Screen (Buttons) |
-|:-:|:-:|
-| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/full_no_buttons%20(1).png" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/full_buttons_framed.png" width="190" height="400"/> |
+# MJ PDF Reader
+MJ PDF Reader is a lightweight and minimalist PDF viewer made by Mudlej (@mudlej).
+It's the successor of PDF Viewer Plus made by Gokul Swaminathan (@JavaCafe01). 
+
+For more ([see changelog](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/changelog.md))
 
 ## MJ PDF Reader Features
 * Fast & smooth experience.
@@ -28,27 +25,12 @@ The new app is significantly different and is called MJ PDF Reader. ([see What i
 * Remembers the last opened page.
 * Dark mode for the app and the PDF.
 * True full screen with hidable buttons.
-* Search the PDF file. (experimental)
-* Text mode to view PDFs like E-readers. (experimental)
+* Search for text in the PDF.
 * An option to keep the screen on.
 * Open online PDFs through links.
 * Share & print PDFs.
 * Open multiple PDFs.
 * FOSS and totally private
-
-## What is new in MJ PDF Reader V1.4.X
-* V1.4.2
-    * Add an option to turn the page using volume buttons.
-    * Add a button to disable copy page text pop up on long press.
-    * Fix NumberFormatException when local use comma for decimal point.
-* V1.4.1
-    * A workaround to prevent app from crashing when opening huge files.
-* V1.4.0
-    * Updated the core libraries and fixed the security issue.
-    * Added Search functionality. (experimental) ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text-mode-and-search))
-    * Added Text mode to view PDFs like E-readers. (experimental) ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text-mode-and-search))
-    * Added the ability to copy text from the PDF via a dialog.
-    * Reorganized action bar's options and added Additional Options.
 
 ## Permissions and privacy
 This app does not collect any data.
@@ -56,44 +38,26 @@ The following permissions are required to provide specific features in the app:
 * *Internet*: For opening PDFs through links
 * *Storage*: For saving downloading PDFs and opening them from storage
 
+## What is new in MJ PDF Reader V1.4.3
+* Added an option (seekbar) to adjust brightness in the Full Screen Mode 
+* Added 'Go To Page' option.
+* Fixed crashing for big files.
+* More consistent theme across the app. (now, all dialogs use black/white theme)
+* Search is now available for files of any size.
+* Decreased ram usage significantly and eliminated stuttering for big files. 
+* Changed App Bar style. (font, color, icons, title max lines)
+* Clicking on the title will show a message containing the full name of the pdf.
+* Changed scroll handler style.
+* Moved 'Print File' to the main menu, and put 'About' to the additional options.
+* Relabeled 'Additional Options' as 'More' 
+* Disabled Text Mode since it's not usable yet and crashes a lot. 
+* Hid page scroll handle if the pdf consists of only one page.
+
 ## Things I would like to do for MJ PDF Reader
-- [ ] Add a home page with three tabs (PDFs folders, Recent, Favorite)
-- [ ] Adding the ability to click on hyperlinks.
-- [ ] Adding highlight functionality. I don't use it personally, so I don't think I'll work on it any time soon. But feel free to create a pull request.
-- [ ] Adding auto-scroll mode.
+[See todo](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/todo.md)
 
 ## What is different from PDF Viewer Plus
-- [x] Great refactoring of the code. (still needs more)
-- [x] Converted the code to Kotlin. (except for two files)
-- [x] Removed many security vulnerabilities. ([see Forking PdfiumAndroid](https://gitlab.com/mudlej_android/mj_pdf_reader#forking-pdfiumandroid))
-- [x] Extracted almost all the resources from the logic files.
-- [x] Support for the new versions of Android.
-- [x] Forked and changed android-pdf-viewer library to achieve some of the below modifications.
-- [x] Forked [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) to update its core libraries. ([see Forking PdfiumAndroid](https://gitlab.com/mudlej_android/mj_pdf_reader#forking-pdfiumandroid))
-- [x] Removed [WhatsNew](https://github.com/TonnyL/WhatsNew) dependency.
-- [x] Removed [Cyanea](https://github.com/jaredrummler/Cyanea) dependency.
-- [x] Removed deprecated PreferenceActivity and replaced it with AndroidX Preference library and rewrote all the files.
-- [x] Changed the license to GPLv3
-- [x] Remembers the last opened page of each PDF. (credits to @Derekelkins)
-- [x] True full screen mode
-  - While in the full screen mode, there are no buttons nor bars that will pop up very annoyingly when scrolling, instead tapping the screen will show / hide three elements to control the viewer:
-    - A simple button to get out of the full screen. (top-left corner)
-    - A simple button to rotate the screen and lock the rotation while in the full screen mode. (top-left corner)
-    - A page scroll handle.
-- [x] Adding a new library that will work in the background to extract PDFs text.
-- [x] Adding a Text Mode that tries to view the PDF like epub files. ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text_mode_and_search))
-- [x] Adding a search functionality. ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text_mode_and_search))
-- [x] Adding the ability to copy text from the PDF via a dialog that will show up by a long press on the page.
-- [x] Fixed the (very annoying) issue with full screen mode being lost when the screen gets rotated.
-- [x] Added TextView that will be visible only when scrolling, so you can see the page number while scrolling.
-- [x] Added the functionality to restore the zoom level when rotating the device via a Snackbar prompt.
-- [x] Removed the Bottom Bar & placed its options in the action menu.
-- [x] Placed the toggle full screen button in the top bar.
-- [x] Changed the title format in the top bar to show the pages count first, and removed the '.pdf' form it.
-- [x] Changed the Default Theme to the Material theme.
-- [x] App's light / dark theme follows phone's theme. (You've to enable this option, disabled by default due to https://github.com/barteksc/AndroidPdfViewer/issues/914)
-- [x] A shortcut to switch the theme for the PDF in the action menu.
-- [x] Decreased the size of the app from 20 MB to 14.9 MB. (MJ PDF Reader v1.3)
+[See changelog](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/changelog.md)
 
 ## Forking PdfiumAndroid
 I Forked [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) to update its core libraries that were years behind and had too many security vulnerabilities.
@@ -103,6 +67,8 @@ I Forked [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) to update it
 * Updated Freetype to 2.12.1 ([source code](https://github.com/freetype/freetype), [building script](https://github.com/kota-kota/freetype-build))
 
 ## Text Mode and Search
+EDIT: This has changed in v1.4.3, this section talks about the previous versions
+
 These were challenging to add, and they are still experimental. (especially Text Mode)
 The problem was that PdfiumAndroid doesn't provide an option to extract text from the PDF. (even though PDFium does AFAIK)
 And to make things more problematic, android-pdf-viewer renders the PDF file as bitmap images.

@@ -11,6 +11,11 @@
     <color name="bright">#FDF9F9</color>
     <color name="dark">#263238</color>
     <color name="white">#ffffff</color>
+    <color name="grey">#CDCDCD</color>
+
+    <color name="topBarColor">@color/grey</color>
+    <color name="topBarBackgroundColor">#202020</color>
+
 
 <!--    // Color of Action bar-->
 <!--    //supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#232e32")))-->

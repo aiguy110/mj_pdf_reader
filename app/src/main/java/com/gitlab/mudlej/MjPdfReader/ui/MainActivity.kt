@@ -51,18 +51,25 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.AssetFileDescriptor
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.*
 import android.print.PrintManager
+import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.widget.Toast
+import android.widget.*
+import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.text.isDigitsOnly
+import androidx.core.view.*
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.github.barteksc.pdfviewer.PDFView.Configurator
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
@@ -79,18 +86,19 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.gitlab.mudlej.MjPdfReader.util.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.shockwave.pdfium.PdfPasswordException
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
-
 class MainActivity : AppCompatActivity() {
-    enum class AdditionalOptions{ APP_SETTINGS, TEXT_MODE, METADATA, PRINT_FILE, ADVANCED_CONFIG }
+    enum class AdditionalOptions{ APP_SETTINGS, TEXT_MODE, METADATA, ADVANCED_CONFIG, ABOUT }
 
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
@@ -104,14 +112,14 @@ class MainActivity : AppCompatActivity() {
     private val pdf = PDF()
     private val extras = ExtendedDataHolder.instance
 
-    // TODO: remove this temporary variable (to workaround PdfBox-Android limitation)
-    private var isPdfTooBig = false
+    lateinit var activityTitleTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "-----------onCreate: ${pdf.name} ")
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setCustomActionBar()
 
         // To avoid FileUriExposedException, (https://stackoverflow.com/questions/38200282/)
         StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().build())
@@ -126,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         // Show Into Activity and Features Dialog on the first install
         onFirstInstall()
 
-        // Create PDF by restore it in case of activity restart OR open filer picker
+        // Create PDF by restoring it in case of an activity restart OR open filer picker
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState)
         }
@@ -140,10 +148,36 @@ class MainActivity : AppCompatActivity() {
         showAppFeaturesDialogOnFirstRun()
     }
 
+    private fun setCustomActionBar() {
+        val actionBar = supportActionBar
+        // Disable the default and enable the custom
+        actionBar?.setDisplayShowTitleEnabled(false)
+        actionBar?.setDisplayShowCustomEnabled(true)
+
+        val customView: View = layoutInflater.inflate(R.layout.actionbar_title, null)
+        activityTitleTextView = customView.findViewById(R.id.actionbarTitle)
+
+        // Change the font family (optional)
+        activityTitleTextView.setTypeface(Typeface.SERIF)
+
+        activityTitleTextView.setOnClickListener {
+            val title = pdf.getTitle()
+            if (title.isNotEmpty()) {
+                Toast.makeText(this, title, Toast.LENGTH_LONG).show()
+            }
+        }
+        // Apply the custom view
+        actionBar?.customView = customView
+    }
+
     private fun onFirstInstall() {
         val isFirstRun = pref.getFirstInstall()
         if (isFirstRun) {
-            startActivity(Intent(this, MainIntroActivity::class.java))
+            // To avoid com.github.paolorotolo.appintro.AppIntroBaseFragment.onCreateView
+            // android.content.res.Resources$NotFoundException
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                startActivity(Intent(this, MainIntroActivity::class.java))
+            }
             pref.setFirstInstall(false)
             pref.setShowFeaturesDialog(true)
         }
@@ -162,8 +196,9 @@ class MainActivity : AppCompatActivity() {
         if (uri == null) return
 
         pdf.name = getFileName(this, uri)
-        pdf.sizeInMb = getSizeInMb(uri)
-        title = pdf.name
+        //pdf.sizeInMb = getSizeInMb(uri)       // shouldn't be needed anymore
+        activityTitleTextView.text = pdf.getTitle()
+
         setTaskDescription(ActivityManager.TaskDescription(pdf.name))
         val scheme = uri.scheme
         if (scheme != null && scheme.contains("http")) {
@@ -172,7 +207,7 @@ class MainActivity : AppCompatActivity() {
             initPdfViewAndLoad(binding.pdfView.fromUri(pdf.uri))
 
             // start extracting text in the background
-            if (!pdf.isExtractingTextFinished) extractPdfText()
+            //if (!pdf.isExtractingTextFinished) extractPdfText()
         }
     }
 
@@ -221,7 +256,7 @@ class MainActivity : AppCompatActivity() {
             .enableAnnotationRendering(Preferences.annotationRenderingDefault)
             .enableAntialiasing(pref.getAntiAliasing())
             .onTap { toggleScrollAndButtonsVisibility() }
-            .onLongPress { showPageTextDialog(this, pdf, pref) }
+            .onLongPress { copyPageText(false) }
             .scrollHandle(DefaultScrollHandle(this))
             .spacing(Preferences.spacingDefault)
             .onError { exception: Throwable -> handleFileOpeningError(exception) }
@@ -235,24 +270,32 @@ class MainActivity : AppCompatActivity() {
             .nightMode(pref.getPdfDarkTheme())
             .load()
 
+        // hide page scroll handle if the pdf consists of only one page
+        // it needs to be delayed so pdf.length is set
+        Handler(mainLooper).postDelayed({
+            if (pdf.length == 1)
+                binding.pdfView.scrollHandle?.permanentHide()
+        }, 750)
+
         // Show the page scroll handler for 3 seconds when the pdf is loaded then hide it.
         pdfView.performTap()
         tappingHandler.postDelayed({ hideButtons(pdfView.scrollHandle) },
             pref.getHideDelay().toLong())
     }
 
-    private fun extractPdfText() {
-        // --- check if file size is too big for PdfBox-Android
-        Log.i(TAG, "extractPdfText: fileSize: ${pdf.sizeInMb}MB")
-        if (pdf.sizeInMb > 50) {
-            isPdfTooBig = true
-            invalidateOptionsMenu()
-            return
+    private fun copyPageText(bypass: Boolean) {
+        //showPageTextDialog(this, pdf, pref, true)
+        val pageNumber = pdf.pageNumber + 1
+        // don't extract the text if it's already extracted
+        if (pdf.extractedPagesIndexes.value?.contains(pageNumber) != true) {
+            extractPageText(pageNumber)
         }
+        showCopyPageTextDialog(pageNumber ,this, pdf, pref, bypass)
+    }
 
+    private fun extractPageText(number: Int) {
         var document: PDDocument? = null
         val pdfStripper = PDFTextStripper()
-        pdf.pagesText.clear()
 
         Executors.newSingleThreadExecutor().execute {
             // off UI thread
@@ -260,58 +303,136 @@ class MainActivity : AppCompatActivity() {
                 document = PDDocument.load(contentResolver.openInputStream(pdf.uri as Uri))
                 val pagesCount = document?.numberOfPages ?: 0
 
-                for (i in 0..pagesCount) {      // <= intentional
-                    pdfStripper.startPage = i
-                    pdfStripper.endPage = i
-                    pdf.pagesText[i] = pdfStripper.getText(document)
-                }
+                if (pagesCount < 1 || number < 0 || number > pagesCount)
+                    return@execute
+
+                pdfStripper.startPage = number
+                pdfStripper.endPage = number
+                pdf.text[number] = pdfStripper.getText(document)
+
                 // back to UI thread
                 handler.post {
-                    Log.i(TAG, "extractPdfText: finished")
-                    pdf.isExtractingTextFinished = true
-                    invalidateOptionsMenu() // to update (search loading) in action bar
-                    if (pref.getFinishedExtractionDialog()) {
-                        Snackbar.make(
-                            binding.root, getString(R.string.finished_extracting_text),
-                            Snackbar.LENGTH_SHORT
-                        )
-                        .setAction(getString(R.string.search)) {
-                            showSearchDialog(this, pdf, binding, handler)
-                        }
-                        .show()
-                    }
+                    pdf.updatePagesTextLiveData(pdf.text)
+                    pdf.updateExtractedPagesIndexesLiveData(pdf.text.keys)
                 }
             }
             catch (e: IOException) {
-                Log.e("PdfBox", "Exception thrown while stripping text", e)
+                Log.e("PdfBox", "extractPageText($number): error while stripping text", e)
             }
             finally {
                 try {
                     document?.close()
                 }
                 catch (e: IOException) {
-                    Log.e("PdfBox", "Exception thrown while closing document", e)
+                    Log.e("PdfBox", "extractPageText($number): error while closing document", e)
                 }
             }
         }
     }
 
+    private fun extractAllPagesText() {
+        val pdfIndexes = (1..pdf.length).toSet()
+        val extractedIndexes = pdf.extractedPagesIndexes.value ?: setOf()
+        val indexesToExtract =  pdfIndexes - extractedIndexes
+
+        Log.d(TAG, "extractAllPagesText: extractedIndexes: $extractedIndexes")
+        Log.d(TAG, "extractAllPagesText: indexesToExtract: $indexesToExtract")
+        var isCanceled = false
+
+        if (indexesToExtract.isNotEmpty()) {
+            //val progressBar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
+            val progressBarLayout = LayoutInflater.from(this).inflate(R.layout.extracting_data_layout, null) as ConstraintLayout
+            val progressBar = progressBarLayout.get(0) as ProgressBar
+
+            progressBar.max = pdf.length
+            val title = getString(R.string.extracting_text_title)
+            val extractingDialog = AlertDialog.Builder(this, R.style.MJDialogThemeLight)
+                .setTitle(title)
+                .setView(progressBarLayout)
+                .setNegativeButton(getString(R.string.stop)) { _, _ -> isCanceled = true}
+                .setPositiveButton(getString(R.string.hide)) { dialog, _ -> dialog.dismiss() }
+                .create()
+
+            //var counter = 1
+            val iterator = indexesToExtract.iterator()
+            extractPageText(iterator.next())
+            lifecycleScope.launchWhenCreated {
+                pdf.extractedPagesIndexes.observe(this@MainActivity) { indexes ->
+                    if (isCanceled) return@observe
+
+                    if (indexes.size == pdf.length) {
+                        extractingDialog.dismiss()
+                        showSearchDialog(this@MainActivity, pdf, binding, handler)
+                        return@observe
+                    }
+
+                    Log.d(TAG, "extractAllPagesText: rate: ${indexes.size}/${pdf.length} ")
+                    progressBar.progress = indexes.size
+                    if (iterator.hasNext())
+                        extractPageText(iterator.next())
+                    extractingDialog.setTitle("$title (${indexes.size}/${pdf.length})")
+                }
+            }
+            extractingDialog.show()
+        }
+        else {
+            showSearchDialog(this, pdf, binding, handler)
+        }
+    }
+
     @SuppressLint("SourceLockedOrientationActivity")
     private fun setButtonsFunctionalities() {
-        binding.exitFullScreenButton.setOnClickListener {
-            // set orientation to unspecified so that the screen rotation will be unlocked
-            // this is because PORTRAIT / LANDSCAPE modes will lock the app in them
-            toggleFullscreen(false)
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            hideButtons(null)
+        binding.apply {
+            exitFullScreenButton.setOnClickListener {
+                // set orientation to unspecified so that the screen rotation will be unlocked
+                // this is because PORTRAIT / LANDSCAPE modes will lock the app in them
+                toggleFullscreen(false)
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                hideButtons(null)
+
+                // this WON'T give the brightness control back to the system.
+                val brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS)
+                updateBrightness(brightness)
+            }
+            rotateScreenButton.setOnClickListener {
+                requestedOrientation =
+                    if (pdf.isPortrait) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                pdf.togglePortrait()
+            }
+            brightnessButton.setOnClickListener {
+                if (brightnessSeekBar.isVisible) {
+                    brightnessSeekBar.visibility = View.GONE
+                    brightnessPercentage.visibility = View.GONE
+                }
+                else {
+                    brightnessSeekBar.visibility = View.VISIBLE
+                    brightnessPercentage.visibility = View.VISIBLE
+                }
+            }
+
+            // init the seekbar
+            val brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS)
+            brightnessSeekBar.progress = brightness
+            brightnessPercentage.text = "$brightness%"
+
+            brightnessSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onStopTrackingTouch(seekBar: SeekBar?) { }
+                override fun onStartTrackingTouch(p0: SeekBar?) { }
+                override fun  onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    if (seekBar == null) return
+                    updateBrightness(progress)
+                }
+            })
+            pickFile.setOnClickListener { pickFile() }
         }
-        binding.rotateScreenButton.setOnClickListener {
-            requestedOrientation =
-                if (pdf.isPortrait) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            pdf.togglePortrait()
-        }
-        binding.pickFile.setOnClickListener { pickFile() }
+    }
+
+    private fun updateBrightness(brightness: Int) {
+        binding.brightnessPercentage.text = "$brightness%"
+        val layout = window.attributes
+        window.attributes.screenBrightness = brightness.toFloat() / 100
+        window.attributes = layout
     }
 
     public override fun onResume() {
@@ -403,12 +524,15 @@ class MainActivity : AppCompatActivity() {
         handle?.customHide()
         binding.exitFullScreenButton.visibility = View.INVISIBLE
         binding.rotateScreenButton.visibility = View.INVISIBLE
+        binding.brightnessButtonLayout.visibility = View.INVISIBLE
     }
 
     private fun toggleScrollAndButtonsVisibility(): Boolean {
         val handle = binding.pdfView.scrollHandle
         val exitButton = binding.exitFullScreenButton
         val rotateButton = binding.rotateScreenButton
+        val brightnessButton = binding.brightnessButton
+
         if (handle == null) {
             toggleButtonsVisibility()
             return true
@@ -422,6 +546,7 @@ class MainActivity : AppCompatActivity() {
         tappingHandler.postDelayed({
             exitButton.visibility = View.INVISIBLE
             rotateButton.visibility = View.INVISIBLE
+            brightnessButtonLayout.visibility = View.INVISIBLE
             handle.customHide()
         }, pref.getHideDelay().toLong())
 
@@ -430,10 +555,12 @@ class MainActivity : AppCompatActivity() {
             if (pdf.isFullScreenToggled) {
                 exitButton.visibility = View.VISIBLE
                 rotateButton.visibility = View.VISIBLE
+                brightnessButtonLayout.visibility = View.VISIBLE
             }
         } else if (exitButton.visibility == View.GONE && pdf.isFullScreenToggled) {
             exitButton.visibility = View.VISIBLE
             rotateButton.visibility = View.VISIBLE
+            brightnessButtonLayout.visibility = View.VISIBLE
         } else {
             hideButtons(handle)
         }
@@ -442,14 +569,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleButtonsVisibility() {
         if (!pdf.isFullScreenToggled) return
+
         val exitButton = binding.exitFullScreenButton
         val rotateButton = binding.rotateScreenButton
+        val brightnessButton = binding.brightnessButton
+
         if (exitButton.visibility == View.VISIBLE) {
             exitButton.visibility = View.INVISIBLE
             rotateButton.visibility = View.INVISIBLE
-        } else {
+            brightnessButtonLayout.visibility = View.INVISIBLE
+        }
+        else {
             exitButton.visibility = View.VISIBLE
             rotateButton.visibility = View.VISIBLE
+            brightnessButtonLayout.visibility = View.VISIBLE
         }
     }
 
@@ -509,6 +642,51 @@ class MainActivity : AppCompatActivity() {
             pdf.isFullScreenToggled = false
             view.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
         }
+    }
+
+
+//  private fun toggleFullscreen(fixFullScreen: Boolean) {
+//        if (!pdf.isFullScreenToggled || fixFullScreen) {
+//            supportActionBar?.hide()
+//            pdf.isFullScreenToggled = true
+//
+//            hideSystemUI()
+//            // hide the scroll handle
+//            if (!fixFullScreen) {
+//                val handle = binding.pdfView.scrollHandle
+//                handle?.customHide()
+//            }
+//
+//            // show how to dialog
+//            if (pref.getShowFeaturesDialog()) showHowToExitFullscreenDialog(this, pref)
+//        } else {
+//            supportActionBar?.show()
+//            pdf.isFullScreenToggled = false
+//            showSystemUI()
+//        }
+//    }
+
+    private fun hideSystemUI() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, binding.root).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        }
+
+//        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//            or View.SYSTEM_UI_FLAG_FULLSCREEN
+//            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+    }
+
+    private fun showSystemUI() {
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowInsetsControllerCompat(window, binding.root).show(WindowInsetsCompat.Type.systemBars())
+//        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
     }
 
     private fun downloadOrShowDownloadedFile(uri: Uri) {
@@ -577,7 +755,8 @@ class MainActivity : AppCompatActivity() {
     private fun setCurrentPage(pageNumber: Int, pageCount: Int) {
         pdf.pageNumber = pageNumber             // I think this may need to be incremented
         pdf.setPageCount(pageCount)
-        title = pdf.getTitle()
+        //title = pdf.getTitle()
+        activityTitleTextView.text = pdf.getTitle()
 
         val hash = pdf.fileHash              // Don't want fileContentHash to change out from under us
         if (hash != null) executor.execute {    // off UI thread
@@ -604,17 +783,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val textModeItem = menu.findItem(R.id.searchOption)
-        // TODO: remove this workaround to prevent crashing
-        if (isPdfTooBig)
-            textModeItem.title = getString(R.string.no_search)
-        else if (pdf.isExtractingTextFinished)
-            textModeItem.title = getString(R.string.search_experimental)
-
-        return super.onPrepareOptionsMenu(menu)
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
@@ -625,17 +793,42 @@ class MainActivity : AppCompatActivity() {
             R.id.fullscreenOption -> toggleFullscreen(false)
             R.id.switchThemeOption -> switchPdfTheme()
             R.id.openFileOption -> pickFile()
+            R.id.copyPageText -> { copyPageText(true) }
+            R.id.goToPageOption -> { goToPage() }
             R.id.bookmarksListOption -> showBookmarksDialog(this, binding.pdfView)
-            R.id.searchOption -> showSearchDialog(this, pdf, binding, handler)
-            R.id.copyPageText -> showPageTextDialog(this, pdf, pref, true)
+            R.id.searchOption -> extractAllPagesText()
             R.id.shareFileOption -> shareFile()
+            R.id.printFileOption -> printFile()
             R.id.additionalOptionsOption -> showAdditionalOptions()
-            R.id.actionAboutOption -> {
-                startActivity(navIntent(this, AboutActivity::class.java))
-            }
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private fun goToPage() {
+        // create EditText for input
+        val inputLayout = LayoutInflater.from(this)
+            .inflate(R.layout.only_integers_input_layout, null) as TextInputLayout
+        inputLayout.hint = "Current page ${pdf.pageNumber + 1}/${pdf.length}"
+
+        AlertDialog.Builder(this, R.style.MJDialogThemeLight)
+            .setTitle(getString(R.string.go_to_page))
+            .setView(inputLayout)
+            .setPositiveButton(getString(R.string.go_to)) { dialog, _ ->
+                val query = inputLayout.editText?.text.toString().lowercase().trim()
+
+                // check if the user provided input
+                if (query.isEmpty()) {
+                    Toast.makeText(this, getString(R.string.no_input), Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                if (query.isDigitsOnly())
+                    binding.pdfView.jumpTo(query.toInt() - 1)
+
+                dialog.dismiss()
+            }
+            .setNegativeButton(getString(R.string.cancel)) {dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -650,14 +843,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navToTextMode() {
-        if (!checkHasFile()) return
+        Toast.makeText(this, "Text Mode is not available yet", Toast.LENGTH_SHORT).show()
+        return
 
-        // TODO: remove this workaround to prevent crashing
-        if (isPdfTooBig) {
-            Toast.makeText(this,
-                getString(R.string.not_available_file_too_big), Toast.LENGTH_LONG).show()
-            return
-        }
+        if (!checkHasFile()) return
 
         if (!pdf.isExtractingTextFinished) {
             Toast.makeText(this,
@@ -666,7 +855,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         val intent = Intent(this, TextModeActivity::class.java)
-        extras.putExtra(pdf.uri.toString(), pdf.pagesText)
+        extras.putExtra(pdf.uri.toString(), pdf.text)
         intent.putExtra(Preferences.uriKey, pdf.uri.toString())
         intent.putExtra(Preferences.pdfLengthKey, pdf.length)
         startActivity(intent)
@@ -676,25 +865,32 @@ class MainActivity : AppCompatActivity() {
         // map an index to an option string
         val settingsMap = mapOf(
             AdditionalOptions.APP_SETTINGS to getString(R.string.app_settings),
-            AdditionalOptions.TEXT_MODE to
-                    if (pdf.isExtractingTextFinished) getString(R.string.text_mode_experimental)
-                    else getString(R.string.text_mode_loading),
+            AdditionalOptions.TEXT_MODE to getString(R.string.text_mode_not_available),
             AdditionalOptions.METADATA to getString(R.string.file_metadata),
-            AdditionalOptions.PRINT_FILE to getString(R.string.print_file),
-            AdditionalOptions.ADVANCED_CONFIG to getString(R.string.advanced_config)
+            AdditionalOptions.ADVANCED_CONFIG to getString(R.string.advanced_config),
+            AdditionalOptions.ABOUT to getString(R.string.action_about)
         )
 
         // create a dialog for additional options and set their functionalities
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, R.style.MJDialogThemeDark)
             .setTitle(getString(R.string.settings))
             .setItems(settingsMap.values.toTypedArray()) { dialog, which ->
                 when (which) {
-                    AdditionalOptions.APP_SETTINGS.ordinal -> navToAppSettings()
-                    AdditionalOptions.TEXT_MODE.ordinal -> navToTextMode()
-                    AdditionalOptions.METADATA.ordinal ->
+                    AdditionalOptions.APP_SETTINGS.ordinal -> {
+                        navToAppSettings()
+                    }
+                    AdditionalOptions.TEXT_MODE.ordinal -> {
+                        navToTextMode()
+                    }
+                    AdditionalOptions.METADATA.ordinal -> {
                         if (checkHasFile()) showMetaDialog(this, binding.pdfView.documentMeta)
-                    AdditionalOptions.PRINT_FILE.ordinal -> printFile()
-                    AdditionalOptions.ADVANCED_CONFIG.ordinal -> showPartSizeDialog(this, pref)
+                    }
+                    AdditionalOptions.ADVANCED_CONFIG.ordinal -> {
+                        showPartSizeDialog(this, pref)
+                    }
+                    AdditionalOptions.ABOUT.ordinal -> {
+                        startActivity(navIntent(this, AboutActivity::class.java))
+                    }
                 }
                 dialog.dismiss()
             }

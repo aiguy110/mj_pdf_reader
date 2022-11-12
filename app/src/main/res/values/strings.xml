@@ -51,7 +51,7 @@
     <string name="intro">Replay Intro</string>
     <string name="author" translatable="false">Mudlej</string>
     <string name="email">Email (Mudlej)</string>
-    <string name="description_open">Free of cost and free of restrictions.\nYou are free to read, edit, share and redistribute the app and its source code of the app.</string>
+    <string name="description_open">Free of cost and free of restrictions.\nYou are free to read, edit, share and redistribute the app and its source code.</string>
     <string name="title_open">IT IS YOURS</string>
     <string name="title_intro" translatable="false">MJ PDF READER</string>
     <string name="description__intro">A simple PDF Reader</string>
@@ -163,7 +163,7 @@
     <string name="exit_fullscreen_message">Tapping the screen will show an X button in the top-left corner. Click it to exit full screen.</string>
     <string name="exit_fullscreen_title">To Exit Full Screen</string>
     <string name="exit_fullscreen_positive">Don\'t show again</string>
-    <string name="about_app">This is a fork mady by (@mudlej) from PDF Viewer Plus by Gokul Swaminathan (@JavaCafe01).\n\n I added, fixed and modified many things in the app and its core libraries. The new app is significantly different and is called MJ PDF Reader.\n\nCredits to (@Derekelkins) for adding the ability to remember last opened page.</string>
+    <string name="about_app">This is a fork made by (@mudlej) from PDF Viewer Plus by Gokul Swaminathan (@JavaCafe01).\n\n I added, fixed and modified many things in the app and its core libraries. The new app is significantly different and is called MJ PDF Reader.\n\nCredits to (@Derekelkins) for adding the ability to remember last opened page.</string>
     <string name="permission_denied">Permission denied</string>
     <string name="error_load_file_name">Couldn\'t retrieve file name</string>
     <string name="cannot_load_page">\"Cannot load page \"</string>
@@ -207,7 +207,7 @@
     <string name="page">Page</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="no_bookmarks">This file doesn\'t contain bookmarks</string>
-    <string name="additional_options">Additional Options</string>
+    <string name="additional_options">More</string>
     <string name="text_mode_experimental">Text Mode (experimental)</string>
     <string name="text_mode_loading">Text Mode (try later, still loading…)</string>
     <string name="search_loading">Search (loading…)</string>
@@ -247,5 +247,14 @@
     <string name="turn_page_by_volume_buttons_summary">Go to the next or previous page using the physical volume buttons</string>
     <string name="try_later_still_extracting_text">Try few seconds later, still extracting text from the PDF.</string>
     <string name="dont_pop_up">Don\'t pop up!</string>
+    <string name="extracting_text_wait">Extracting text, wait…</string>
+    <string name="stop">Stop</string>
+    <string name="extracting_text_title">Extracting Text</string>
+    <string name="text_mode_not_available">Text Mode</string>
+    <string name="go_to_page">Go To Page</string>
+    <string name="no_input">No Input!</string>
+    <string name="go_to">Go To</string>
+    <string name="hide">Hide</string>
+    <string name="search_field">Search...</string>
 
 </resources>

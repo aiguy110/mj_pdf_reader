@@ -1,6 +1,9 @@
 package com.github.barteksc.pdfviewer.scroll;
 
+import android.view.View;
 import android.widget.TextView;
+
+import androidx.arch.core.util.Function;
 
 import com.github.barteksc.pdfviewer.PDFView;
 
@@ -63,8 +66,10 @@ public interface ScrollHandle {
      * the custom show/hide are called only when the view is tapped
      */
     boolean customShown();
-    void customHide();
     void customShow();
+    void customHide();
+    void permanentHide();
+    void disablePermanentHide();
     void cancelHideRunner();
     void activateHandlerHideDelayed();
     TextView getPageLengthText();

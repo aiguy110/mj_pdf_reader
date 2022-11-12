@@ -44,8 +44,6 @@
 package com.gitlab.mudlej.MjPdfReader.ui
 
 import android.app.Dialog
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.DialogInterface
@@ -53,11 +51,11 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import com.github.barteksc.pdfviewer.PDFView
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
@@ -69,6 +67,7 @@ import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
 import com.gitlab.mudlej.MjPdfReader.util.indexesOf
 import com.gitlab.mudlej.MjPdfReader.util.putEditTextInLinearLayout
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.shockwave.pdfium.PdfDocument
 import java.util.concurrent.Executors
 
@@ -76,7 +75,7 @@ private const val TAG = "Dialogs"
 
 fun showAppFeaturesDialog(context: Context) {
     val end = "\n\n"
-    AlertDialog.Builder(context)
+    AlertDialog.Builder(context, R.style.MJDialogThemeLight)
         .setTitle("${context.resources.getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} Features")
         .setMessage(
             "* Fast & smooth experience." + end +
@@ -98,7 +97,7 @@ fun showAppFeaturesDialog(context: Context) {
 }
 
 fun showMetaDialog(context: Context, meta: PdfDocument.Meta) {
-    AlertDialog.Builder(context)
+    AlertDialog.Builder(context, R.style.MJDialogThemeLight)
         .setTitle(R.string.metadata)
         .setMessage(
             "${context.getString(R.string.pdf_title)}: ${meta.title}\n" +
@@ -112,7 +111,7 @@ fun showMetaDialog(context: Context, meta: PdfDocument.Meta) {
 }
 
 fun showHowToExitFullscreenDialog(context: Context, pref: Preferences) {
-    AlertDialog.Builder(context)
+    AlertDialog.Builder(context, R.style.MJDialogThemeLight)
         .setTitle(context.getString(R.string.exit_fullscreen_title))
         .setMessage(context.getString(R.string.exit_fullscreen_message))
         .setPositiveButton(context.getString(R.string.exit_fullscreen_positive)) { _, _ ->
@@ -131,7 +130,7 @@ fun showAskForPasswordDialog(
     dialogBinding: PasswordDialogBinding,
     displayFunc: (Uri?) -> Unit)
 {
-    val alert = AlertDialog.Builder(context)
+    val alert = AlertDialog.Builder(context, R.style.MJDialogThemeLight)
         .setTitle(R.string.protected_pdf)
         .setView(dialogBinding.root)
         .setIcon(R.drawable.lock_icon)
@@ -216,7 +215,7 @@ fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
     if (bookmarks.isEmpty()) bookmarks = listOf(activity.getString(R.string.no_bookmarks))
 
     // create and show the bookmarks dialog
-    AlertDialog.Builder(activity)
+    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
         .setTitle(activity.getString(R.string.bookmarks))
         .setItems(bookmarks.toTypedArray()) { dialog, which ->
             if (pdfView.tableOfContents.isEmpty()) return@setItems
@@ -228,35 +227,27 @@ fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
         .show()
 }
 
-fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences, bypass: Boolean = false) {
+fun showCopyPageTextDialog(pageNumber: Int, activity: MainActivity, pdf: PDF,
+                           pref: Preferences, bypass: Boolean = false) {
+
     if (!bypass && !pref.getCopyTextDialog()) return
 
-    // TODO: remove this workaround to prevent crashing
-    if (pdf.sizeInMb > 50) {
-        Toast.makeText(activity,
-            activity.getString(R.string.not_available_file_too_big), Toast.LENGTH_LONG).show()
-        return
-    }
-
     var hasText = true
-    // copy page's text or set an appropriate message
-    val pageText =
-        if (!pdf.isExtractingTextFinished)
-            activity.getString(R.string.try_later_still_extracting_text)
-        else
-            (pdf.pagesText[pdf.pageNumber + 1] ?: "").trim().ifEmpty {
-                hasText = false
-                activity.getString(R.string.could_not_text)
-            }
-
     // create a custom view to make the text selectable
     val pageTextView = TextView(activity)
     pageTextView.setPadding(30, 20, 30, 0)
     pageTextView.setTextIsSelectable(true)
-    pageTextView.text = pageText
     pageTextView.textSize = 16f
+    pageTextView.text = activity.getString(R.string.extracting_text_wait)
 
-    AlertDialog.Builder(activity)
+    activity.lifecycleScope.launchWhenCreated {
+        pdf.pagesText.observe(activity) { pdfPages ->
+            val text = pdfPages.getOrElse(pageNumber) { "Loading text..." }
+            pageTextView.text = text
+            hasText = text.isNotEmpty()
+        }
+    }
+    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
         .setView(pageTextView)
         .setTitle("${activity.getString(R.string.selectable_text)} " +
                 "#${pdf.pageNumber + 1} (${activity.getString(R.string.experimental)})")
@@ -267,7 +258,7 @@ fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences, bypa
                 it.setPositiveButton(activity.getString(R.string.copy_all)) { dialog, _ ->
                 // copy page's text to clipboard
                 val copyLabel = "${activity.getString(R.string.page)} #${pdf.pageNumber} Text"
-                copyToClipboard(activity, copyLabel, pageText)
+                copyToClipboard(activity, copyLabel, pdf.pagesText.value?.get(pageNumber) ?: "")
 
                 // show message to user before closing
                 Toast.makeText(activity, activity.getString(R.string.copied_to_clipboard),
@@ -275,7 +266,7 @@ fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences, bypa
                 dialog.dismiss()
             }
 
-            // don't show this button if the click came from the acion bar
+            // don't show this button if the click came from the action bar
             if (!bypass)
                 it.setNeutralButton(activity.getString(R.string.dont_pop_up)) { dialog, _ ->
                     pref.setCopyTextDialog(false)
@@ -286,7 +277,7 @@ fun showPageTextDialog(activity: MainActivity, pdf: PDF, pref: Preferences, bypa
 }
 
 fun showUnderDevelopmentDialog(activity: TextModeActivity) {
-    AlertDialog.Builder(activity)
+    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
         .setTitle(activity.getString(R.string.this_is_experimental))
         .setMessage(activity.getString(R.string.this_is_experimental_message))
         .setPositiveButton(activity.getString(R.string.ok)) { dialog, _ -> dialog.dismiss()}
@@ -302,32 +293,21 @@ fun showSearchDialog(
     binding: ActivityMainBinding,
     handler: Handler)
 {
-    // TODO: remove this workaround to prevent crashing
-    if (pdf.sizeInMb > 50) {
-        Toast.makeText(activity,
-            activity.getString(R.string.not_available_file_too_big), Toast.LENGTH_LONG).show()
-        return
-    }
-
-    if (!pdf.isExtractingTextFinished) {
-        Toast.makeText(activity, activity.getString(R.string.app_still_extracting_text),
-            Toast.LENGTH_LONG).show()
-        return
-    }
-
     val resultMap = mutableMapOf<Int, MutableList<String>>()
     val lineNumbers = mutableListOf<Int>()
 
-    val searchInput = EditText(activity)
-    val layout = LinearLayout(activity)
-    putEditTextInLinearLayout(activity, searchInput, layout)
+//    val searchInput = EditText(activity)
+//    val layout = LinearLayout(activity)
+//    putEditTextInLinearLayout(activity, searchInput, layout)
+    val searchLayout = LayoutInflater.from(activity).inflate(R.layout.input_layout, null) as TextInputLayout
 
-    AlertDialog.Builder(activity)
-        .setTitle(activity.getString(R.string.search_dialog_title))
+
+    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
+        .setTitle(activity.getString(R.string.search))
         .setMessage(activity.getString(R.string.search_dialog_message))
-        .setView(layout)
+        .setView(searchLayout)
         .setPositiveButton(activity.getString(R.string.search)) { dialog, _ ->
-            val query = searchInput.text.toString().lowercase().trim()
+            val query = searchLayout.editText?.text.toString().lowercase().trim()
 
             // check if the user provided input
             if (query.isEmpty()) {
@@ -342,7 +322,7 @@ fun showSearchDialog(
                 val offset = 70
 
                 // search each page
-                for ((page, text) in pdf.pagesText) {
+                for ((page, text) in pdf.text) {
 
                     // find the indexes of each match of the query in the page
                     for (index in text.lowercase().indexesOf(query)) {

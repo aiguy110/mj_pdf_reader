@@ -27,6 +27,7 @@ attr ttcIndex
 color notification_action_color_filter
 color notification_icon_bg_color
 color notification_material_background_media_default_color
+color primaryColor
 color primary_text_default_material_dark
 color ripple_material_light
 color secondary_text_default_material_dark
@@ -53,6 +54,7 @@ dimen notification_small_icon_size_as_large
 dimen notification_subtext_size
 dimen notification_top_pad
 dimen notification_top_pad_large_text
+dimen scrollHandleRadius
 dimen subtitle_corner_radius
 dimen subtitle_outline_width
 dimen subtitle_shadow_offset

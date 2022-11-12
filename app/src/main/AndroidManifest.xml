@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.gitlab.mudlej.MjPdfReader">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -8,6 +10,11 @@
         android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+<!--    For Brightness. (Not used) -->
+<!--    <uses-permission android:name="android.permission.WRITE_SETTINGS"-->
+<!--        tools:ignore="ProtectedPermissions" />-->
+
+<!--    android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"-->
     <application
         android:name="com.gitlab.mudlej.MjPdfReader.App"
         android:allowBackup="true"
@@ -16,8 +23,9 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
-        android:usesCleartextTraffic="true">
+        android:theme="@style/MJ_PDF_THEME"
+        android:usesCleartextTraffic="true"
+        android:largeHeap="true">
         <activity
             android:name=".ui.TextModeActivity"
             android:exported="false" />

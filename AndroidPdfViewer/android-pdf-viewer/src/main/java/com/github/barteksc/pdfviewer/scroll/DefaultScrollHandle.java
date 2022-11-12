@@ -9,11 +9,13 @@ import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.arch.core.util.Function;
 import androidx.core.content.ContextCompat;
 
 import com.github.barteksc.pdfviewer.PDFView;
@@ -36,13 +38,16 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
 
     public TextView pageLengthText;
 
-    private Handler handler = new Handler();
-    private Runnable hidePageScrollerRunnable = new Runnable() {
+    private final Handler handler = new Handler();
+    private final Runnable hidePageScrollerRunnable = new Runnable() {
         @Override
         public void run() {
             customHide();
         }
     };
+    boolean permanentHidden = false;
+    private OnClickListener pageHandlerListener = null;
+    private Function<Void, Void> function = null;
 
     public DefaultScrollHandle(Context context) {
         this(context, false);
@@ -54,7 +59,8 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
         this.inverted = inverted;
         textView = new TextView(context);
         setVisibility(INVISIBLE);
-        setTextColor(Color.BLACK);
+        //setTextColor(Color.BLACK);
+        setTextColor(Color.parseColor("#CDCDCD"));
         setTextSize(DEFAULT_TEXT_SIZE);
     }
 
@@ -216,9 +222,11 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
 //        setVisibility(INVISIBLE);
     }
 
+    @Override public void permanentHide() { permanentHidden = true; setVisibility(INVISIBLE); }
+    @Override public void disablePermanentHide() { permanentHidden = false; }
     @Override public boolean customShown() { return getVisibility() == VISIBLE; }
-    @Override public void customShow() { setVisibility(VISIBLE); }
-    @Override public void customHide() { setVisibility(INVISIBLE); }
+    @Override public void customShow() { if (!permanentHidden) setVisibility(VISIBLE); }
+    @Override public void customHide() { if (!permanentHidden) setVisibility(INVISIBLE); }
 
     public void setTextColor(int color) {
         textView.setTextColor(color);

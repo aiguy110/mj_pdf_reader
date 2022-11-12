@@ -47,7 +47,7 @@
         android:id="@+id/fullscreenOption"
         android:orderInCategory="1"
         android:title="@string/full_screen"
-        android:icon="@drawable/fullscreen_white_icon"
+        android:icon="@drawable/ic_fullscreen_grey"
         app:showAsAction="ifRoom" />
 
     <item
@@ -63,39 +63,45 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/bookmarksListOption"
+        android:id="@+id/copyPageText"
         android:orderInCategory="4"
+        android:title="@string/copy_page_text"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/goToPageOption"
+        android:orderInCategory="5"
+        android:title="@string/go_to_page"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/bookmarksListOption"
+        android:orderInCategory="6"
         android:title="@string/bookmarks"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/searchOption"
-        android:orderInCategory="5"
-        android:title="@string/search_loading"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/copyPageText"
-        android:orderInCategory="6"
-        android:title="@string/copy_page_text"
+        android:orderInCategory="7"
+        android:title="@string/search"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/shareFileOption"
-        android:orderInCategory="7"
+        android:orderInCategory="8"
         android:title="@string/share_file"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/printFileOption"
+        android:orderInCategory="9"
+        android:title="@string/print_file"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/additionalOptionsOption"
         android:title="@string/additional_options"
-        android:orderInCategory="8"
+        android:orderInCategory="10"
         app:showAsAction="never"  />
-
-    <item
-        android:id="@+id/actionAboutOption"
-        android:orderInCategory="9"
-        android:title="@string/action_about"
-        app:showAsAction="never" />
 
 </menu>

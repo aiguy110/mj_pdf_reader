@@ -1,19 +1,17 @@
 ## TODO
-- [ ] fix PdfBox-Android can't deal with big files in the background
-- [ ] fix not show copy dialog on first long press
+- [ ] add an option to lock horizontal swipe
+- [ ] Add a home page with three tabs (PDFs folders, Recent, Favorite)
+- [ ] Adding the ability to click on hyperlinks.
+- [ ] Adding highlight functionality.
+- [ ] Adding auto-scroll mode.
 - [ ] fix search for a sentence across pages
 - [ ] add hyperlinks support
-- [ ] hide page handle when there is only one page
 - [ ] make copy page's text option in action bar more powerful (specify page number in name or choose it in dialog)
-- [ ] create a scrollbar for textView in Text Mode
-- [ ] changing font size in text mode takes too much and freezes UI thread
 - [ ] add toggle to show a bottom bar
 - [ ] only shows me the top level bookmarks and not the nested ones
-- [ ] add brightness control in fullscreen mode
-- [ ] add a 'go to page' like Librera's
 - [ ] add an option to export saved reading progress
-- [ ] add an option to lock horizontal swipe
 - [ ] add a pop up after enabling Dark Mode for app to enable it for pdf as well
+- [ ] make Full Screen Mode utilize 100% of the screen. (even around the notch)
 - 
 ## DONE
 - [x] activate appDarkTheme in MainActivity
@@ -37,8 +35,18 @@
 - [x] Reloading MainActivity restart text extraction, this should be solved someway
 - [x] scrolling using the volume keys
 - [x] add 'don't pop up in copy page dialog if shown by long press
+- [x] fix PdfBox-Android can't deal with big files in the background
+- [x] fix not show copy dialog on first long press
+- [x] change page handler theme to suit the app
+- [x] add the ability to view the full file name of the pdf as a toast message by long pressing the title
+- [x] Add 'continue in the background'
+- [x] hide page handle when there is only one page
+- [x] add brightness control in fullscreen mode
 
 ## IGNORED
 - [ ] adding a fullscreen button to restore default zoom
 - [ ] elaborate the saving error message and suggest storage permission
 - [ ] improve the app logo image
+- [ ] create a scrollbar for textView in Text Mode
+- [ ] changing font size in text mode takes too much and freezes UI thread
+- [ ] add a 'go to page' like Librera's

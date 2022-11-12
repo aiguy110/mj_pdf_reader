@@ -44,6 +44,8 @@
 package com.gitlab.mudlej.MjPdfReader.data
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 
 class PDF(
     var uri: Uri? = null,
@@ -57,9 +59,23 @@ class PDF(
     var isFullScreenToggled: Boolean = false,
     var fileHash: String? = null,
     var downloadedPdf: ByteArray? = null,
-    val pagesText: MutableMap<Int, String> = mutableMapOf(),
+    val text: MutableMap<Int, String> = mutableMapOf(),
     var isExtractingTextFinished: Boolean = false
 ) {
+
+    private val pagesTextLiveData = MutableLiveData<MutableMap<Int, String>>()
+    val pagesText: LiveData<MutableMap<Int, String>> = pagesTextLiveData
+
+    private val extractedPagesIndexesLiveData = MutableLiveData<Set<Int>>()
+    val extractedPagesIndexes: LiveData<Set<Int>> = extractedPagesIndexesLiveData
+
+    fun updatePagesTextLiveData(pdfPages: MutableMap<Int, String>) {
+        pagesTextLiveData.value = pdfPages
+    }
+
+    fun updateExtractedPagesIndexesLiveData(indexes: Set<Int>) {
+        extractedPagesIndexesLiveData.value = indexes
+    }
 
     companion object {
         // constants
@@ -86,6 +102,7 @@ class PDF(
         return String.format(
             "[%s/%s] %s", pageNumber + 1, length, name.substring(0, extensionIndex))
     }
+
     fun togglePortrait() { isPortrait = !isPortrait }
 
     fun setPageCount(count: Int) {
