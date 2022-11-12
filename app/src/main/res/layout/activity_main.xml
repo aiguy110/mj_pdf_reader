@@ -141,7 +141,7 @@
             <androidx.appcompat.widget.AppCompatSeekBar
                 android:id="@+id/brightnessSeekBar"
                 android:layout_height="match_parent"
-                android:layout_width="250dp"
+                android:layout_width="200dp"
                 android:layout_marginStart="8dp"
                 android:thumbTint="@color/topBarBackgroundColor"
                 android:progressTint="@color/topBarBackgroundColor"
