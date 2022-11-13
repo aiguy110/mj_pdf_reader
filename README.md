@@ -24,7 +24,8 @@ For more ([see changelog](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob
 * Minimalist & simple user interface.
 * Remembers the last opened page.
 * Dark mode for the app and the PDF.
-* True full screen with hidable buttons.
+* True Full Screen Mode.
+* Control brightness and enable auto-scrolling within the Full Screen Mode. 
 * Search for text in the PDF.
 * An option to keep the screen on.
 * Open online PDFs through links.
@@ -37,6 +38,9 @@ This app does not collect any data.
 The following permissions are required to provide specific features in the app:
 * *Internet*: For opening PDFs through links
 * *Storage*: For saving downloading PDFs and opening them from storage
+
+## Coming in MJ PDF Reader V1.4.4
+* Added an option to auto scroll in the Full Screen Mode.
 
 ## What is new in MJ PDF Reader V1.4.3
 * Added an option (seekbar) to adjust brightness in the Full Screen Mode 

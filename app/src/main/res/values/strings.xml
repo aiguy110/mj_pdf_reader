@@ -163,7 +163,7 @@
     <string name="exit_fullscreen_message">Tapping the screen will show an X button in the top-left corner. Click it to exit full screen.</string>
     <string name="exit_fullscreen_title">To Exit Full Screen</string>
     <string name="exit_fullscreen_positive">Don\'t show again</string>
-    <string name="about_app">This is a fork made by (@mudlej) from PDF Viewer Plus by Gokul Swaminathan (@JavaCafe01).\n\n I added, fixed and modified many things in the app and its core libraries. The new app is significantly different and is called MJ PDF Reader.\n\nCredits to (@Derekelkins) for adding the ability to remember last opened page.</string>
+    <string name="about_app">wMJ PDF Reader is a lightweight and minimalist PDF viewer made by Mudlej (@mudlej). It\'s the successor of PDF Viewer Plus made by Gokul Swaminathan (@JavaCafe01).</string>
     <string name="permission_denied">Permission denied</string>
     <string name="error_load_file_name">Couldn\'t retrieve file name</string>
     <string name="cannot_load_page">\"Cannot load page \"</string>
