@@ -443,7 +443,7 @@ class MainActivity : AppCompatActivity() {
 
             var isAutoScrolling = false
             val delay = 1L
-            val interval = 1
+            val interval = 0.5
             var scrollBy = -interval
             val scrollingHandler = Handler(mainLooper)
 

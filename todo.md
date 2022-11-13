@@ -1,4 +1,5 @@
 ## TODO
+- [ ] App icon ratio
 - [ ] add an option to lock horizontal swipe
 - [ ] Add a home page with three tabs (PDFs folders, Recent, Favorite)
 - [ ] Adding the ability to click on hyperlinks.

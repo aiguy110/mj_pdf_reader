@@ -26,6 +26,11 @@
         android:theme="@style/MJ_PDF_THEME"
         android:usesCleartextTraffic="true"
         android:largeHeap="true">
+<!--        <service-->
+<!--            android:name=".ExtractingPdfText"-->
+<!--            android:exported="false"-->
+<!--            android:description="Extracting text of PDF for Search"-->
+<!--            />-->
         <activity
             android:name=".ui.TextModeActivity"
             android:exported="false" />
