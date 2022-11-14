@@ -2,22 +2,38 @@
   <img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="120" />
 </div>
 
-# Download
-- [x] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader)
-- [x] [IzzyOnDroid Repo](https://apt.izzysoft.de/fdroid/index/apk/com.gitlab.mudlej.MjPdfReader)
-- [x] [Direct Download (V1.4.3)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.3-stable/app/release/app-release.apk)
-- [ ] F-droid (working on it...)
 
-## Screenshots
-| Light Mode | Dark Mode |
-|:-:|:-:|
-| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png" width="190" height="400"/> |
+# TABLE OF CONTENTS
+* [MJ PDF Reader](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-reader)
+* [Download](https://gitlab.com/mudlej_android/mj_pdf_reader#download)
+* [Screenshots](https://gitlab.com/mudlej_android/mj_pdf_reader#screenshots)
+* [MJ PDF Reader Features](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-reader-features)
+* [Permissions and privacy](https://gitlab.com/mudlej_android/mj_pdf_reader#permissions-and-privacy)
+* [What is new in this release V1.4.3+](https://gitlab.com/mudlej_android/mj_pdf_reader#coming-in-the-next-release-mj-pdf-reader-v150)
+* [What's coming in the next release](https://gitlab.com/mudlej_android/mj_pdf_reader#what-is-new-in-mj-pdf-reader-v143)
+* [Things I would like to do for MJ PDF Reader](https://gitlab.com/mudlej_android/mj_pdf_reader#things-i-would-like-to-do-for-mj-pdf-reader)
+* [What is different from PDF Viewer Plus](https://gitlab.com/mudlej_android/mj_pdf_reader#what-is-different-from-pdf-viewer-plus)
+* [Forking PdfiumAndroid](https://gitlab.com/mudlej_android/mj_pdf_reader#forking-pdfiumandroid)
+* [Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text-mode-and-search)
+* [Authors and acknowledgment](https://gitlab.com/mudlej_android/mj_pdf_reader#authors-and-acknowledgment)
+* [License](https://gitlab.com/mudlej_android/mj_pdf_reader#authors-and-acknowledgment)
 
 # MJ PDF Reader
 MJ PDF Reader is a lightweight and minimalist PDF viewer made by Mudlej (@mudlej).
 It's [the successor](https://github.com/JavaCafe01/PdfViewer#anouncement) of PDF Viewer Plus made by Gokul Swaminathan (@JavaCafe01).
 
 For more ([see changelog](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/change_log.md))
+
+# Download
+- [x] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader)
+- [x] [IzzyOnDroid Repo](https://apt.izzysoft.de/fdroid/index/apk/com.gitlab.mudlej.MjPdfReader)
+- [x] [Direct Download (V1.4.3+)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V1.4.3+-stable/app/release/app-release.apk)
+- [ ] F-droid (working on it...)
+
+## Screenshots
+| Light Mode | Dark Mode |
+|:-:|:-:|
+| <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png" width="190" height="400"/> | <img src ="https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png" width="190" height="400"/> |
 
 ## MJ PDF Reader Features
 * Fast & smooth experience.
@@ -51,7 +67,7 @@ The following permissions are req   uired to provide specific features in the ap
 * (may be) Added a Full Screen button to lock horizontal scrolling?
 * (may be) Added a Full Screen button to take screenshots?
 
-## What is new in MJ PDF Reader V1.4.3
+## What is new in MJ PDF Reader V1.4.3+
 * Added an option (seekbar) to adjust brightness in the Full Screen Mode 
 * Added 'Go To Page' option.
 * Fixed crashing for big files.
@@ -115,7 +131,8 @@ by a red color. (It's still under heavy development and may crash or work improp
 
 ## Authors and acknowledgment
 - MJ PDF Reader is made by @mudlej.
-- The original app (PDF View Plus) was made by Gokul Swaminathan (@JavaCafe01).
+- The original app (PDF View Plus) was made by Gokul Swaminathan ([@JavaCafe01](https://github.com/JavaCafe01)).
+- [@barteksc](https://github.com/barteksc), made the libraries that MJ PDF Reader uses to render PDFs. 
 - Credits to (@Derekelkins)'s pull request for adding the ability to remember last opened page.
 
 ## License
