@@ -81,6 +81,9 @@ class PDF(
         // constants
         const val FILE_TYPE = "application/pdf"
         const val HASH_SIZE = 1024 * 1024
+        const val BOOKMARK_TEXT_SIZE = 24F
+        const val BOOKMARK_TEXT_SIZE_DEC = 2F
+        const val BOOKMARK_RESULT_OK = 48645
 
         // keys
         const val nameKey = "name"
@@ -92,6 +95,9 @@ class PDF(
         const val isPortraitKey = "isPortrait"
         const val isFullScreenToggledKey = "isFullScreenToggled"
         const val isExtractingTextFinishedKey = "isExtractingTextFinished"
+        const val pdfBookmarksKey = "PDF_BOOKMARKS"
+        const val chosenBookmarkKey = "chosenBookmarkKey"
+        const val startBookmarksActivity = 84418
     }
 
     fun getTitle(): String {

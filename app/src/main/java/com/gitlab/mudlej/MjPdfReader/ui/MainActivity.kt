@@ -77,15 +77,13 @@ import com.github.barteksc.pdfviewer.util.Constants
 import com.github.barteksc.pdfviewer.util.FitPolicy
 import com.gitlab.mudlej.MjPdfReader.PdfDocumentAdapter
 import com.gitlab.mudlej.MjPdfReader.R
-import com.gitlab.mudlej.MjPdfReader.data.AppDatabase
-import com.gitlab.mudlej.MjPdfReader.data.PDF
-import com.gitlab.mudlej.MjPdfReader.data.Preferences
-import com.gitlab.mudlej.MjPdfReader.data.SavedLocation
+import com.gitlab.mudlej.MjPdfReader.data.*
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.gitlab.mudlej.MjPdfReader.util.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.shockwave.pdfium.PdfPasswordException
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
@@ -350,6 +348,7 @@ class MainActivity : AppCompatActivity() {
             val extractingDialog = AlertDialog.Builder(this, R.style.MJDialogThemeLight)
                 .setTitle(title)
                 .setView(progressBarLayout)
+                .setMessage(getString(R.string.extraction_dialog_message))
                 .setNegativeButton(getString(R.string.stop)) { _, _ -> isCanceled = true}
                 .setPositiveButton(getString(R.string.hide)) { dialog, _ -> dialog.dismiss() }
                 .create()
@@ -436,7 +435,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onStartTrackingTouch(p0: SeekBar?) { }
                 override fun  onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     if (seekBar == null) return
-                    updateBrightness(progress)
+                    // Don't override system's brightness if the user didn't manually asked for it
+                    if (fromUser) updateBrightness(progress)
                 }
             })
             pickFile.setOnClickListener { pickFile() }
@@ -600,7 +600,9 @@ class MainActivity : AppCompatActivity() {
         binding.exitFullScreenButton.visibility = visibility
         binding.rotateScreenButton.visibility = visibility
         binding.brightnessButtonLayout.visibility = visibility
-        binding.autoScrollLayout.visibility = visibility
+
+        // TODO: coming in the next release
+        //binding.autoScrollLayout.visibility = visibility
     }
 
     private fun toggleScrollAndButtonsVisibility(): Boolean {
@@ -641,17 +643,17 @@ class MainActivity : AppCompatActivity() {
 
         val exitButton = binding.exitFullScreenButton
         val rotateButton = binding.rotateScreenButton
-        val brightnessButton = binding.brightnessButton
+        val brightnessButton = binding.brightnessButtonLayout
 
         if (exitButton.visibility == View.VISIBLE) {
             exitButton.visibility = View.INVISIBLE
             rotateButton.visibility = View.INVISIBLE
-            brightnessButtonLayout.visibility = View.INVISIBLE
+            brightnessButton.visibility = View.INVISIBLE
         }
         else {
             exitButton.visibility = View.VISIBLE
             rotateButton.visibility = View.VISIBLE
-            brightnessButtonLayout.visibility = View.VISIBLE
+            brightnessButton.visibility = View.VISIBLE
         }
     }
 
@@ -862,9 +864,9 @@ class MainActivity : AppCompatActivity() {
             R.id.fullscreenOption -> toggleFullscreen(false)
             R.id.switchThemeOption -> switchPdfTheme()
             R.id.openFileOption -> pickFile()
-            R.id.copyPageText -> { copyPageText(true) }
-            R.id.goToPageOption -> { goToPage() }
-            R.id.bookmarksListOption -> showBookmarksDialog(this, binding.pdfView)
+            R.id.copyPageText -> copyPageText(true)
+            R.id.goToPageOption -> goToPage()
+            R.id.bookmarksListOption -> showBookmarks()
             R.id.searchOption -> extractAllPagesText()
             R.id.shareFileOption -> shareFile()
             R.id.printFileOption -> printFile()
@@ -872,6 +874,17 @@ class MainActivity : AppCompatActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private fun showBookmarks() {
+        showBookmarksDialog(this, binding.pdfView)
+        return
+        // Coming in the next release
+        Intent(this, BookmarksActivity::class.java).also { intent ->
+            val bookmarks = pdfView.tableOfContents.map { bookmark -> Bookmark(bookmark, level = 0) }
+            intent.putExtra(PDF.pdfBookmarksKey, Gson().toJson(bookmarks))
+            startActivityForResult(intent, PDF.startBookmarksActivity)
+        }
     }
 
     private fun goToPage() {
@@ -999,6 +1012,18 @@ class MainActivity : AppCompatActivity() {
         pdf.isFullScreenToggled = savedState.getBoolean(PDF.isFullScreenToggledKey)
         pdf.zoom = savedState.getFloat(PDF.zoomKey)
         pdf.isExtractingTextFinished = savedState.getBoolean(PDF.isExtractingTextFinishedKey)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            PDF.startBookmarksActivity -> {
+                if (resultCode == PDF.BOOKMARK_RESULT_OK) {
+                    val pageNumber = data?.getLongExtra(PDF.chosenBookmarkKey, pdf.pageNumber.toLong())
+                    pageNumber?.let { binding.pdfView.jumpTo(it.toInt()) }
+                }
+            }
+        }
     }
 
     private val documentPickerLauncher = registerForActivityResult(OpenDocument()) {

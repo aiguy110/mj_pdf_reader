@@ -5,9 +5,13 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="20dp"
     android:padding="26dp"
-    app:boxBackgroundColor="@android:color/transparent"
+    android:textColorHint="@color/darkGrey"
+    app:hintTextColor="@color/primaryColor"
     app:startIconDrawable="@drawable/ic_numbers"
-    app:startIconTint="@color/dark">
+    app:startIconTint="@color/primaryColor"
+    app:boxBackgroundColor="@android:color/transparent"
+    app:color="@color/primaryColor"
+    >
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editText"
@@ -16,5 +20,7 @@
         android:maxLength="4"
         android:gravity="center_vertical"
         android:digits="0123456789"
-        android:inputType="number" />
+        android:inputType="number"
+        android:backgroundTint="@color/primaryColor"
+        />
 </com.google.android.material.textfield.TextInputLayout>

@@ -12,6 +12,7 @@
     <color name="dark">#263238</color>
     <color name="white">#ffffff</color>
     <color name="grey">#CDCDCD</color>
+    <color name="darkGrey">#959595</color>
 
     <color name="topBarColor">@color/grey</color>
     <color name="topBarBackgroundColor">#202020</color>

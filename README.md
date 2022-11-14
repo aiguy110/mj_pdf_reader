@@ -35,12 +35,21 @@ For more ([see changelog](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob
 
 ## Permissions and privacy
 This app does not collect any data.
-The following permissions are required to provide specific features in the app:
+The following permissions are req   uired to provide specific features in the app:
 * *Internet*: For opening PDFs through links
 * *Storage*: For saving downloading PDFs and opening them from storage
 
-## Coming in MJ PDF Reader V1.4.4
-* Added an option to auto scroll in the Full Screen Mode.
+## Coming in the next release MJ PDF Reader V1.5.0
+* Re-branded the app as 'MJ PDF'
+* New and better icon for the app
+* Added support for Hyperlinks.
+* Added a Table of Content page to show the full list of bookmarks (including nested ones).
+* Added an auto scroll feature in the Full Screen Mode (adjustable speed).
+* Added an option to see a list of all the links embedded in the file.
+* Improved Search functionality
+* Fixed not being able to reset the zoom to a page-width level
+* (may be) Added a Full Screen button to lock horizontal scrolling?
+* (may be) Added a Full Screen button to take screenshots?
 
 ## What is new in MJ PDF Reader V1.4.3
 * Added an option (seekbar) to adjust brightness in the Full Screen Mode 
@@ -56,6 +65,7 @@ The following permissions are required to provide specific features in the app:
 * Relabeled 'Additional Options' as 'More' 
 * Disabled Text Mode since it's not usable yet and crashes a lot. 
 * Hid page scroll handle if the pdf consists of only one page.
+* Improved Copy Page's Text functionality and UI.
 
 ## Things I would like to do for MJ PDF Reader
 [See todo](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/todo.md)

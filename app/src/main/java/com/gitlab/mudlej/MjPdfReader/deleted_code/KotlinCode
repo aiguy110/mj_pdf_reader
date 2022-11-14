@@ -76,3 +76,97 @@ Handler(Looper.getMainLooper()).postAtFrontOfQueue {
     Toast.makeText(this@MainActivity,
         getString(R.string.search_input_empty), Toast.LENGTH_SHORT).show()
 }
+
+
+
+// -------------------------------- Parcalable Bookmark ---------------------
+package com.gitlab.mudlej.MjPdfReader.data
+
+import android.os.Parcel
+import android.os.Parcelable
+import com.shockwave.pdfium.PdfDocument
+
+class Bookmark(bookmark:PdfDocument.Bookmark, val level: Int) : PdfDocument.Bookmark(), Parcelable {
+    val subBookmarks: MutableList<Bookmark> = mutableListOf()
+
+    init {
+        title = bookmark.title
+        pageIdx = bookmark.pageIdx
+        mNativePtr = bookmark.mNativePtr
+        if (hasChildren())
+            for (child in children)
+                subBookmarks.add(Bookmark(child, level + 1))
+    }
+
+    constructor(parcel: Parcel) : this(createFromParcel(parcel), parcel.readInt()) {
+        title = parcel.readString()
+        pageIdx = parcel.readLong()
+        mNativePtr = parcel.readLong()
+        parcel.readList(subBookmarks, Bookmark::class.java.classLoader)
+    }
+
+    override fun describeContents(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun writeToParcel(destination: Parcel, p1: Int) {
+        destination.writeString(title)
+        destination.writeInt(level)
+        destination.writeLong(pageIdx)
+        destination.writeLong(mNativePtr)
+        destination.writeList(subBookmarks)
+    }
+
+    companion object CREATOR : Parcelable.Creator<Bookmark> {
+        override fun createFromParcel(parcel: Parcel): Bookmark {
+            return Bookmark(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Bookmark?> {
+            return arrayOfNulls(size)
+        }
+    }
+
+}
+
+//fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
+//    // get bookmarks or set an appropriate message for the user
+//
+//    val bookmarks = mutableListOf<PdfDocument.Bookmark>()
+//    var bookmarksTitles = mutableListOf<String>()
+//    var level = 0
+//
+//    // to flatten the parent and children bookmarks
+//    fun flattenBookmarksRecursively(bookmarkList: List<PdfDocument.Bookmark>) {
+//        for (bookmark in bookmarkList) {
+//            bookmarks.add(bookmark)
+//            val prefix = "   "
+//            val newline = if (level == 0) "\n" else ""
+//            bookmarksTitles.add(
+//                "$newline${prefix.repeat(level)}${bookmark.title} - P${bookmark.pageIdx + 1}"
+//            )
+//
+//            if (bookmark.hasChildren()) {
+//                ++level
+//                flattenBookmarksRecursively(bookmark.children)
+//            }
+//        }
+//        --level
+//    }
+//    flattenBookmarksRecursively(pdfView.tableOfContents)
+//
+//    if (bookmarksTitles.isEmpty()) bookmarksTitles = mutableListOf(activity.getString(R.string.no_bookmarks))
+//
+//    // create and show the bookmarks dialog
+//    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
+//        .setTitle(activity.getString(R.string.bookmarks))
+//        .setItems(bookmarksTitles.toTypedArray()) { dialog, which ->
+//            if (pdfView.tableOfContents.isEmpty()) return@setItems
+//
+//            //val page = pdfView.tableOfContents[which].pageIdx
+//            val page = bookmarks[which].pageIdx
+//            pdfView.jumpTo(page.toInt())
+//            dialog.dismiss()
+//        }
+//        .show()
+//}

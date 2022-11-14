@@ -1,18 +1,23 @@
 ## TODO
-- [ ] App icon ratio
+- [ ] try to allow rendering while scale
+- [ ] fix not saving the last page you visited when navigating for some time in the Full Screen Mode.
+- [ ] Fix app's icon ratio
 - [ ] add an option to lock horizontal swipe
 - [ ] Add a home page with three tabs (PDFs folders, Recent, Favorite)
-- [ ] Adding the ability to click on hyperlinks.
 - [ ] Adding highlight functionality.
+- [ ] Add links list dialog.
 - [ ] fix search for a sentence across pages
-- [ ] add hyperlinks support
-- [ ] make copy page's text option in action bar more powerful (specify page number in name or choose it in dialog)
+- [ ] Add search in bookmarks activity
+- [ ] Add expand / collapse all in bookmarks activity
+- [ ] make getting all the bookmarks done in the background
 - [ ] add toggle to show a bottom bar
-- [ ] only shows me the top level bookmarks and not the nested ones
+- [ ] change bookmarks to table of contents
 - [ ] add an option to export saved reading progress
-- [ ] add a pop up after enabling Dark Mode for app to enable it for pdf as well
 - [ ] make Full Screen Mode utilize 100% of the screen. (even around the notch)
-- 
+- [ ] double tap should reset zoom to page-width zoom
+- [x] Add textView in the auto-scroll option in Full Screen Mode.
+
+
 ## DONE
 - [x] activate appDarkTheme in MainActivity
 - [x] Add a workaround for the dark theme issue (https://github.com/barteksc/AndroidPdfViewer/issues/914)
@@ -43,6 +48,9 @@
 - [x] hide page handle when there is only one page
 - [x] add brightness control in fullscreen mode
 - [x] Add auto-scroll option in Full Screen Mode.
+- [x] Adding the ability to click on hyperlinks.
+- [x] only shows me the top level bookmarks and not the nested ones
+- [x] fix dialogs theme in dark mode
 
 ## IGNORED
 - [ ] adding a fullscreen button to restore default zoom
@@ -51,3 +59,5 @@
 - [ ] create a scrollbar for textView in Text Mode
 - [ ] changing font size in text mode takes too much and freezes UI thread
 - [ ] add a 'go to page' like Librera's
+- [ ] make copy page's text option in action bar more powerful (specify page number in name or choose it in dialog)
+- [ ] add a pop up after enabling Dark Mode for app to enable it for pdf as well

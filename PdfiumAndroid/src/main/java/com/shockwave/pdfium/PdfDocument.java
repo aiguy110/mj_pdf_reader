@@ -55,12 +55,16 @@ public class PdfDocument {
 
     public static class Bookmark {
         private List<Bookmark> children = new ArrayList<>();
-        String title;
-        long pageIdx;
-        long mNativePtr;
+        public String title;
+        public long pageIdx;
+        public long mNativePtr;
 
         public List<Bookmark> getChildren() {
             return children;
+        }
+
+        public void setChildren(List<Bookmark> newChildren) {
+            children.addAll(newChildren);
         }
 
         public boolean hasChildren() {

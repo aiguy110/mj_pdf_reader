@@ -51,10 +51,12 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.github.barteksc.pdfviewer.PDFView
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
@@ -65,7 +67,6 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
 import com.gitlab.mudlej.MjPdfReader.util.indexesOf
-import com.gitlab.mudlej.MjPdfReader.util.putEditTextInLinearLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.shockwave.pdfium.PdfDocument
@@ -212,6 +213,7 @@ fun showPartSizeDialog(activity: MainActivity, pref: Preferences) {
 fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
     // get bookmarks or set an appropriate message for the user
     var bookmarks = pdfView.tableOfContents.map { "${it.title} - P${it.pageIdx + 1}" }
+
     if (bookmarks.isEmpty()) bookmarks = listOf(activity.getString(R.string.no_bookmarks))
 
     // create and show the bookmarks dialog
@@ -234,12 +236,19 @@ fun showCopyPageTextDialog(pageNumber: Int, activity: MainActivity, pdf: PDF,
 
     var hasText = true
     // create a custom view to make the text selectable
+
     val pageTextView = TextView(activity)
     pageTextView.setPadding(30, 20, 30, 0)
     pageTextView.setTextIsSelectable(true)
-    pageTextView.textSize = 16f
+    pageTextView.textSize = 18f
     pageTextView.text = activity.getString(R.string.extracting_text_wait)
+    pageTextView.setTextColor(ContextCompat.getColor(activity, R.color.topBarBackgroundColor))
 
+    val scrollView = ScrollView(activity)
+    //scrollView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
+    //scrollView.scrollBarSize = 2
+
+    scrollView.addView(pageTextView)
     activity.lifecycleScope.launchWhenCreated {
         pdf.pagesText.observe(activity) { pdfPages ->
             val text = pdfPages.getOrElse(pageNumber) { "Loading text..." }
@@ -248,9 +257,9 @@ fun showCopyPageTextDialog(pageNumber: Int, activity: MainActivity, pdf: PDF,
         }
     }
     AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
-        .setView(pageTextView)
+        .setView(scrollView)
         .setTitle("${activity.getString(R.string.selectable_text)} " +
-                "#${pdf.pageNumber + 1} (${activity.getString(R.string.experimental)})")
+                "#${pdf.pageNumber + 1}")
         .setNegativeButton(activity.getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
         .also {
             // don't show copy option if there is no text

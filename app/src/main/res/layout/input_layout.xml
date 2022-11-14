@@ -6,14 +6,19 @@
     android:layout_marginHorizontal="20dp"
     android:paddingHorizontal="26dp"
     android:hint="@string/search_field"
-    app:boxBackgroundColor="@android:color/transparent"
     app:startIconDrawable="@drawable/ic_text"
-    app:startIconTint="@color/dark">
+    android:textColorHint="@color/darkGrey"
+    app:hintTextColor="@color/primaryColor"
+    app:startIconTint="@color/primaryColor"
+    app:boxBackgroundColor="@android:color/transparent"
+    app:color="@color/primaryColor"
+    >
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:inputType="text" />
+        android:inputType="text"
+        android:backgroundTint="@color/primaryColor"/>
 </com.google.android.material.textfield.TextInputLayout>
