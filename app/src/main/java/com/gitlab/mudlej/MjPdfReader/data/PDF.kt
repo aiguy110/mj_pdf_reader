@@ -84,6 +84,7 @@ class PDF(
         const val BOOKMARK_TEXT_SIZE = 24F
         const val BOOKMARK_TEXT_SIZE_DEC = 2F
         const val BOOKMARK_RESULT_OK = 48645
+        const val SCREENSHOT_IMAGE_QUALITY = 100
 
         // keys
         const val nameKey = "name"

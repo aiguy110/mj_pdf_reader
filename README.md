@@ -74,14 +74,14 @@ The following permissions are req   uired to provide specific features in the ap
 ## Coming in the next release MJ PDF Reader V1.5.0
 * Re-branded the app as 'MJ PDF'
 * New and better icon for the app
-* Added support for Hyperlinks.
-* Added a Table of Content page to show the full list of bookmarks (including nested ones).
-* Added an auto scroll feature in the Full Screen Mode (adjustable speed).
-* Added an option to see a list of all the links embedded in the file.
+* [Done] Added support for Hyperlinks.
+* [Done] Added a Table of Content page to show the full list of bookmarks (including nested ones).
+* [Done] Added an auto scroll feature in the Full Screen Mode (adjustable speed).
+* (probably no)Added an option to see a list of all the links embedded in the file.
 * Improved Search functionality
-* Fixed not being able to reset the zoom to a page-width level
-* (may be) Added a Full Screen button to lock horizontal scrolling?
-* (may be) Added a Full Screen button to take screenshots?
+* [Done] Fixed not being able to reset the zoom to a page-width level by double tapping
+* [Done] Added a Full Screen button to lock horizontal scrolling
+* [Done] Added a Full Screen button to take screenshots
 
 ## Things I would like to do for MJ PDF Reader
 [See todo](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/todo.md)

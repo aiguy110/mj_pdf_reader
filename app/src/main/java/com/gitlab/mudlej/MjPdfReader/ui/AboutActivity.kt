@@ -62,7 +62,6 @@ import com.franmontiel.attributionpresenter.entities.Attribution
 import com.franmontiel.attributionpresenter.entities.License
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityAboutBinding
-import java.util.*
 
 class AboutActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAboutBinding
@@ -166,7 +165,7 @@ class AboutActivity : AppCompatActivity() {
         try {
             startActivity(emailIntent(
                 email,
-                getString(com.gitlab.mudlej.MjPdfReader.R.string.app_name),
+                getString(com.gitlab.mudlej.MjPdfReader.R.string.mj_app_name),
                 APP_VERSION_RELEASE
             ))
         } catch (e: ActivityNotFoundException) {

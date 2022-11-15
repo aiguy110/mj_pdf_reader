@@ -84,7 +84,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val screenOnDefault = false
         const val hideDelayDefault = 6000
         const val spacingDefault = 10          // in dp
-        const val minZoomDefault = 0.5f
+        const val minZoomDefault = 1f //0.5f
         const val midZoomDefault = 2.0f
         const val maxZoomDefault = 5.0f
         const val partSizeDefault = 256f

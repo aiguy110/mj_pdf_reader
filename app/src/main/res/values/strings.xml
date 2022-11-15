@@ -38,7 +38,7 @@
     ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     ~ SOFTWARE.
 -->
-    <string name="app_name" translatable="false">MJ PDF Reader</string>
+    <string name="mj_app_name" translatable="false">MJ PDF Reader</string>
     <string name="pick_file">Pick File</string>
     <string name="toast_pick_file_error">Unable to pick file! Check your file manager on your phone.</string>
     <string name="toast_http_code_error">Remote server responded with an error.</string>
@@ -92,6 +92,7 @@
     <string name="git" translatable="false">Github</string>
     <string name="code">Source Code</string>
 
+    <string name="share">Share</string>
     <string name="share_file">Share File</string>
     <string name="print_file">Print File</string>
     <string name="full_screen">Full Screen</string>
@@ -207,6 +208,7 @@
     <string name="page">Page</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="no_bookmarks">This file doesn\'t contain bookmarks</string>
+    <string name="no_links">This file doesn\'t contain any embedded links</string>
     <string name="additional_options">More</string>
     <string name="text_mode_experimental">Text Mode (experimental)</string>
     <string name="text_mode_loading">Text Mode (try later, still loading…)</string>
@@ -233,7 +235,6 @@
     <string name="this_is_experimental_message">This feature of the app is still under development and is not stable or fully correct.</string>
     <string name="go_back">Go Back</string>
     <string name="selectable_text">Selectable Text of Page</string>
-    <!-- TODO: Remove this after solving the issu   -->
     <string name="could_not_text">Couldn\'t extract text from this page (center th page in the middle if you want another page then try again)</string>
     <string name="finished_extraction_title">Show Extraction Finished Message</string>
     <string name="finished_extraction_summary">Show a message when the app finishes extracting text from the PDF.</string>
@@ -259,5 +260,9 @@
     <string name="expand_or_collapse_bookmark">expand or collapse bookmark</string>
     <string name="table_of_contents">Table of Contents</string>
     <string name="extraction_dialog_message">Switching to another app or hiding it may restart the process. This - hopefully - will be solved and become faster in the next release.</string>
+    <string name="screenshot_saved">Screenshot saved successfully</string>
+    <string name="failed_save_screenshot">Couldn\'t save the screenshot!</string>
+    <string name="pdf_links">Links Embedded in the File</string>
+    <string name="links_in_file">Links in File</string>
 
 </resources>

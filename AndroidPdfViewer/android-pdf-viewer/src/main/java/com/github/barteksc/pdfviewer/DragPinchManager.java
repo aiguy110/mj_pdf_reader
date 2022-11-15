@@ -183,6 +183,8 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         scrolling = true;
         if (pdfView.isZooming() || pdfView.isSwipeEnabled()) {
+            if (pdfView.isHorizontalSwipeDisabled()) distanceX = 0;
+
             pdfView.moveRelativeTo(-distanceX, -distanceY);
         }
         if (!scaling || pdfView.doRenderDuringScale()) {
@@ -209,6 +211,9 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         if (!pdfView.isSwipeEnabled()) {
             return false;
         }
+        if (pdfView.isHorizontalSwipeDisabled()) velocityX = 0;
+        //if (pdfView.isVerticalSwipeDisabled()) velocityX = 0;
+
         if (pdfView.isPageFlingEnabled()) {
             if (pdfView.pageFillsScreen()) {
                 onBoundedFling(velocityX, velocityY);

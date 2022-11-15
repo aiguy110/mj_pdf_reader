@@ -15,7 +15,6 @@
  */
 package com.github.barteksc.pdfviewer;
 
-import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -179,10 +178,12 @@ public class PDFView extends RelativeLayout {
 
     private int defaultPage = 0;
 
-    /** True if should scroll through pages vertically instead of horizontally */
+    /* True if should scroll through pages vertically instead of horizontally */
     private boolean swipeVertical = true;
 
     private boolean enableSwipe = true;
+
+    private boolean horizontalSwipeDisabled = false;
 
     private boolean doubletapEnabled = true;
 
@@ -391,6 +392,10 @@ public class PDFView extends RelativeLayout {
 
     public void setSwipeEnabled(boolean enableSwipe) {
         this.enableSwipe = enableSwipe;
+    }
+
+    public void setHorizontalSwipeDisabled(boolean horizontalSwipeDisabled) {
+        this.horizontalSwipeDisabled = horizontalSwipeDisabled;
     }
 
     public void setNightMode(boolean nightMode) {
@@ -1245,6 +1250,10 @@ public class PDFView extends RelativeLayout {
         return enableSwipe;
     }
 
+    public boolean isHorizontalSwipeDisabled() {
+        return horizontalSwipeDisabled;
+    }
+
     private void setSwipeVertical(boolean swipeVertical) {
         this.swipeVertical = swipeVertical;
     }
@@ -1389,6 +1398,8 @@ public class PDFView extends RelativeLayout {
 
         private boolean enableSwipe = true;
 
+        private boolean horizontalSwipeDisabled = false;
+
         private boolean enableDoubletap = true;
 
         private OnDrawListener onDrawListener;
@@ -1452,6 +1463,11 @@ public class PDFView extends RelativeLayout {
 
         public Configurator enableSwipe(boolean enableSwipe) {
             this.enableSwipe = enableSwipe;
+            return this;
+        }
+
+        public Configurator disableHorizontalSwipe(boolean disableHorizontalSwipe) {
+            this.horizontalSwipeDisabled = disableHorizontalSwipe;
             return this;
         }
 
@@ -1608,6 +1624,7 @@ public class PDFView extends RelativeLayout {
             PDFView.this.callbacks.setOnPageError(onPageErrorListener);
             PDFView.this.callbacks.setLinkHandler(linkHandler);
             PDFView.this.setSwipeEnabled(enableSwipe);
+            PDFView.this.setHorizontalSwipeDisabled(horizontalSwipeDisabled);
             PDFView.this.setNightMode(nightMode);
             PDFView.this.enableDoubletap(enableDoubletap);
             PDFView.this.setDefaultPage(defaultPage);

@@ -69,22 +69,23 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/goToPageOption"
+        android:id="@+id/bookmarksListOption"
         android:orderInCategory="5"
+        android:title="@string/table_of_contents"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/goToPageOption"
+        android:orderInCategory="6"
         android:title="@string/go_to_page"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/bookmarksListOption"
-        android:orderInCategory="6"
-        android:title="@string/bookmarks"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/searchOption"
+        android:id="@+id/linksListOption"
         android:orderInCategory="7"
-        android:title="@string/search"
-        app:showAsAction="never" />
+        android:title="@string/links_in_file"
+        app:showAsAction="never"
+        android:visible="false"/>
 
     <item
         android:id="@+id/shareFileOption"
@@ -99,9 +100,15 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/searchOption"
+        android:orderInCategory="10"
+        android:title="@string/search"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/additionalOptionsOption"
         android:title="@string/additional_options"
-        android:orderInCategory="10"
+        android:orderInCategory="11"
         app:showAsAction="never"  />
 
 </menu>

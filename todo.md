@@ -1,22 +1,18 @@
 ## TODO
-- [ ] try to allow rendering while scale
-- [ ] fix not saving the last page you visited when navigating for some time in the Full Screen Mode.
+- [ ] fix not saving the last page you visited when navigating for some time in the Full Screen Mode. 
 - [ ] Fix app's icon ratio
 - [ ] add an option to lock horizontal swipe
-- [ ] Add a home page with three tabs (PDFs folders, Recent, Favorite)
+- [ ] Add a home activity with multiple pages (PDFs folders, Recent, Favorite, want to read, finished)
+- [ ] Items in each page has an info card similar to that in Sebaq.
 - [ ] Adding highlight functionality.
-- [ ] Add links list dialog.
 - [ ] fix search for a sentence across pages
 - [ ] Add search in bookmarks activity
 - [ ] Add expand / collapse all in bookmarks activity
 - [ ] make getting all the bookmarks done in the background
 - [ ] add toggle to show a bottom bar
-- [ ] change bookmarks to table of contents
 - [ ] add an option to export saved reading progress
 - [ ] make Full Screen Mode utilize 100% of the screen. (even around the notch)
-- [ ] double tap should reset zoom to page-width zoom
-- [x] Add textView in the auto-scroll option in Full Screen Mode.
-
+- [ ] clicking on autoscroll speed textView shows a dialog to enter it manually
 
 ## DONE
 - [x] activate appDarkTheme in MainActivity
@@ -51,7 +47,10 @@
 - [x] Adding the ability to click on hyperlinks.
 - [x] only shows me the top level bookmarks and not the nested ones
 - [x] fix dialogs theme in dark mode
-
+- [x] Add textView near the auto-scroll option to see the speed.
+- [x] double tapping should reset zoom to page-width zoom
+- [x] change bookmarks to table of contents
+- 
 ## IGNORED
 - [ ] adding a fullscreen button to restore default zoom
 - [ ] elaborate the saving error message and suggest storage permission
@@ -61,3 +60,5 @@
 - [ ] add a 'go to page' like Librera's
 - [ ] make copy page's text option in action bar more powerful (specify page number in name or choose it in dialog)
 - [ ] add a pop up after enabling Dark Mode for app to enable it for pdf as well
+- [ ] try to allow rendering while scale
+- [ ] Add links list dialog.

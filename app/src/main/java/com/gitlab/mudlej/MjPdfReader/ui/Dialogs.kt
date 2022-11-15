@@ -77,7 +77,7 @@ private const val TAG = "Dialogs"
 fun showAppFeaturesDialog(context: Context) {
     val end = "\n\n"
     AlertDialog.Builder(context, R.style.MJDialogThemeLight)
-        .setTitle("${context.resources.getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} Features")
+        .setTitle("${context.resources.getString(R.string.mj_app_name)} ${BuildConfig.VERSION_NAME} Features")
         .setMessage(
             "* Fast & smooth experience." + end +
             "* Minimalist & simple user interface." + end +
@@ -224,6 +224,47 @@ fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
 
             val page = pdfView.tableOfContents[which].pageIdx
             pdfView.jumpTo(page.toInt())
+            dialog.dismiss()
+        }
+        .show()
+}
+
+fun showLinksDialog(activity: MainActivity, pdfView: PDFView, pdf: PDF) {
+    val originalPageNumber = pdf.pageNumber
+    val links = mutableListOf<PdfDocument.Link?>()
+    // This is not working because getLinks(i) can only
+    // see links in pages the pdfView visited and stayed there for a bit
+    for (i in 0..pdf.length) {
+        pdfView.jumpTo(i)
+        pdfView.loadPages()
+    }
+    for (i in 0..pdf.length) {
+        //pdfView.jumpTo(i)
+        Log.d(TAG, "showLinksDialog: pdfView.getLinks($i).size.: ${pdfView.getLinks(i)?.size}")
+        pdfView.getLinks(i)?.let {
+            it.forEach { link -> if (link.uri != null) links.add(link)}
+        }
+    }
+
+    pdfView.jumpTo(originalPageNumber)
+    Log.d(TAG, "showLinksDialog: links.size: ${links.size}")
+    var linksLabels = links.map {
+        // e.g. Page 48: (NOT USED NOW)
+        //      https://ww.startpage.com/
+        //"${activity.getString(R.string.page)} ${it?.destPageIdx?.plus(1)}:\n${it?.uri}"
+        it?.uri.toString()
+    }
+
+    if (linksLabels.isEmpty()) linksLabels = listOf(activity.getString(R.string.no_links))
+
+    // create and show the bookmarks dialog
+    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
+        .setTitle(activity.getString(R.string.pdf_links) + "(${links.size})")
+        .setItems(linksLabels.toTypedArray()) { dialog, which ->
+            if (links.isEmpty()) return@setItems
+
+            val page = links[which]?.destPageIdx ?: return@setItems
+            pdfView.jumpTo(page)
             dialog.dismiss()
         }
         .show()

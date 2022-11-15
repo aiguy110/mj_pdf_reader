@@ -50,12 +50,16 @@ import android.content.*
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.AssetFileDescriptor
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.*
 import android.print.PrintManager
+import android.provider.MediaStore
 import android.provider.Settings
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -66,6 +70,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import androidx.core.view.*
 import androidx.lifecycle.lifecycleScope
@@ -88,13 +93,14 @@ import com.shockwave.pdfium.PdfPasswordException
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.FileNotFoundException
-import java.io.IOException
+import java.io.*
+import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 import kotlin.system.exitProcess
+
 
 class MainActivity : AppCompatActivity() {
     enum class AdditionalOptions{ APP_SETTINGS, TEXT_MODE, METADATA, ADVANCED_CONFIG, ABOUT }
@@ -144,7 +150,7 @@ class MainActivity : AppCompatActivity() {
 
         displayFromUri(pdf.uri)
         setButtonsFunctionalities()
-        showAppFeaturesDialogOnFirstRun()
+        //showAppFeaturesDialogOnFirstRun()
     }
 
     private fun setCustomActionBar() {
@@ -269,8 +275,9 @@ class MainActivity : AppCompatActivity() {
             .nightMode(pref.getPdfDarkTheme())
             .load()
 
+        
         // hide page scroll handle if the pdf consists of only one page
-        // it needs to be delayed so pdf.length is set
+        // it needs to be delayed so pdf.length is set after the pdf is fully loaded
         Handler(mainLooper).postDelayed({
             if (pdf.length == 1)
                 binding.pdfView.scrollHandle?.permanentHide()
@@ -278,7 +285,7 @@ class MainActivity : AppCompatActivity() {
 
         // Show the page scroll handler for 3 seconds when the pdf is loaded then hide it.
         pdfView.performTap()
-        tappingHandler.postDelayed({ hideButtonsAndHandle(pdfView.scrollHandle) },
+        tappingHandler.postDelayed({ hideButtonsAndHandle() },
             pref.getHideDelay().toLong())
     }
 
@@ -388,7 +395,7 @@ class MainActivity : AppCompatActivity() {
                 // this is because PORTRAIT / LANDSCAPE modes will lock the app in them
                 toggleFullscreen(false)
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-                hideButtonsAndHandle(null)
+                hideButtonsAndHandle()
 
                 // this WON'T give the brightness control back to the system. (that was not a good idea)
                 // val brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS)
@@ -416,12 +423,14 @@ class MainActivity : AppCompatActivity() {
                     decreaseScrollSpeedButton.visibility = View.GONE
                     reverseAutoScrollButton.visibility = View.GONE
                     toggleAutoScrollButton.visibility = View.GONE
+                    autoScrollSpeedText.visibility = View.GONE
                 }
                 else {
                     increaseScrollSpeedButton.visibility = View.VISIBLE
                     decreaseScrollSpeedButton.visibility = View.VISIBLE
                     reverseAutoScrollButton.visibility = View.VISIBLE
                     toggleAutoScrollButton.visibility = View.VISIBLE
+                    autoScrollSpeedText.visibility = View.VISIBLE
                 }
             }
 
@@ -441,19 +450,44 @@ class MainActivity : AppCompatActivity() {
             })
             pickFile.setOnClickListener { pickFile() }
 
-            var isAutoScrolling = false
-            val delay = 1L
-            val interval = 0.5
-            var scrollBy = -interval
+            // --------- Auto Scrolling
             val scrollingHandler = Handler(mainLooper)
 
+            var isAutoScrolling = false
+            val delay = 1L
+            val interval = 0.25
+            var scrollBy = -interval * 3
+
+            autoScrollSpeedText.text = formatSpeed(scrollBy)
+
             increaseScrollSpeedButton.setOnClickListener {
-                    scrollBy = (scrollBy.absoluteValue + interval) *  scrollBy.sign
+                scrollBy = changeScrollingSpeed(scrollBy, interval, isIncreasing = true)
             }
             decreaseScrollSpeedButton.setOnClickListener {
                 if (scrollBy.absoluteValue > interval)
-                    scrollBy = (scrollBy.absoluteValue - interval) *  scrollBy.sign
+                    scrollBy = changeScrollingSpeed(scrollBy, interval, isIncreasing = false)
             }
+            // check this out: https://stackoverflow.com/questions/7938516/continuously-increase-integer-value-as-the-button-is-pressed
+            val handler = Handler(mainLooper)
+            lateinit var runnable: Runnable
+            val DELAY = 100L
+
+            fun createUpdatingSpeedRunnable(isIncreasing: Boolean): Boolean {
+                runnable = Runnable {
+                    if (!increaseScrollSpeedButton.isPressed && !decreaseScrollSpeedButton.isPressed) {
+                        return@Runnable
+                    }
+
+                    scrollBy = changeScrollingSpeed(scrollBy, interval, isIncreasing)
+                    handler.postDelayed(runnable, DELAY)
+                }
+                handler.postDelayed(runnable, DELAY)
+                return true
+            }
+
+            increaseScrollSpeedButton.setOnLongClickListener { createUpdatingSpeedRunnable(isIncreasing = true) }
+            decreaseScrollSpeedButton.setOnLongClickListener { createUpdatingSpeedRunnable(isIncreasing = false) }
+
             reverseAutoScrollButton.setOnClickListener { scrollBy = -scrollBy }
 
             toggleAutoScrollButton.setOnClickListener {
@@ -481,7 +515,41 @@ class MainActivity : AppCompatActivity() {
                 }
                 scroll()
             }
+            screenshotButton.setOnClickListener {
+                takeScreenshot()
+            }
+
+            // --------- horizontal swipe lock
+            toggleHorizontalSwipeButton.setOnClickListener {
+                if (pdfView.isHorizontalSwipeDisabled) {
+                    toggleHorizontalSwipeImage.setImageResource(R.drawable.ic_horizontal_swipe_locked)
+                    pdfView.isHorizontalSwipeDisabled = false
+                }
+                else {
+                    toggleHorizontalSwipeImage.setImageResource(R.drawable.horizontal_swipe_unlocked)
+                    pdfView.isHorizontalSwipeDisabled = true
+                }
+            }
         }
+    }
+    private fun formatSpeed(scrollBy: Double) = (scrollBy.absoluteValue * 4).toInt().toString()
+
+    private fun changeScrollingSpeed(scrollBy: Double, interval: Double, isIncreasing: Boolean): Double {
+
+        val newSpeed = if (isIncreasing) {
+            (scrollBy.absoluteValue + interval) * scrollBy.sign
+        }
+        else {
+            if (scrollBy.absoluteValue > interval) {
+                (scrollBy.absoluteValue - interval) * scrollBy.sign
+            }
+            else {
+                scrollBy
+            }
+        }
+
+        autoScrollSpeedText.text = formatSpeed(newSpeed)
+        return newSpeed
     }
 
     private fun updateBrightness(brightness: Int) {
@@ -537,10 +605,17 @@ class MainActivity : AppCompatActivity() {
             DrawableCompat.wrap(binding.autoScrollButton.drawable),
             ContextCompat.getColor(this, color)
         )
+        DrawableCompat.setTint(
+            DrawableCompat.wrap(binding.screenshotImage.drawable),
+            ContextCompat.getColor(this, color)
+        )
+        DrawableCompat.setTint(
+            DrawableCompat.wrap(binding.toggleHorizontalSwipeImage.drawable),
+            ContextCompat.getColor(this, color)
+        )
     }
 
-    private fun shareFile() {
-        val uri = pdf.uri
+    private fun shareFile(uri: Uri?, type: FileType) {
         if (uri == null) {
             checkHasFile()  // only to show the message
             return
@@ -548,8 +623,11 @@ class MainActivity : AppCompatActivity() {
         val sharingIntent: Intent = 
             if (uri.scheme != null && uri.scheme!!.startsWith("http"))
                 plainTextShareIntent(getString(R.string.share_file), pdf.uri.toString())
-            else 
+            else if (type == FileType.PDF)
                 fileShareIntent(getString(R.string.share_file), pdf.name, uri)
+            else if (type == FileType.IMAGE)
+                imageShareIntent(getString(R.string.share_file), pdf.name, uri)
+            else return
         
         startActivity(sharingIntent)
     }
@@ -581,15 +659,12 @@ class MainActivity : AppCompatActivity() {
         Log.e(TAG, message)
     }
 
-    private fun hideButtonsAndHandle(handle: ScrollHandle?) {
+    private fun hideButtonsAndHandle() {
         // stop any previous timer to hide them
         tappingHandler.removeCallbacksAndMessages(null)
 
-        handle?.customHide()
-        binding.exitFullScreenButton.visibility = View.INVISIBLE
-        binding.rotateScreenButton.visibility = View.INVISIBLE
-        binding.brightnessButtonLayout.visibility = View.INVISIBLE
-        binding.autoScrollLayout.visibility = View.INVISIBLE
+        binding.pdfView.scrollHandle?.customHide()
+        changeFullScreenButtonsVisibility(false)
     }
 
     private fun showFullScreenButtons() = changeFullScreenButtonsVisibility(true)
@@ -600,9 +675,9 @@ class MainActivity : AppCompatActivity() {
         binding.exitFullScreenButton.visibility = visibility
         binding.rotateScreenButton.visibility = visibility
         binding.brightnessButtonLayout.visibility = visibility
-
-        // TODO: coming in the next release
-        //binding.autoScrollLayout.visibility = visibility
+        binding.autoScrollLayout.visibility = visibility
+        binding.screenshotButton.visibility = visibility
+        binding.toggleHorizontalSwipeButton.visibility = visibility
     }
 
     private fun toggleScrollAndButtonsVisibility(): Boolean {
@@ -633,7 +708,7 @@ class MainActivity : AppCompatActivity() {
             showFullScreenButtons()
         }
         else {
-            hideButtonsAndHandle(handle)
+            hideButtonsAndHandle()
         }
         return true
     }
@@ -641,20 +716,10 @@ class MainActivity : AppCompatActivity() {
     private fun toggleButtonsVisibility() {
         if (!pdf.isFullScreenToggled) return
 
-        val exitButton = binding.exitFullScreenButton
-        val rotateButton = binding.rotateScreenButton
-        val brightnessButton = binding.brightnessButtonLayout
-
-        if (exitButton.visibility == View.VISIBLE) {
-            exitButton.visibility = View.INVISIBLE
-            rotateButton.visibility = View.INVISIBLE
-            brightnessButton.visibility = View.INVISIBLE
-        }
-        else {
-            exitButton.visibility = View.VISIBLE
-            rotateButton.visibility = View.VISIBLE
-            brightnessButton.visibility = View.VISIBLE
-        }
+        if (binding.exitFullScreenButton.visibility == View.VISIBLE)
+            changeFullScreenButtonsVisibility(false)
+        else
+            changeFullScreenButtonsVisibility(true)
     }
 
     private fun handleFileOpeningError(exception: Throwable) {
@@ -867,8 +932,9 @@ class MainActivity : AppCompatActivity() {
             R.id.copyPageText -> copyPageText(true)
             R.id.goToPageOption -> goToPage()
             R.id.bookmarksListOption -> showBookmarks()
+            //R.id.linksListOption -> showLinks()
             R.id.searchOption -> extractAllPagesText()
-            R.id.shareFileOption -> shareFile()
+            R.id.shareFileOption -> shareFile(pdf.uri, FileType.PDF)
             R.id.printFileOption -> printFile()
             R.id.additionalOptionsOption -> showAdditionalOptions()
             else -> return super.onOptionsItemSelected(item)
@@ -876,10 +942,12 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    private fun showLinks() {
+        showLinksDialog(this, binding.pdfView, pdf)
+    }
+
     private fun showBookmarks() {
-        showBookmarksDialog(this, binding.pdfView)
-        return
-        // Coming in the next release
+        binding.progressBar.visibility = View.VISIBLE
         Intent(this, BookmarksActivity::class.java).also { intent ->
             val bookmarks = pdfView.tableOfContents.map { bookmark -> Bookmark(bookmark, level = 0) }
             intent.putExtra(PDF.pdfBookmarksKey, Gson().toJson(bookmarks))
@@ -995,6 +1063,61 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun screenShot(view: View): Bitmap? {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
+    }
+
+    private fun takeScreenshot() {
+        val now = DateFormat.format("yyyy-MM-dd_hh:mm:ss", Date())
+        try {
+            val fileName = "${pdf.name.removeSuffix(".pdf")} - ${now}.jpg"
+            val imageFile = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName)
+
+            hideButtonsAndHandle()
+            val bitmap = screenShot(binding.pdfView) ?: return
+
+            val outputStream = FileOutputStream(imageFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, PDF.SCREENSHOT_IMAGE_QUALITY, outputStream)
+            outputStream.flush()
+            outputStream.close()
+
+            val uri = saveImage(bitmap, fileName)
+            Snackbar.make(binding.root, getString(R.string.screenshot_saved), Snackbar.LENGTH_SHORT).also {
+                it.setAction(getString(R.string.share)) { shareFile(uri, FileType.IMAGE) }
+                it.show()
+            }
+        } catch (e: Throwable) {
+            // Several error may come out with file handling or DOM
+            Toast.makeText(this, getString(R.string.failed_save_screenshot), Toast.LENGTH_LONG).show()
+            e.printStackTrace()
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun saveImage(bitmap: Bitmap, fileName: String): Uri? {
+        val (fileOutputStream: OutputStream?, imageUri: Uri?) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val contentValues = ContentValues()
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/*")
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES
+                    + "/${getString(R.string.mj_app_name)}/")   // e.g. ~/Pictures/app_name/screenshot1.jpg
+
+            val imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            Pair(imageUri?.let { contentResolver.openOutputStream(it) }, imageUri)
+        }
+        else {
+            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()
+            val image = File(imagesDir, fileName)
+            Pair(FileOutputStream(image), image.toUri())
+        }
+        bitmap.compress(Bitmap.CompressFormat.JPEG, PDF.SCREENSHOT_IMAGE_QUALITY, fileOutputStream)
+        fileOutputStream?.close()
+        return imageUri
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(PDF.uriKey, pdf.uri)
         outState.putInt(PDF.pageNumberKey, pdf.pageNumber)
@@ -1016,6 +1139,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        binding.progressBar.visibility = View.GONE
         when (requestCode) {
             PDF.startBookmarksActivity -> {
                 if (resultCode == PDF.BOOKMARK_RESULT_OK) {
@@ -1043,6 +1167,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
+
+enum class FileType { IMAGE, PDF }
 
 
 /*

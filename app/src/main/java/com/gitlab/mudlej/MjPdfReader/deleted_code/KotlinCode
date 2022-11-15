@@ -106,7 +106,6 @@ class Bookmark(bookmark:PdfDocument.Bookmark, val level: Int) : PdfDocument.Book
     }
 
     override fun describeContents(): Int {
-        TODO("Not yet implemented")
     }
 
     override fun writeToParcel(destination: Parcel, p1: Int) {

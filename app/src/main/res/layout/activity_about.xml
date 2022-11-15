@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="32dp"
-                android:text="@string/app_name"
+                android:text="@string/mj_app_name"
                 android:fontFamily="@font/roboto_medium"
                 android:textAllCaps="false"
                 android:textSize="26sp" />

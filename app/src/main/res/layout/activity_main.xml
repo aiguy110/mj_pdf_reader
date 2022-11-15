@@ -229,21 +229,63 @@
                 android:visibility="invisible"
                 />
 
-<!--            <TextView-->
-<!--                android:id="@+id/autoScrollSpeed"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_gravity="center_vertical"-->
-<!--                android:padding="4dp"-->
-<!--                android:layout_marginStart="8dp"-->
-<!--                android:textColor="@color/topBarBackgroundColor"-->
-<!--                android:background="@drawable/seekbar_background"-->
-<!--                android:text="35%"-->
-<!--                android:textSize="20sp"-->
-<!--                android:textStyle="bold"-->
-<!--                android:visibility="invisible"-->
-<!--                />-->
+            <TextView
+                android:id="@+id/autoScrollSpeedText"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:textColor="@color/topBarBackgroundColor"
+                android:background="@drawable/seekbar_background"
+                tools:text="1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:visibility="invisible"
+                />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/toggleHorizontalSwipeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/toggleHorizontalSwipeImage"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="2dp"
+                android:src="@drawable/ic_horizontal_swipe_locked"
+                android:background="@drawable/button_background"
+                android:shadowColor="#ffffff"
+                android:shadowDx="1.5"
+                android:shadowDy="1.5"
+                android:shadowRadius="3" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/screenshotButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/screenshotImage"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="2dp"
+                android:src="@drawable/ic_screenshot"
+                android:background="@drawable/button_background"
+                android:shadowColor="#ffffff"
+                android:shadowDx="1.5"
+                android:shadowDy="1.5"
+                android:shadowRadius="3"
+                android:contentDescription="@string/rotate_screen" />
         </LinearLayout>
     </LinearLayout>
 

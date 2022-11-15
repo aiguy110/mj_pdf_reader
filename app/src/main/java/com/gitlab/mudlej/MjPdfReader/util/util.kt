@@ -44,6 +44,7 @@
 package com.gitlab.mudlej.MjPdfReader.util
 
 import android.Manifest
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -53,14 +54,13 @@ import android.net.Uri
 import android.os.Build
 import android.provider.OpenableColumns
 import android.text.InputType
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
@@ -72,6 +72,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import kotlin.math.min
+
 
 fun openSelectedDocument(activity: MainActivity, pdf: PDF, selectedDocumentUri: Uri?) {
     if (selectedDocumentUri == null) return
@@ -150,6 +151,14 @@ fun fileShareIntent(chooserTitle: String, fileName: String, fileUri: Uri): Inten
     intent.type = "application/pdf"
     intent.putExtra(Intent.EXTRA_STREAM, fileUri)
     intent.clipData = ClipData(fileName, arrayOf("application/pdf"), ClipData.Item(fileUri))
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    return Intent.createChooser(intent, chooserTitle)
+}
+fun imageShareIntent(chooserTitle: String, fileName: String, fileUri: Uri): Intent {
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.type = "image/*"
+    intent.putExtra(Intent.EXTRA_STREAM, fileUri)
+    intent.clipData = ClipData(fileName, arrayOf("image/*"), ClipData.Item(fileUri))
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     return Intent.createChooser(intent, chooserTitle)
 }
@@ -236,3 +245,12 @@ val File.sizeInKb get() = size / 1024
 val File.sizeInMb get() = sizeInKb / 1024
 val File.sizeInGb get() = sizeInMb / 1024
 val File.sizeInTb get() = sizeInGb / 1024
+
+
+private fun openScreenshot(activity: Activity, imageFile: File) {
+    val intent = Intent()
+    intent.action = Intent.ACTION_VIEW
+    val uri = Uri.fromFile(imageFile)
+    intent.setDataAndType(uri, "image/*")
+    activity.startActivity(intent)
+}
