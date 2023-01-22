@@ -125,7 +125,8 @@ class MainActivity : AppCompatActivity() {
         Launcher(this, pdf).settings(::displayFromUri)
     )
 
-    private lateinit var activityTitleTextView: TextView
+    private lateinit var appTitle: TextView
+    private lateinit var appTitlePageNumber: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "-----------onCreate: ${pdf.name} ")
@@ -168,17 +169,22 @@ class MainActivity : AppCompatActivity() {
         actionBar?.setDisplayShowCustomEnabled(true)
 
         val customView: View = layoutInflater.inflate(R.layout.actionbar_title, null)
-        activityTitleTextView = customView.findViewById(R.id.actionbarTitle)
+        appTitlePageNumber = customView.findViewById(R.id.actionbarPageNumber)
+        appTitle = customView.findViewById(R.id.actionbarTitle)
 
         // Change the font family (optional)
-        activityTitleTextView.setTypeface(Typeface.SERIF)
+        appTitle.setTypeface(Typeface.SERIF)
+        appTitlePageNumber.setTypeface(Typeface.SERIF)
 
-        activityTitleTextView.setOnClickListener {
+        fun titleClickListener() {
             val title = pdf.getTitle()
-            if (title.isNotEmpty()) {
+            if (title.isNotBlank()) {
                 Toast.makeText(this, title, Toast.LENGTH_LONG).show()
             }
         }
+        appTitle.setOnClickListener { titleClickListener() }
+        appTitlePageNumber.setOnClickListener { titleClickListener() }
+
         // Apply the custom view
         actionBar?.customView = customView
     }
@@ -209,8 +215,8 @@ class MainActivity : AppCompatActivity() {
         if (uri == null) return
 
         pdf.name = getFileName(this, uri)
-        //pdf.sizeInMb = getSizeInMb(uri)       // shouldn't be needed anymore
-        activityTitleTextView.text = pdf.getTitle()
+        updateAppTitle()
+        pdf.resetLength()
 
         setTaskDescription(ActivityManager.TaskDescription(pdf.name))
         val scheme = uri.scheme
@@ -222,6 +228,10 @@ class MainActivity : AppCompatActivity() {
             // start extracting text in the background
             //if (!pdf.isExtractingTextFinished) extractPdfText()
         }
+    }
+
+    private fun updateAppTitle() {
+        appTitle.text = pdf.getTitleWithPageNumber()
     }
 
     private fun getSizeInMb(uri: Uri): Double {
@@ -356,7 +366,7 @@ class MainActivity : AppCompatActivity() {
         if (indexesToExtract.isNotEmpty()) {
             //val progressBar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
             val progressBarLayout = LayoutInflater.from(this).inflate(R.layout.extracting_data_layout, null) as ConstraintLayout
-            val progressBar = progressBarLayout.get(0) as ProgressBar
+            val progressBar = progressBarLayout[0] as ProgressBar
 
             progressBar.max = pdf.length
             val title = getString(R.string.extracting_text_title)
@@ -544,7 +554,6 @@ class MainActivity : AppCompatActivity() {
     private fun formatSpeed(scrollBy: Double) = (scrollBy.absoluteValue * 4).toInt().toString()
 
     private fun changeScrollingSpeed(scrollBy: Double, interval: Double, isIncreasing: Boolean): Double {
-
         val newSpeed = if (isIncreasing) {
             (scrollBy.absoluteValue + interval) * scrollBy.sign
         }
@@ -854,14 +863,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setCurrentPage(pageNumber: Int, pageCount: Int) {
-        pdf.pageNumber = pageNumber             // I think this may need to be incremented
-        pdf.setPageCount(pageCount)
-        //title = pdf.getTitle()
-        activityTitleTextView.text = pdf.getTitle()
+        pdf.pageNumber = pageNumber
+        pdf.initPdfLength(pageCount)
+        updateAppTitle()
 
-        val hash = pdf.fileHash              // Don't want fileContentHash to change out from under us
-        if (hash != null) executor.execute {    // off UI thread
-            database.savedLocationDao().insert(SavedLocation(hash, pdf.pageNumber))
+        val hash = pdf.fileHash ?: return              // Don't want fileContentHash to change out from under us
+        executor.execute {    // off UI thread
+            database.savedLocationDao().insert(SavedLocation(hash, pageNumber))
         }
     }
 

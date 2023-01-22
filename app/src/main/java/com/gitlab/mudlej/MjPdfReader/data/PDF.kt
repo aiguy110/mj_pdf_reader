@@ -85,6 +85,7 @@ class PDF(
         const val BOOKMARK_TEXT_SIZE_DEC = 2F
         const val BOOKMARK_RESULT_OK = 48645
         const val SCREENSHOT_IMAGE_QUALITY = 100
+        const val RESET_NUMBER = -1
 
         // keys
         const val nameKey = "name"
@@ -101,13 +102,17 @@ class PDF(
         const val startBookmarksActivity = 84418
     }
 
+    fun getTitleWithPageNumber(): String {
+        return "${getPageCounterText()} ${getTitle()}";
+    }
+
     fun getTitle(): String {
         // get .pdf start index (the dot)
-        val extensionIndex: Int =
-            if (name.lastIndexOf('.') == -1) name.length else name.lastIndexOf('.')
-
-        return String.format(
-            "[%s/%s] %s", pageNumber + 1, length, name.substring(0, extensionIndex))
+        val extensionIndex: Int = if (name.lastIndexOf('.') == -1) name.length else name.lastIndexOf('.')
+        return name.substring(0, extensionIndex)
+    }
+    fun getPageCounterText(): String {
+        return String.format("[%s/%s]", pageNumber + 1, length)
     }
 
     fun togglePortrait() { isPortrait = !isPortrait }
@@ -118,4 +123,16 @@ class PDF(
     }
 
     fun hasFile() = uri != null
+
+    fun resetLength() {
+        length = RESET_NUMBER
+    }
+
+    fun isPdfLengthInitialized() = length == RESET_NUMBER
+
+    fun initPdfLength(pageCount: Int) {
+        if (length == RESET_NUMBER) {
+            length = pageCount
+        }
+    }
 }
