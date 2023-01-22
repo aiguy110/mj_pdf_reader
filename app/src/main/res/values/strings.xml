@@ -264,5 +264,6 @@
     <string name="failed_save_screenshot">Couldn\'t save the screenshot!</string>
     <string name="pdf_links">Links Embedded in the File</string>
     <string name="links_in_file">Links in File</string>
+    <string name="page_number">[0/0]</string>
 
 </resources>
