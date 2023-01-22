@@ -867,8 +867,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun printFile() {
         if (checkHasFile()) {
-            val mgr = getSystemService(Context.PRINT_SERVICE) as PrintManager
-            mgr.print(pdf.name, PdfDocumentAdapter(this, pdf.uri), null)
+            val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
+            printManager.print(pdf.name, PdfDocumentAdapter(this, pdf.uri), null)
         }
     }
 

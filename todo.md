@@ -1,5 +1,14 @@
 ## TODO
-- [ ] fix not saving the last page you visited when navigating for some time in the Full Screen Mode. 
+
+### Urgent
+- [ ] Fix not saving the last page you visited when navigating for some time in the Full Screen Mode.
+- [ ] Prevent hiding the Full Screen Buttons when the user is interacting with them
+- [ ] Fix Horizontal Lock color in dark theme
+- [x] (dev) Move the unresolved errors out of the MainActivity
+- [ ] Use PDFium for search the text of the PDF.
+- [ ] Prevent crashing when opening large files for a long time. (400MB+, 30M+)
+
+### Not Urgent
 - [ ] Fix app's icon ratio
 - [ ] add an option to lock horizontal swipe
 - [ ] Add a home activity with multiple pages (PDFs folders, Recent, Favorite, want to read, finished)
