@@ -534,9 +534,10 @@ class MainActivity : AppCompatActivity() {
                     pdfView.isHorizontalSwipeDisabled = false
                 }
                 else {
-                    toggleHorizontalSwipeImage.setImageResource(R.drawable.horizontal_swipe_unlocked)
+                    toggleHorizontalSwipeImage.setImageResource(R.drawable.ic_allow_horizontal_swipe)
                     pdfView.isHorizontalSwipeDisabled = true
                 }
+                fixButtonsColor()
             }
         }
     }
