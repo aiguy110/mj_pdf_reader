@@ -73,7 +73,7 @@ The following permissions are req   uired to provide specific features in the ap
 
 ## Coming in the next release MJ PDF Reader V1.5.0
 * Re-branded the app as 'MJ Reader'
-* New and better icon for the app
+* New icon for the app
 * [Done] Added support for Hyperlinks.
 * [Done] Added a Table of Content page to show the full list of bookmarks (including nested ones).
 * [Done] Added an auto scroll feature in the Full Screen Mode (adjustable speed).
