@@ -218,3 +218,21 @@ class Bookmark(bookmark:PdfDocument.Bookmark, val level: Int) : PdfDocument.Book
         WindowInsetsControllerCompat(window, binding.root).show(WindowInsetsCompat.Type.systemBars())
 //        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
     }
+
+// ----------
+
+
+    private fun getSizeInMb(uri: Uri): Double {
+        var fileDescriptor: AssetFileDescriptor? = null
+        try {
+            fileDescriptor = applicationContext.contentResolver.openAssetFileDescriptor(uri, "r")
+        }
+        catch (e: FileNotFoundException) {
+            Log.e(TAG, "getSizeInMb: ${e.message}")
+        }
+        val fileSizeInBytes: Long = fileDescriptor?.length ?: 50
+        return fileSizeInBytes.toDouble() / (1024 * 1024)
+    }
+
+
+// ---------

@@ -128,8 +128,6 @@ class PDF(
         length = RESET_NUMBER
     }
 
-    fun isPdfLengthInitialized() = length == RESET_NUMBER
-
     fun initPdfLength(pageCount: Int) {
         if (length == RESET_NUMBER) {
             length = pageCount

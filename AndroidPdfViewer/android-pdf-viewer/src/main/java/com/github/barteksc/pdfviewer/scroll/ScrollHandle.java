@@ -73,4 +73,8 @@ public interface ScrollHandle {
     void cancelHideRunner();
     void activateHandlerHideDelayed();
     TextView getPageLengthText();
+
+    void setOnTouchListener(View.OnTouchListener onTouchListener);
+
+    void setOnClickListener(View.OnClickListener onClickListener);
 }

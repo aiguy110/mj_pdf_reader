@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,8 +13,8 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.arch.core.util.Function;
 import androidx.core.content.ContextCompat;
 
 import com.github.barteksc.pdfviewer.PDFView;
@@ -36,6 +35,8 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
     private PDFView pdfView;
     private float currentPos;
 
+    private boolean isClickEvent = false;
+
     public TextView pageLengthText;
 
     private final Handler handler = new Handler();
@@ -46,8 +47,8 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
         }
     };
     boolean permanentHidden = false;
-    private OnClickListener pageHandlerListener = null;
-    private Function<Void, Void> function = null;
+    private View.OnTouchListener customOnTouchListener;
+    private View.OnClickListener customOnClickListener;
 
     public DefaultScrollHandle(Context context) {
         this(context, false);
@@ -131,6 +132,17 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
     @Override
     public TextView getPageLengthText() {
         return pageLengthText;
+    }
+
+    @Override
+    public void setOnTouchListener(View.OnTouchListener onTouchListener) {
+        customOnTouchListener = onTouchListener;
+    }
+
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener onClickListener) {
+        customOnClickListener = onClickListener;
+        super.setOnClickListener(onClickListener);
     }
 
     @Override
@@ -246,6 +258,11 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
     @SuppressLint("SetTextI18n")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        performClickIfClickEvent(event);
+
+        if (customOnTouchListener != null) {
+            customOnTouchListener.onTouch(this, event);
+        }
 
         if (!isPDFViewReady()) {
             return super.onTouchEvent(event);
@@ -277,13 +294,25 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
                 pageLengthText.setVisibility(GONE);
-                hideDelayed();
                 pdfView.performPageSnap();
                 return true;
         }
 
         return super.onTouchEvent(event);
     }
+
+    private void performClickIfClickEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            isClickEvent = false;
+        }
+        else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            isClickEvent = true;
+        }
+        else if (event.getAction() == MotionEvent.ACTION_UP && !isClickEvent) {
+            performClick();
+        }
+    }
+
 
     @Override
     public void cancelHideRunner() {

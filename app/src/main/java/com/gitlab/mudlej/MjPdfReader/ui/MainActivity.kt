@@ -49,7 +49,6 @@ import android.app.ActivityManager
 import android.content.*
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -77,6 +76,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.github.barteksc.pdfviewer.PDFView.Configurator
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
+import com.github.barteksc.pdfviewer.scroll.ScrollHandle
 import com.github.barteksc.pdfviewer.util.Constants
 import com.github.barteksc.pdfviewer.util.FitPolicy
 import com.gitlab.mudlej.MjPdfReader.Launcher
@@ -111,8 +111,8 @@ class MainActivity : AppCompatActivity() {
 
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val handler = Handler(Looper.getMainLooper())
-    private val tappingHandler = Handler(Looper.getMainLooper())
 
+    private lateinit var fullScreenOptionsManager: FullScreenOptionsManager
     private lateinit var pref: Preferences
     private lateinit var database: AppDatabase
     private val pdf = PDF()
@@ -141,6 +141,7 @@ class MainActivity : AppCompatActivity() {
         // init
         pref = Preferences(PreferenceManager.getDefaultSharedPreferences(this))
         database = AppDatabase.getInstance(applicationContext)
+        fullScreenOptionsManager = FullScreenOptionsManager(binding, pdf, pref.getHideDelay().toLong())
 
         Constants.THUMBNAIL_RATIO = pref.getThumbnailRation()
         Constants.PART_SIZE = pref.getPartSize()
@@ -234,18 +235,6 @@ class MainActivity : AppCompatActivity() {
         appTitle.text = pdf.getTitleWithPageNumber()
     }
 
-    private fun getSizeInMb(uri: Uri): Double {
-        var fileDescriptor: AssetFileDescriptor? = null
-        try {
-            fileDescriptor = applicationContext.contentResolver.openAssetFileDescriptor(uri, "r")
-        }
-        catch (e: FileNotFoundException) {
-            Log.e(TAG, "getSizeInMb: ${e.message}")
-        }
-        val fileSizeInBytes: Long = fileDescriptor?.length ?: 50
-        return fileSizeInBytes.toDouble() / (1024 * 1024)
-    }
-
     private fun initPdfViewAndLoad(viewConfigurator: Configurator) {
         // attempt to find a saved location for the pdf else assign zero
         if (pdf.pageNumber == 0) {
@@ -275,12 +264,12 @@ class MainActivity : AppCompatActivity() {
 
         viewConfigurator   // creates a Configurator
             .defaultPage(pageNumber)
-            .onPageChange { page: Int, pageCount: Int -> setCurrentPage(page, pageCount)}
+            .onPageChange { page: Int, pageCount: Int -> setCurrentPage(page, pageCount) }
             .enableAnnotationRendering(Preferences.annotationRenderingDefault)
             .enableAntialiasing(pref.getAntiAliasing())
-            .onTap { toggleScrollAndButtonsVisibility() }
+            .onTap { fullScreenOptionsManager.toggleAllTemporarily() }
             .onLongPress { copyPageText(false) }
-            .scrollHandle(DefaultScrollHandle(this))
+            .scrollHandle(createScrollHandle())
             .spacing(Preferences.spacingDefault)
             .onError { exception: Throwable -> handleFileOpeningError(exception) }
             .onPageError { page: Int, error: Throwable -> reportLoadPageError(page, error) }
@@ -293,18 +282,18 @@ class MainActivity : AppCompatActivity() {
             .nightMode(pref.getPdfDarkTheme())
             .load()
 
-        
-        // hide page scroll handle if the pdf consists of only one page
-        // it needs to be delayed so pdf.length is set after the pdf is fully loaded
-        Handler(mainLooper).postDelayed({
-            if (pdf.length == 1)
-                binding.pdfView.scrollHandle?.permanentHide()
-        }, 750)
 
         // Show the page scroll handler for 3 seconds when the pdf is loaded then hide it.
         pdfView.performTap()
-        tappingHandler.postDelayed({ hideButtonsAndHandle() },
-            pref.getHideDelay().toLong())
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun createScrollHandle(): ScrollHandle {
+        // hiding the handle if the pdf.length is 1 will happen when pdf.length is set in setPdfLength()
+        val handle = DefaultScrollHandle(this)
+        handle.setOnTouchListener(fullScreenOptionsManager.getOnTouchListener())
+        handle.setOnClickListener { goToPage() }
+        return handle
     }
 
     private fun copyPageText(bypass: Boolean) {
@@ -408,17 +397,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SourceLockedOrientationActivity")
     private fun setButtonsFunctionalities() {
         binding.apply {
-            exitFullScreenButton.setOnClickListener {
-                // set orientation to unspecified so that the screen rotation will be unlocked
-                // this is because PORTRAIT / LANDSCAPE modes will lock the app in them
-                toggleFullscreen(false)
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-                hideButtonsAndHandle()
-
-                // this WON'T give the brightness control back to the system. (that was not a good idea)
-                // val brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS)
-                // updateBrightness(brightness)
-            }
+            exitFullScreenListener(binding)
             rotateScreenButton.setOnClickListener {
                 requestedOrientation =
                     if (pdf.isPortrait) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -552,6 +531,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun exitFullScreenListener(binding: ActivityMainBinding) {
+        binding.exitFullScreenButton.setOnClickListener {
+            // set orientation to unspecified so that the screen rotation will be unlocked
+            // this is because PORTRAIT / LANDSCAPE modes will lock the app in them
+            toggleFullscreen()
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            //fullScreenOptionsManager.toggleAllTemporarily()
+
+            // this WON'T give the brightness control back to the system. (that was not a good idea)
+            // val brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS)
+            // updateBrightness(brightness)
+        }
+    }
+
     private fun formatSpeed(scrollBy: Double) = (scrollBy.absoluteValue * 4).toInt().toString()
 
     private fun changeScrollingSpeed(scrollBy: Double, interval: Double, isIncreasing: Boolean): Double {
@@ -590,7 +583,7 @@ class MainActivity : AppCompatActivity() {
         if (pdf.uri != null) binding.pickFile.visibility = View.GONE
 
         // restore the full screen mode if was toggled On
-        if (pdf.isFullScreenToggled) toggleFullscreen(true)
+        restoreFullScreenIfNeeded()
 
         // Prompt the user to restore the previous zoom if there is one saved other than the default
         // pdfZoom != binding.pdfView.getZoom())   // doesn't work for some peculiar reason
@@ -603,6 +596,13 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
         fixButtonsColor()
+    }
+
+    private fun restoreFullScreenIfNeeded() {
+        if (pdf.isFullScreenToggled) {
+            pdf.isFullScreenToggled = false
+            toggleFullscreen()
+        }
     }
 
     private fun fixButtonsColor() {
@@ -678,70 +678,6 @@ class MainActivity : AppCompatActivity() {
         Log.e(TAG, message)
     }
 
-    private fun hideButtonsAndHandle() {
-        // stop any previous timer to hide them
-        tappingHandler.removeCallbacksAndMessages(null)
-
-        binding.pdfView.scrollHandle?.customHide()
-        changeFullScreenButtonsVisibility(false)
-    }
-
-    private fun showFullScreenButtons() = changeFullScreenButtonsVisibility(true)
-
-    private fun hideFullScreenButtons() = changeFullScreenButtonsVisibility(false)
-
-    private fun changeFullScreenButtonsVisibility(isVisible: Boolean) {
-        val visibility = if (isVisible) View.VISIBLE else View.GONE
-        binding.exitFullScreenButton.visibility = visibility
-        binding.rotateScreenButton.visibility = visibility
-        binding.brightnessButtonLayout.visibility = visibility
-        binding.autoScrollLayout.visibility = visibility
-        binding.screenshotButton.visibility = visibility
-        binding.toggleHorizontalSwipeButton.visibility = visibility
-    }
-
-    private fun toggleScrollAndButtonsVisibility(): Boolean {
-        val handle = binding.pdfView.scrollHandle
-
-        if (handle == null) {
-            toggleButtonsVisibility()
-            return true
-        }
-
-        // timer to hide them. This timer will be canceled in the else branch
-        tappingHandler.removeCallbacksAndMessages(null)
-        handle.cancelHideRunner()
-
-        // set a new timer to hide
-        tappingHandler.postDelayed({
-            hideFullScreenButtons()
-            handle.customHide()
-        }, pref.getHideDelay().toLong())
-
-        if (!handle.customShown()) {
-            handle.customShow()
-            if (pdf.isFullScreenToggled) {
-                showFullScreenButtons()
-            }
-        }
-        else if (binding.exitFullScreenButton.visibility == View.GONE && pdf.isFullScreenToggled) {
-            showFullScreenButtons()
-        }
-        else {
-            hideButtonsAndHandle()
-        }
-        return true
-    }
-
-    private fun toggleButtonsVisibility() {
-        if (!pdf.isFullScreenToggled) return
-
-        if (binding.exitFullScreenButton.visibility == View.VISIBLE)
-            changeFullScreenButtonsVisibility(false)
-        else
-            changeFullScreenButtonsVisibility(true)
-    }
-
     private fun handleFileOpeningError(exception: Throwable) {
         if (exception is PdfPasswordException) {
             if (pdf.password != null) {
@@ -776,27 +712,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun toggleFullscreen(fixFullScreen: Boolean) {
-        val view: View = binding.pdfView
-        if (!pdf.isFullScreenToggled || fixFullScreen) {
-            supportActionBar?.hide()
-            pdf.isFullScreenToggled = true
-            view.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
-
-            // hide the scroll handle
-            if (!fixFullScreen) {
-                val handle = binding.pdfView.scrollHandle
-                handle?.customHide()
-            }
-
-            // show how to dialog
-            if (pref.getShowFeaturesDialog()) showHowToExitFullscreenDialog(this, pref)
-        } else {
+    private fun toggleFullscreen() {
+        fun showUi() {
             supportActionBar?.show()
+            binding.pdfView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+        }
+
+        fun hideUi() {
+            supportActionBar?.hide()
+            binding.pdfView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            )
+        }
+
+        if (!pdf.isFullScreenToggled) {
+            hideUi()
+            pdf.isFullScreenToggled = true
+            fullScreenOptionsManager.hideAll()
+
+            // show how to exit Full Screen dialog
+            if (pref.getShowFeaturesDialog()) {
+                showHowToExitFullscreenDialog(this, pref)
+            }
+        }
+        else {
+            showUi()
             pdf.isFullScreenToggled = false
-            view.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+            fullScreenOptionsManager.toggleAllTemporarily()
         }
     }
 
@@ -865,12 +809,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun setCurrentPage(pageNumber: Int, pageCount: Int) {
         pdf.pageNumber = pageNumber
-        pdf.initPdfLength(pageCount)
+        setPdfLength(pageCount)
         updateAppTitle()
 
         val hash = pdf.fileHash ?: return              // Don't want fileContentHash to change out from under us
         executor.execute {    // off UI thread
             database.savedLocationDao().insert(SavedLocation(hash, pageNumber))
+        }
+
+        //binding.pdfView.scrollHandle?.setOnTouchListener(fullScreenOptionsManager.getOnTouchListener())
+    }
+
+    private fun setPdfLength(pageCount: Int) {
+        pdf.initPdfLength(pageCount)
+        if (pageCount == 1) {
+            fullScreenOptionsManager.permanentlyHidePageHandle()
         }
     }
 
@@ -900,16 +853,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.fullscreenOption -> toggleFullscreen(false)
+            R.id.fullscreenOption -> toggleFullscreen()
             R.id.switchThemeOption -> switchPdfTheme()
             R.id.openFileOption -> pickFile()
             R.id.copyPageText -> copyPageText(true)
-            R.id.goToPageOption -> goToPage()
             R.id.bookmarksListOption -> showBookmarks()
+            R.id.goToPageOption -> goToPage()
             //R.id.linksListOption -> showLinks()
-            R.id.searchOption -> extractAllPagesText()
             R.id.shareFileOption -> shareFile(pdf.uri, FileType.PDF)
             R.id.printFileOption -> printFile()
+            R.id.searchOption -> extractAllPagesText()
             R.id.additionalOptionsOption -> showAdditionalOptions()
             else -> return super.onOptionsItemSelected(item)
         }
@@ -1050,7 +1003,7 @@ class MainActivity : AppCompatActivity() {
             val fileName = "${pdf.name.removeSuffix(".pdf")} - ${now}.jpg"
             val imageFile = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName)
 
-            hideButtonsAndHandle()
+            fullScreenOptionsManager.toggleAllTemporarily()
             val bitmap = screenShot(binding.pdfView) ?: return
 
             val outputStream = FileOutputStream(imageFile)
