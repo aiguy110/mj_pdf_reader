@@ -77,11 +77,13 @@ The following permissions are req   uired to provide specific features in the ap
 * [Done] Added support for Hyperlinks.
 * [Done] Added a Table of Content page to show the full list of bookmarks (including nested ones).
 * [Done] Added an auto scroll feature in the Full Screen Mode (adjustable speed).
-* (probably no)Added an option to see a list of all the links embedded in the file.
+* Added an option to see a list of all the links embedded in the file.
 * Improved Search functionality
 * [Done] Fixed not being able to reset the zoom to a page-width level by double tapping
 * [Done] Added a Full Screen button to lock horizontal scrolling
 * [Done] Added a Full Screen button to take screenshots
+* [Done?] Fixed not saving the last visited page when navigating for some time in the Full Screen Mode.
+* [Done] Prevent hiding the Full Screen Buttons and Scroll Handle when the user is interacting with them.
 
 ## Things I would like to do for MJ PDF Reader
 [See todo](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/todo.md)

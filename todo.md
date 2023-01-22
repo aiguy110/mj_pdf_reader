@@ -6,10 +6,14 @@
 - [x] Prevent hiding the scroll handle while touching it.
 - [x] Fix Horizontal Lock color in dark theme
 - [x] (dev) Move the unresolved errors out of the MainActivity
+- [ ] Stop Auto-Scrolling when the user exit the Full Screen Mode.
 - [ ] Use PDFium for search the text of the PDF.
 - [ ] Prevent crashing when opening large files for a long time. (400MB+, 30M+)
 
 ### Not Urgent
+- [ ] Adding an option to crop margins.
+- [ ] Adding an option to disable zooming in Full Screen Mode.
+- [ ] Adding an option to disable double-tap or customize it in the settings.
 - [x] Clicking on Scroll Handle show 'Go To Page' dialog. 
 - [ ] Fix app's icon ratio
 - [ ] add an option to lock horizontal swipe
