@@ -1,7 +1,7 @@
 ## TODO
 
 ### Urgent
-- [x] Fixed? not saving the last page you visited when navigating for some time in the Full Screen Mode.
+- [ ] Fixed? not saving the last page you visited when navigating for some time in the Full Screen Mode.
 - [x] Prevented hiding the Full Screen Buttons when the user is interacting with them.
 - [x] Prevented hiding the scroll handle while touching it.
 - [x] Fixed Horizontal Swipe lock color in dark theme
