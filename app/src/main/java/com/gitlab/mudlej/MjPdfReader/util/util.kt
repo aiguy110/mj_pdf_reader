@@ -78,7 +78,7 @@ fun openSelectedDocument(activity: MainActivity, pdf: PDF, selectedDocumentUri: 
     if (selectedDocumentUri == null) return
 
     if (pdf.uri == null || selectedDocumentUri == pdf.uri) {
-        pdf.uri = selectedDocumentUri
+        activity.initPdf(pdf, selectedDocumentUri)
         activity.displayFromUri(pdf.uri)
     } else {
         val intent = Intent(activity, activity.javaClass)

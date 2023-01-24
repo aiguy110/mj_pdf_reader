@@ -171,6 +171,12 @@ class MainActivity : AppCompatActivity() {
         //showAppFeaturesDialogOnFirstRun()
     }
 
+    public fun initPdf(pdf: PDF, uri: Uri) {
+        pdf.uri = uri
+        pdf.fileHash = computeHash(this@MainActivity, pdf)
+            ?: throw IllegalStateException("Failed to compute file hash")
+    }
+
     private fun setCustomActionBar() {
         val actionBar = supportActionBar
         // Disable the default and enable the custom
@@ -416,6 +422,13 @@ class MainActivity : AppCompatActivity() {
             toggleHorizontalSwipeButton.setOnClickListener { horizontalSwipeButtonListener(binding) }
             pickFile.setOnClickListener { pickFile() }
         }
+    }
+
+    private fun rotateScreenButtonListener() {
+        requestedOrientation =
+            if (pdf.isPortrait) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        pdf.togglePortrait()
     }
 
     private fun horizontalSwipeButtonListener(binding: ActivityMainBinding) {
@@ -839,7 +852,8 @@ class MainActivity : AppCompatActivity() {
         setPdfLength(pageCount)
         updateAppTitle()
 
-        val hash = pdf.fileHash ?: return
+        //val hash = pdf.fileHash ?: return
+        val hash = pdf.fileHash ?: throw IllegalStateException("Where is the file hash?!")
         lifecycleScope.launchWhenCreated {
             databaseManager.saveLocationInBackground(hash, pageNumber)
         }
@@ -1072,6 +1086,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(PDF.uriKey, pdf.uri)
+        outState.putString(PDF.fileHashKey, pdf.fileHash)
         outState.putInt(PDF.pageNumberKey, pdf.pageNumber)
         outState.putString(PDF.passwordKey, pdf.password)
         outState.putBoolean(PDF.isFullScreenToggledKey, pdf.isFullScreenToggled)
@@ -1082,6 +1097,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun restoreInstanceState(savedState: Bundle) {
         pdf.uri = savedState.getParcelable(PDF.uriKey)
+        pdf.fileHash = savedState.getString(PDF.fileHashKey)
         pdf.pageNumber = savedState.getInt(PDF.pageNumberKey)
         pdf.password = savedState.getString(PDF.passwordKey)
         pdf.isFullScreenToggled = savedState.getBoolean(PDF.isFullScreenToggledKey)
