@@ -44,13 +44,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.SettingsActivity">
+    tools:context=".ui.settings.SettingsActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.gitlab.mudlej.MjPdfReader.ui.SettingsFragment" />
+        android:name="com.gitlab.mudlej.MjPdfReader.ui.settings.SettingsFragment" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

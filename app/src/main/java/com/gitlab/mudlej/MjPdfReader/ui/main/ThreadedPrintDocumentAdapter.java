@@ -41,7 +41,7 @@
  *  SOFTWARE.
  */
 
-package com.gitlab.mudlej.MjPdfReader;
+package com.gitlab.mudlej.MjPdfReader.ui.main;
 
 import android.content.Context;
 import android.os.Bundle;

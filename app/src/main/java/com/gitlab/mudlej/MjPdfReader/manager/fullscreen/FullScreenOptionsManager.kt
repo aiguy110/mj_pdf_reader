@@ -1,4 +1,4 @@
-package com.gitlab.mudlej.MjPdfReader.manager
+package com.gitlab.mudlej.MjPdfReader.manager.fullscreen
 
 import android.view.View
 

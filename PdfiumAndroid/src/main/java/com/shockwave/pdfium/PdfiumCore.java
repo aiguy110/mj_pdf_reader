@@ -3,6 +3,7 @@ package com.shockwave.pdfium;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -14,7 +15,11 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 public class PdfiumCore {
     private static final String TAG = PdfiumCore.class.getName();
@@ -82,6 +87,17 @@ public class PdfiumCore {
     private native Size nativeGetPageSizeByIndex(long docPtr, int pageIndex, int dpi);
 
     private native long[] nativeGetPageLinks(long pagePtr);
+
+    private native String nativeGetPageText(long pagePtr);
+
+    private native Rect[] nativeGetPageTextBounds(long pagePtr, int start, int count);
+
+
+    private native boolean nativeCreateAnnotInPage(long pagePtr, int l, int r, int t, int b, int dpi, boolean padding);
+
+    private native int nativeClearSearchResultAnnot(long pagePtr, int pageIndex);
+
+    private native String nativeGetPagesText(long docPtr, long start, long end);
 
     private native Integer nativeGetDestPageIndex(long docPtr, long linkPtr);
 
@@ -171,7 +187,7 @@ public class PdfiumCore {
     }
 
     /** Open range of pages and store native pointers in {@link PdfDocument} */
-    public long[] openPage(PdfDocument doc, int fromIndex, int toIndex) {
+    public long[] openPages(PdfDocument doc, int fromIndex, int toIndex) {
         long[] pagesPtr;
         synchronized (lock) {
             pagesPtr = nativeLoadPages(doc.mNativeDocPtr, fromIndex, toIndex);
@@ -386,6 +402,61 @@ public class PdfiumCore {
         Long sibling = nativeGetSiblingBookmark(doc.mNativeDocPtr, bookmarkPtr);
         if (sibling != null) {
             recursiveGetBookmark(tree, doc, sibling);
+        }
+    }
+
+    public String getPageText(PdfDocument doc, int pageIndex) {
+        synchronized (lock) {
+            Long nativePagePtr = doc.mNativePagesPtr.get(pageIndex);
+            if (nativePagePtr == null) {
+                return "";
+            }
+            String text = nativeGetPageText(nativePagePtr);
+            // fix '￾' character
+            if (text != null) {
+                // for some reason a dash '-' at the end of the line is interpreted as \uFFFE
+                // deleting the character is no good, there are cases where the last character in a line is '-'
+                text = text.replace('\uFFFE', '-');    // replace '￾' (65534) with '-'
+            }
+
+            // ------------------ Unrelated Code:
+            // Size size = nativeGetPageSizeByIndex(doc.mNativeDocPtr, pageIndex, mCurrentDpi);
+            // Log.d(TAG, "getPageText: size-width:" + size.getWidth());
+            // Log.d(TAG, "getPageText: size-height:" + size.getHeight());
+            // ------------------
+            return text == null ? "" : text;
+        }
+    }
+
+    public Map<Integer, String> getPagesText(PdfDocument doc, int start, int end) {
+        synchronized (lock) {
+            Map<Integer, String> pagesText = new HashMap<>();
+            for (int i = start; i <= end; ++i) {
+                long pagePtr = doc.mNativePagesPtr.get(i);
+                pagesText.put(i, nativeGetPageText(pagePtr));
+            }
+            return pagesText;
+        }
+    }
+
+    public void createHighlightText(PdfDocument doc, int pageIndex, int start, int end) {
+        createHighlightText(doc, pageIndex, start, end, false);
+    }
+
+    public void createHighlightText(PdfDocument doc, int pageIndex, int start, int end, boolean padding) {
+        synchronized (lock) {
+            Long nativePagePtr = doc.mNativePagesPtr.get(pageIndex);
+            Rect[] rects = nativeGetPageTextBounds(nativePagePtr, start, end);
+            for (Rect rect : rects) {
+                nativeCreateAnnotInPage(nativePagePtr, rect.left, rect.right, rect.top, rect.bottom, mCurrentDpi, padding);
+            }
+        }
+    }
+
+    public void clearSearchResultsAnnot(PdfDocument doc, int pageIndex) {
+        synchronized (lock) {
+            Long nativePagePtr = doc.mNativePagesPtr.get(pageIndex);
+            nativeClearSearchResultAnnot(nativePagePtr, pageIndex);
         }
     }
 

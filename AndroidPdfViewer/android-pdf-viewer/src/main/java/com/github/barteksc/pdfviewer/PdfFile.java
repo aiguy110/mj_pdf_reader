@@ -30,6 +30,7 @@ import com.shockwave.pdfium.util.SizeF;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 class PdfFile {
 
@@ -313,6 +314,30 @@ class PdfFile {
     public List<PdfDocument.Link> getPageLinks(int pageIndex) {
         int docPage = documentPage(pageIndex);
         return pdfiumCore.getPageLinks(pdfDocument, docPage);
+    }
+
+    public String getPageText(int pageIndex) {
+        int docPage = documentPage(pageIndex);
+        pdfiumCore.openPage(pdfDocument, pageIndex);
+        return pdfiumCore.getPageText(pdfDocument, docPage);
+    }
+
+    public Map<Integer, String> getPagesText(int start, int end) {
+        pdfiumCore.openPages(pdfDocument, start, end);
+        return pdfiumCore.getPagesText(pdfDocument, start, end);
+    }
+
+    public void createHighlightText(int pageIndex, int start, int end) {
+        createHighlightText(pageIndex, start, end, false);
+    }
+
+    public void createHighlightText(int pageIndex, int start, int end, boolean padding) {
+        pdfiumCore.openPage(pdfDocument, pageIndex);
+        pdfiumCore.createHighlightText(pdfDocument, pageIndex, start, end, padding);
+    }
+
+    public void clearSearchResultsAnnot(int pageIndex) {
+        pdfiumCore.clearSearchResultsAnnot(pdfDocument, pageIndex);
     }
 
     public RectF mapRectToDevice(int pageIndex, int startX, int startY, int sizeX, int sizeY,

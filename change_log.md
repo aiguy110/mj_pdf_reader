@@ -1,9 +1,32 @@
+* V1.4.4
+
+
+* V1.4.3+
+  * Big increase in performance, especially for big files.
+  * Removed the most common causes of crashing.
+  * Decreased ram usage significantly.
+  * Added 'Go To Page' option.
+  * Added an option (seekbar) to adjust brightness in the Full Screen Mode
+  * Search is now available for files of any
+  * Better and more consistent theme across the app.
+  * Changed App Bar style. (font, color, icons, title max lines)
+  * Clicking on the title will show a message containing the full name of the pdf.
+  * Changed scroll handler style.
+  * Moved 'Print File' to the main menu, and put 'About' to the additional options.
+  * Relabeled 'Additional Options' as 'More'
+  * Disabled Text Mode since it's not usable yet and crashes a lot.
+  * Hid page scroll handle if the pdf consists of only one page.
+  * Improved Copy Page's Text functionality and UI.
+
+
 * V1.4.2
     * Add an option to turn the page using volume buttons.
     * Add a button to disable copy page text pop up on long press.
     * Fix NumberFormatException when local use comma for decimal point.
+  
 * V1.4.1
     * A workaround to prevent app from crashing when opening huge files.
+  
 * V1.4.0
     * Updated the core libraries and fixed the security issue.
     * Added Search functionality. (experimental) ([see Text Mode and Search](https://gitlab.com/mudlej_android/mj_pdf_reader#text-mode-and-search))
@@ -44,3 +67,4 @@
 - [x] App's light / dark theme follows phone's theme. (You've to enable this option, disabled by default due to https://github.com/barteksc/AndroidPdfViewer/issues/914)
 - [x] A shortcut to switch the theme for the PDF in the action menu.
 - [x] Decreased the size of the app from 20 MB to 7 MB. (MJ PDF Reader v1.4)
+- [x] See the above Release Notes for further changes and improvements.

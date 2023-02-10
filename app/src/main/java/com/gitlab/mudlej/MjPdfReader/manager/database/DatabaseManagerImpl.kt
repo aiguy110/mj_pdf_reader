@@ -1,4 +1,4 @@
-package com.gitlab.mudlej.MjPdfReader.manager
+package com.gitlab.mudlej.MjPdfReader.manager.database
 
 import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
 import com.gitlab.mudlej.MjPdfReader.repository.SavedLocation

@@ -65,6 +65,8 @@ import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
+import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
+import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
 import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
 import com.gitlab.mudlej.MjPdfReader.util.indexesOf
 import com.google.android.material.snackbar.Snackbar
@@ -76,7 +78,7 @@ private const val TAG = "Dialogs"
 
 fun showAppFeaturesDialog(context: Context) {
     val end = "\n\n"
-    AlertDialog.Builder(context, R.style.MJDialogThemeLight)
+    val dialog = AlertDialog.Builder(context, R.style.MJDialogThemeLight)
         .setTitle("${context.resources.getString(R.string.mj_app_name)} ${BuildConfig.VERSION_NAME} Features")
         .setMessage(
             "* Fast & smooth experience." + end +
@@ -94,7 +96,13 @@ fun showAppFeaturesDialog(context: Context) {
         )
         .setPositiveButton(context.resources.getString(R.string.ok)) { dialog, _ -> dialog.dismiss() }
         .create()
-        .show()
+
+    try {
+        dialog.show()
+    }
+    catch (e: Throwable) {
+        Log.e(TAG, "showAppFeaturesDialog: Error showing the dialog.(${e.message})")
+    }
 }
 
 fun showMetaDialog(context: Context, meta: PdfDocument.Meta) {

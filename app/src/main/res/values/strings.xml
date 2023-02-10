@@ -219,7 +219,7 @@
     <string name="found">found</string>
     <string name="line">line</string>
     <string name="search_experimental">Search (experimental)</string>
-    <string name="search_results">Search Results:</string>
+    <string name="search_results">Search Results</string>
     <string name="copied_to_clipboard">Text copied to clipboard</string>
     <string name="copy_all">Copy All</string>
     <string name="increase_font">Increase Font</string>
@@ -265,5 +265,10 @@
     <string name="pdf_links">Links Embedded in the File</string>
     <string name="links_in_file">Links in File</string>
     <string name="page_number">[0/0]</string>
+    <string name="searching">Searching…</string>
+    <string name="expand_search_result_text">Expand search result text to show more</string>
+    <string name="no_table_of_contents">No Table of Contents</string>
+    <string name="too_short_query">Too Short Query</string>
+    <string name="too_short_query_message">WARNING: The search query \'%s\' is too short! Your phone may struggle to handle too many results. If it misbehaves afterward, close the app and open it again.</string>
 
 </resources>

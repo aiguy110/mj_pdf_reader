@@ -78,13 +78,20 @@ class PDF(
     }
 
     companion object {
+
+
+
         // constants
         const val FILE_TYPE = "application/pdf"
         const val HASH_SIZE = 1024 * 1024
         const val BOOKMARK_TEXT_SIZE = 24F
         const val BOOKMARK_TEXT_SIZE_DEC = 2F
         const val BOOKMARK_RESULT_OK = 48645
+        const val SEARCH_RESULT_OK = 48632
         const val SCREENSHOT_IMAGE_QUALITY = 100
+        const val SEARCH_RESULT_OFFSET = 40
+        const val ADDITIONAL_SEARCH_RESULT_OFFSET = 100
+        const val TOO_MANY_RESULTS = 3500
         const val RESET_NUMBER = -1
 
         // keys
@@ -99,8 +106,13 @@ class PDF(
         const val isExtractingTextFinishedKey = "isExtractingTextFinished"
         const val pdfBookmarksKey = "PDF_BOOKMARKS"
         const val chosenBookmarkKey = "chosenBookmarkKey"
+        const val searchResultPageNumberKey = "searchResultPageNumberKey"
         const val fileHashKey = "fileHashKey"
+        const val searchResultKey = "searchInput"
         const val startBookmarksActivity = 84418
+        const val startSearchActivity = 91234
+        const val searchQueryKey = "searchQuery"
+        const val filePathKey = "pdfPath"
     }
 
     fun getTitleWithPageNumber(): String {

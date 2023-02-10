@@ -2,11 +2,10 @@ package com.gitlab.mudlej.MjPdfReader
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.gitlab.mudlej.MjPdfReader.data.PDF
-import com.gitlab.mudlej.MjPdfReader.ui.MainActivity
+import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
 import com.gitlab.mudlej.MjPdfReader.util.openSelectedDocument
 
 class Launcher(private val activity: MainActivity, private val pdf: PDF) {

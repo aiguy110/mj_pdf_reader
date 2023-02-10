@@ -14,7 +14,7 @@
 * [Screenshots](https://gitlab.com/mudlej_android/mj_pdf_reader#screenshots)
 * [MJ PDF Reader Features](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-reader-features)
 * [Permissions and privacy](https://gitlab.com/mudlej_android/mj_pdf_reader#permissions-and-privacy)
-* [What is new in this release V1.4.3+](https://gitlab.com/mudlej_android/mj_pdf_reader#what-is-new-in-mj-pdf-reader-v143)
+* [MJ PDF Reader V1.5.0 Release Notes](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-reader-v150-release-notes)
 * [What's coming in the next release](https://gitlab.com/mudlej_android/mj_pdf_reader#coming-in-the-next-release-mj-pdf-reader-v150)
 * [Things I would like to do for MJ PDF Reader](https://gitlab.com/mudlej_android/mj_pdf_reader#things-i-would-like-to-do-for-mj-pdf-reader)
 * [What is different from PDF Viewer Plus](https://gitlab.com/mudlej_android/mj_pdf_reader#what-is-different-from-pdf-viewer-plus)
@@ -50,41 +50,29 @@ For more ([see changelog](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob
 
 ## Permissions and privacy
 This app does not collect any data.
-The following permissions are req   uired to provide specific features in the app:
+The following permissions are required to provide specific features in the app:
 * *Internet*: For opening PDFs through links
 * *Storage*: For saving downloading PDFs and opening them from storage
 
-## What is new in MJ PDF Reader V1.4.3+
-* Big increase in performance, especially for big files.
-* Decreased ram usage significantly and eliminated stuttering for big files. 
-* Removed the most common causes of crashing.
-* More consistent theme across the app. (now, all dialogs use black/white theme)
-* Added an option (seekbar) to adjust brightness in the Full Screen Mode 
-* Added 'Go To Page' option.
-* Search is now available for files of any size.
-* Changed App Bar style. (font, color, icons, title max lines)
-* Clicking on the title will show a message containing the full name of the pdf.
-* Changed scroll handler style.
-* Moved 'Print File' to the main menu, and put 'About' to the additional options.
-* Relabeled 'Additional Options' as 'More' 
-* Disabled Text Mode since it's not usable yet and crashes a lot. 
-* Hid page scroll handle if the pdf consists of only one page.
-* Improved Copy Page's Text functionality and UI.
-
-## Coming in the next release MJ PDF Reader V1.5.0
-* Re-branded the app as 'MJ Reader'
-* New icon for the app
-* [Done] Added support for Hyperlinks.
-* [Done] Added a Table of Content page to show the full list of bookmarks (including nested ones).
-* [Done] Added an auto scroll feature in the Full Screen Mode (adjustable speed).
-* Added an option to see a list of all the links embedded in the file.
+## Coming in
+* Improve app's icon.
 * Improved Search functionality
-* [Done] Fixed not being able to reset the zoom to a page-width level by double tapping
-* [Done] Added a Full Screen button to lock horizontal scrolling
-* [Done] Added a Full Screen button to take screenshots
-* [Done] Clicking on the scroll handle shows the 'Go To Page' dialog.
-* [Done?] Fixed not saving the last visited page when navigating for some time in the Full Screen Mode.
-* [Done] Prevent hiding the Full Screen Buttons and Scroll Handle when the user is interacting with them.
+* [?] Added an option to see a list of all the links embedded in the file. 
+
+## MJ PDF Reader V1.4.4 Release Notes
+#### NEW
+* Added support for Hyperlinks.
+* Added a Table of Content page.
+* Added a Full Screen button to auto scroll. (adjustable speed, both direction).
+* Added a Full Screen button to lock horizontal scrolling.
+* Added a Full Screen button to take a screenshot.
+* Clicking on the scroll handle shows the 'Go To Page' dialog.
+
+#### FIXED
+* [Done?] Fixed not remembering the last visited page sometimes.
+* Fixed hiding the Buttons and Scroll Handle while the user is still interacting with them.
+* Fixed not being able to reset the zoom to a page-width level by double tapping
+* Fixed few common crashes.
 
 ## Things I would like to do for MJ PDF Reader
 [See todo](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/todo.md)

@@ -73,7 +73,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * It supports animations, zoom, cache, and swipe.
@@ -104,6 +106,20 @@ public class PDFView extends RelativeLayout {
     private float minZoom = DEFAULT_MIN_SCALE;
     private float midZoom = DEFAULT_MID_SCALE;
     private float maxZoom = DEFAULT_MAX_SCALE;
+
+    public void clearCache() {
+        cacheManager.recycle();
+    }
+
+    public void reloadPages() {
+        clearCache();
+        loadPages();
+    }
+
+    // THUMBNAILS: MUDLEJ
+    public List<PagePart> getThumbnails() {
+        return cacheManager.getThumbnails();
+    }
 
     /**
      * START - scrolling in first page direction
@@ -318,8 +334,12 @@ public class PDFView extends RelativeLayout {
         showPage(page);
     }
 
-    public void jumpTo(int page) {
-        jumpTo(page, false);
+    public void jumpTo(int pageIndex) {
+        jumpTo(pageIndex, false);
+    }
+
+    public void jumpUsingPageNumber(int pageNumber) {
+        jumpTo(pageNumber - 1, false);
     }
 
     void showPage(int pageNb) {
@@ -778,6 +798,11 @@ public class PDFView extends RelativeLayout {
         this.pdfFile = pdfFile;
         if (pdfFile == null) {
             Log.e(TAG, "loadComplete: pdfFile is nul!!");
+            return;
+        }
+
+        if (renderingHandlerThread == null) {
+            Log.e(TAG, "loadComplete: renderingHandlerThread is nul!!");
             return;
         }
 
@@ -1359,6 +1384,49 @@ public class PDFView extends RelativeLayout {
             return Collections.emptyList();
         }
         return pdfFile.getPageLinks(page);
+    }
+
+
+    /** Get the text of page */     // added by Mudlej
+    public String getPageText(int pagNumber) {
+        if (pdfFile == null) {
+            return "";
+        }
+        return pdfFile.getPageText(pagNumber - 1);
+    }
+
+    /** Create a temp text highlight annot for search result */     // added temp by Mudlej
+    public boolean createHighlightText(int pageNumber, int start, int end) {
+        return createHighlightText(pageNumber, start, end, false);
+    }
+
+    public boolean createHighlightText(int pageNumber, int start, int end, Boolean padding) {
+        if (pdfFile == null) {
+            return false;
+        }
+        try {
+            pdfFile.createHighlightText(pageNumber - 1, start, end, padding);
+        }
+        catch (Throwable throwable) {
+            throwable.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public void clearSearchResultsHighlight(int pageNumber) {
+        if (pdfFile != null) {
+            pdfFile.clearSearchResultsAnnot(pageNumber - 1);
+        }
+    }
+
+    /** Get the text of page */     // added by Mudlej
+    public Map<Integer, String> getPagesText(int start, int end) {
+        if (pdfFile == null) {
+            return new HashMap<>();
+        }
+
+        return pdfFile.getPagesText(start, end);
     }
 
     /** Use an asset file as the pdf source */

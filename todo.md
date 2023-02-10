@@ -1,14 +1,7 @@
 ## TODO
 
 ### Urgent
-- [ ] Fixed? not saving the last page you visited when navigating for some time in the Full Screen Mode.
-- [x] Prevented hiding the Full Screen Buttons when the user is interacting with them.
-- [x] Prevented hiding the scroll handle while touching it.
-- [x] Fixed Horizontal Swipe lock color in dark theme
-- [x] Prevented Auto Scrolling and Horizontal Swipe locking from preserving their effects in the Normal Mode.  
-- [ ] Used PDFium for search the text of the PDF.
 - [ ] Prevented crashing when opening large files for a long time. (400MB+, 30M+)
-- [x] (dev) Moved the unresolved errors out of the MainActivity
 
 ### Not Urgent
 - [ ] Refactor the code for Brightness and Auto Scroll buttons
@@ -16,7 +9,6 @@
 - [ ] Adding an option to crop margins.
 - [ ] Adding an option to disable zooming in Full Screen Mode.
 - [ ] Adding an option to disable double-tap or customize it in the settings.
-- [x] Clicking on Scroll Handle show 'Go To Page' dialog.
 - [ ] Fix app's icon ratio
 - [ ] add an option to lock horizontal swipe
 - [ ] Add a home activity with multiple pages (PDFs folders, Recent, Favorite, want to read, finished)
@@ -30,6 +22,7 @@
 - [ ] add an option to export saved reading progress
 - [ ] make Full Screen Mode utilize 100% of the screen. (even around the notch)
 - [ ] clicking on autoscroll speed textView shows a dialog to enter it manually
+- [ ] "only thing i'd like to have an option on is tap for next page." could be added as an option in the bottom bar.6
 
 ## DONE
 - [x] activate appDarkTheme in MainActivity
@@ -59,6 +52,7 @@
 - [x] add the ability to view the full file name of the pdf as a toast message by long pressing the title
 - [x] Add 'continue in the background'
 - [x] hide page handle when there is only one page
+
 - [x] add brightness control in fullscreen mode
 - [x] Add auto-scroll option in Full Screen Mode.
 - [x] Adding the ability to click on hyperlinks.
@@ -67,7 +61,15 @@
 - [x] Add textView near the auto-scroll option to see the speed.
 - [x] double tapping should reset zoom to page-width zoom
 - [x] change bookmarks to table of contents
-- 
+- [x] Clicking on Scroll Handle show 'Go To Page' dialog.
+- [x] (dev) Moved the unresolved errors out of the MainActivity
+- [x] Prevented hiding the Full Screen Buttons when the user is interacting with them.
+- [x] Prevented hiding the scroll handle while touching it.
+- [x] Fixed Horizontal Swipe lock color in dark theme
+- [x] Prevented Auto Scrolling and Horizontal Swipe locking from preserving their effects in the Normal Mode.
+- [x] Fixed not saving the last page you visited when navigating for some time in the Full Screen Mode.
+- [x] Used PDFium for search the text of the PDF.
+
 ## IGNORED
 - [ ] adding a fullscreen button to restore default zoom
 - [ ] elaborate the saving error message and suggest storage permission

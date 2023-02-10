@@ -54,10 +54,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.OpenableColumns
 import android.text.InputType
-import android.text.format.DateFormat
 import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -65,8 +63,8 @@ import androidx.core.content.ContextCompat
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
-import com.gitlab.mudlej.MjPdfReader.ui.MainActivity
-import com.gitlab.mudlej.MjPdfReader.ui.MainActivity.*
+import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
+import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity.*
 import java.io.*
 import java.math.BigInteger
 import java.security.MessageDigest

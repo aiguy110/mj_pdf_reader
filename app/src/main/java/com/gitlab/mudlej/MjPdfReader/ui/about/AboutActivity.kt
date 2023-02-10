@@ -41,7 +41,7 @@
  *  SOFTWARE.
  */
 
-package com.gitlab.mudlej.MjPdfReader.ui
+package com.gitlab.mudlej.MjPdfReader.ui.about
 
 import android.R
 import android.app.Dialog
@@ -62,6 +62,8 @@ import com.franmontiel.attributionpresenter.entities.Attribution
 import com.franmontiel.attributionpresenter.entities.License
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityAboutBinding
+import com.gitlab.mudlej.MjPdfReader.ui.main.MainIntroActivity
+import com.gitlab.mudlej.MjPdfReader.ui.showAppFeaturesDialog
 
 class AboutActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAboutBinding

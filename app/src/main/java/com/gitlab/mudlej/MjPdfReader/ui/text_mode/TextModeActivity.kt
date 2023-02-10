@@ -3,7 +3,7 @@
 * several operations should be done off UI
 * */
 
-package com.gitlab.mudlej.MjPdfReader.ui
+package com.gitlab.mudlej.MjPdfReader.ui.text_mode
 
 import android.os.Bundle
 import android.os.Handler
@@ -15,10 +15,10 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityTextModeBinding
+import com.gitlab.mudlej.MjPdfReader.ui.showUnderDevelopmentDialog
 import com.gitlab.mudlej.MjPdfReader.util.ExtendedDataHolder
 import com.google.android.material.snackbar.Snackbar
 import java.util.concurrent.Executors

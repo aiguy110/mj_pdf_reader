@@ -56,7 +56,7 @@ import javax.net.ssl.SSLException;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 import com.gitlab.mudlej.MjPdfReader.R;
-import com.gitlab.mudlej.MjPdfReader.ui.MainActivity;
+import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity;
 
 /**
  * This class is used to get a PDF File from an URL

@@ -1,7 +1,8 @@
-package com.gitlab.mudlej.MjPdfReader.ui
+package com.gitlab.mudlej.MjPdfReader.ui.bookmark
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gitlab.mudlej.MjPdfReader.R
@@ -11,9 +12,9 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityBookmarksBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class BookmarksActivity : AppCompatActivity(), BookmarksAdapter.BookmarkFunctions {
+class BookmarksActivity : AppCompatActivity(), BookmarkFunctions {
     private lateinit var binding: ActivityBookmarksBinding
-    private val bookmarksAdapter = BookmarksAdapter(this, this)
+    private val bookmarkAdapter = BookmarkAdapter(this, this)
     private lateinit var bookmarks: List<Bookmark>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,13 +30,16 @@ class BookmarksActivity : AppCompatActivity(), BookmarksAdapter.BookmarkFunction
         val bookmarksJson = intent.getStringExtra(PDF.pdfBookmarksKey)
         val bookmarksType = object : TypeToken<List<Bookmark>>() {}.type
         bookmarks = Gson().fromJson(bookmarksJson, bookmarksType)
+        if (bookmarks.isNotEmpty()) {
+            binding.noTableOfContentsText.visibility = View.GONE
+        }
     }
 
     private fun initUi() {
         title = getString(R.string.table_of_contents)
-        bookmarksAdapter.submitList(bookmarks)
+        bookmarkAdapter.submitList(bookmarks)
         binding.bookmarksRecyclerView.apply {
-            adapter = bookmarksAdapter
+            adapter = bookmarkAdapter
             layoutManager = LinearLayoutManager(this@BookmarksActivity)
         }
     }
@@ -46,7 +50,7 @@ class BookmarksActivity : AppCompatActivity(), BookmarksAdapter.BookmarkFunction
 
     override fun onBookmarkClicked(bookmark: Bookmark) {
         val resultIntent = Intent()
-        resultIntent.putExtra(PDF.chosenBookmarkKey, bookmark.pageIdx)
+        resultIntent.putExtra(PDF.chosenBookmarkKey, bookmark.pageIdx.toInt())
         setResult(PDF.BOOKMARK_RESULT_OK, resultIntent)
         finish()
     }

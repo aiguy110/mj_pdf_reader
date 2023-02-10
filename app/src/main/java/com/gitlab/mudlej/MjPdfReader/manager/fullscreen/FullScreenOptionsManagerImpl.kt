@@ -1,4 +1,4 @@
-package com.gitlab.mudlej.MjPdfReader.manager
+package com.gitlab.mudlej.MjPdfReader.manager.fullscreen
 
 import android.annotation.SuppressLint
 import android.os.Handler
@@ -8,7 +8,7 @@ import android.view.View
 import androidx.core.view.children
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
-import com.gitlab.mudlej.MjPdfReader.manager.FullScreenOptionsManager.VisibilityState
+import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManager.VisibilityState
 
 
 class FullScreenOptionsManagerImpl (

@@ -41,37 +41,57 @@
  *  SOFTWARE.
  */
 
-package com.gitlab.mudlej.MjPdfReader.ui
+package com.gitlab.mudlej.MjPdfReader.ui.main
 
-import android.R.attr.tag
+import android.Manifest
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.KeyEvent
-import android.view.MenuItem
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.github.paolorotolo.appintro.AppIntro
+import com.github.paolorotolo.appintro.model.SliderPage
+import com.github.paolorotolo.appintro.AppIntroFragment
 import com.gitlab.mudlej.MjPdfReader.R
-import com.gitlab.mudlej.MjPdfReader.databinding.ActivitySettingsBinding
 
-
-class SettingsActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivitySettingsBinding
+class MainIntroActivity : AppIntro() {
+    var themeColor = "#263238"
+    var bg = Color.parseColor(themeColor)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        supportActionBar?.hide()
 
-        // add back button to the action bar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val first = SliderPage()
+        first.title = getString(R.string.title_intro)
+        first.description = getString(R.string.description__intro)
+        first.imageDrawable = R.drawable.final_logo
+        first.bgColor = bg
+        addSlide(AppIntroFragment.newInstance(first))
+
+        val second = SliderPage()
+        second.title = getString(R.string.title_open)
+        second.description = getString(R.string.description_open)
+        second.imageDrawable = R.drawable.opensource_logo
+        second.bgColor = bg
+        addSlide(AppIntroFragment.newInstance(second))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val third = SliderPage()
+            third.title = getString(R.string.title_permission)
+            third.description = getString(R.string.description__permission)
+            third.imageDrawable = R.drawable.patterns_permissions
+            third.bgColor = bg
+            addSlide(AppIntroFragment.newInstance(third))
+            askForPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 3)
+        }
+
+        showSkipButton(false)
+        showStatusBar(false)
+        setNavBarColor(themeColor)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> finish()
-            else -> super.onOptionsItemSelected(item)
-        }
-        return true
+    override fun onDonePressed(currentFragment: Fragment) {
+        super.onDonePressed(currentFragment)
+        finish()
     }
 }
