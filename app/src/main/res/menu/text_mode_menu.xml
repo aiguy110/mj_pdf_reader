@@ -44,24 +44,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/increase_text_size"
+        android:title="@string/increase_text_size"
+        android:icon="@drawable/ic_increase_text_size"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/decrease_text_size"
+        android:title="@string/decrease_text_size"
+        android:icon="@drawable/ic_deccrease_text_size"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/text_color"
+        android:title="@string/text_color"
+        android:icon="@drawable/ic_color_palate"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/background_color"
+        android:title="@string/background_color"
+        android:icon="@drawable/ic_color_palate"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/reset_to_Default"
+        android:title="@string/reset_to_default"
+        android:icon="@drawable/ic_refresh"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/search_in_text_mode"
-        android:orderInCategory="1"
-        android:title="@string/search_experimental"
+        android:title="Search in Page"
         android:icon="@drawable/search_icon"
-        app:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="never|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        android:visible="false"/>
-
-    <item
-        android:id="@+id/increase_font"
-        android:orderInCategory="2"
-        android:title="@string/increase_font"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/decrease_font"
-        android:orderInCategory="3"
-        android:title="@string/decrease_font"
-        app:showAsAction="never" />
+        android:visible="true"/>
 
 </menu>

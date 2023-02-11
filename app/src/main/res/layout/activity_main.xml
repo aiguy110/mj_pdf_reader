@@ -38,9 +38,9 @@
     ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     ~ SOFTWARE.
 -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainLayout"
     android:clipChildren="false"
     android:layout_width="match_parent"
@@ -71,223 +71,244 @@
         android:indeterminate="true"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="start"
-        android:padding="10dp">
 
-        <LinearLayout
-            android:id="@+id/exitFullScreenButton"
-            android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/secondBarLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/exitFullScreenImage"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/close_icon"
-                android:background="@drawable/button_background"
-                android:shadowColor="#ffffff"
-                android:shadowDx="1.5"
-                android:shadowDy="1.5"
-                android:shadowRadius="3"
-                android:contentDescription="@string/exit_fullscreen_button" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/rotateScreenButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:visibility="invisible">
-
-            <ImageView
-                android:id="@+id/rotateScreenImage"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_screen_rotate"
-                android:background="@drawable/button_background"
-                android:shadowColor="#ffffff"
-                android:shadowDx="1.5"
-                android:shadowDy="1.5"
-                android:shadowRadius="3"
-                android:contentDescription="@string/rotate_screen" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/brightnessButtonLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:visibility="invisible"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/brightnessButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_brightness"
-                android:background="@drawable/button_background"
-                android:shadowColor="#ffffff"
-                android:shadowDx="1.5"
-                android:shadowDy="1.5"
-                android:shadowRadius="3"
-                android:contentDescription="@string/rotate_screen" />
-
-            <androidx.appcompat.widget.AppCompatSeekBar
-                android:id="@+id/brightnessSeekBar"
-                android:layout_height="match_parent"
-                android:layout_width="200dp"
-                android:layout_marginStart="8dp"
-                android:thumbTint="@color/topBarBackgroundColor"
-                android:progressTint="@color/topBarBackgroundColor"
-                android:background="@drawable/seekbar_background"
-                android:visibility="invisible"
-                />
-
-            <TextView
-                android:id="@+id/brightnessPercentage"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:padding="4dp"
-                android:layout_marginStart="8dp"
-                android:textColor="@color/topBarBackgroundColor"
-                android:background="@drawable/seekbar_background"
-                android:text="35%"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:visibility="invisible"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/autoScrollLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:visibility="invisible"
             android:orientation="horizontal"
-            android:divider="@drawable/auto_scroll_button_divider"
-            android:showDividers="middle">
+            android:gravity="center"
+            android:background="@color/topBarBackgroundOffColor"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-            <ImageView
-                android:id="@+id/autoScrollButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_auto_scroll"
-                android:background="@drawable/button_background"
-                android:shadowColor="#ffffff"
-                android:shadowDx="1.5"
-                android:shadowDy="1.5"
-                android:shadowRadius="3"
-                 />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="start"
+            android:padding="10dp"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/secondBarLayout"
+            >
 
-            <ImageView
-                android:id="@+id/reverseAutoScrollButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_reverse_direction"
-                android:background="@drawable/seekbar_background"
-                android:visibility="invisible"
-                />
-
-            <ImageView
-                android:id="@+id/decreaseScrollSpeedButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_decrease"
-                android:background="@drawable/seekbar_background"
-                android:visibility="invisible"
-                 />
-
-            <ImageView
-                android:id="@+id/increaseScrollSpeedButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_increase"
-                android:background="@drawable/seekbar_background"
-                android:visibility="invisible"
-                 />
-
-            <ImageView
-                android:id="@+id/toggleAutoScrollButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_start"
-                android:background="@drawable/seekbar_background"
-                android:visibility="invisible"
-                />
-
-            <TextView
-                android:id="@+id/autoScrollSpeedText"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/exitFullScreenButton"
                 android:layout_width="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="3dp"
-                android:textColor="@color/topBarBackgroundColor"
-                android:background="@drawable/seekbar_background"
-                tools:text="1"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/exitFullScreenImage"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/close_icon"
+                    android:background="@drawable/button_background"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="1.5"
+                    android:shadowDy="1.5"
+                    android:shadowRadius="3"
+                    android:contentDescription="@string/exit_fullscreen_button" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rotateScreenButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:visibility="invisible">
+
+                <ImageView
+                    android:id="@+id/rotateScreenImage"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_screen_rotate"
+                    android:background="@drawable/button_background"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="1.5"
+                    android:shadowDy="1.5"
+                    android:shadowRadius="3"
+                    android:contentDescription="@string/rotate_screen" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/brightnessButtonLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
                 android:visibility="invisible"
-                />
+                android:orientation="horizontal">
 
+                <ImageView
+                    android:id="@+id/brightnessButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_brightness"
+                    android:background="@drawable/button_background"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="1.5"
+                    android:shadowDy="1.5"
+                    android:shadowRadius="3"
+                    android:contentDescription="@string/rotate_screen" />
+
+                <androidx.appcompat.widget.AppCompatSeekBar
+                    android:id="@+id/brightnessSeekBar"
+                    android:layout_height="match_parent"
+                    android:layout_width="200dp"
+                    android:layout_marginStart="8dp"
+                    android:thumbTint="@color/topBarBackgroundColor"
+                    android:progressTint="@color/topBarBackgroundColor"
+                    android:background="@drawable/seekbar_background"
+                    android:visibility="invisible"
+                    />
+
+                <TextView
+                    android:id="@+id/brightnessPercentage"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:padding="4dp"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/topBarBackgroundColor"
+                    android:background="@drawable/seekbar_background"
+                    android:text="35%"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:visibility="invisible"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/autoScrollLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:visibility="invisible"
+                android:orientation="horizontal"
+                android:divider="@drawable/auto_scroll_button_divider"
+                android:showDividers="middle">
+
+                <ImageView
+                    android:id="@+id/autoScrollButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_auto_scroll"
+                    android:background="@drawable/button_background"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="1.5"
+                    android:shadowDy="1.5"
+                    android:shadowRadius="3"
+                     />
+
+                <ImageView
+                    android:id="@+id/reverseAutoScrollButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_reverse_direction"
+                    android:background="@drawable/seekbar_background"
+                    android:visibility="invisible"
+                    />
+
+                <ImageView
+                    android:id="@+id/decreaseScrollSpeedButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_decrease"
+                    android:background="@drawable/seekbar_background"
+                    android:visibility="invisible"
+                     />
+
+                <ImageView
+                    android:id="@+id/increaseScrollSpeedButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_increase"
+                    android:background="@drawable/seekbar_background"
+                    android:visibility="invisible"
+                     />
+
+                <ImageView
+                    android:id="@+id/toggleAutoScrollButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_start"
+                    android:background="@drawable/seekbar_background"
+                    android:visibility="invisible"
+                    />
+
+                <TextView
+                    android:id="@+id/autoScrollSpeedText"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:textColor="@color/topBarBackgroundColor"
+                    android:background="@drawable/seekbar_background"
+                    tools:text="1"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    android:visibility="invisible"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/toggleHorizontalSwipeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:visibility="invisible">
+
+                <ImageView
+                    android:id="@+id/toggleHorizontalSwipeImage"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_horizontal_swipe_locked"
+                    android:background="@drawable/button_background"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="1.5"
+                    android:shadowDy="1.5"
+                    android:shadowRadius="3" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/screenshotButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:visibility="invisible">
+
+                <ImageView
+                    android:id="@+id/screenshotImage"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_screenshot"
+                    android:background="@drawable/button_background"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="1.5"
+                    android:shadowDy="1.5"
+                    android:shadowRadius="3"
+                    android:contentDescription="@string/rotate_screen" />
+            </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/toggleHorizontalSwipeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:visibility="invisible">
-
-            <ImageView
-                android:id="@+id/toggleHorizontalSwipeImage"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_horizontal_swipe_locked"
-                android:background="@drawable/button_background"
-                android:shadowColor="#ffffff"
-                android:shadowDx="1.5"
-                android:shadowDy="1.5"
-                android:shadowRadius="3" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/screenshotButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:visibility="invisible">
-
-            <ImageView
-                android:id="@+id/screenshotImage"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_screenshot"
-                android:background="@drawable/button_background"
-                android:shadowColor="#ffffff"
-                android:shadowDx="1.5"
-                android:shadowDy="1.5"
-                android:shadowRadius="3"
-                android:contentDescription="@string/rotate_screen" />
-        </LinearLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 <!--    <TextView-->
 <!--        android:id="@+id/pageLengthText"-->

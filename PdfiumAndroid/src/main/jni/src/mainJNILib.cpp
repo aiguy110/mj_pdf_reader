@@ -19,6 +19,7 @@ using namespace android;
 #include <fpdf_text.h>
 #include <fpdf_annot.h>
 #include <string>
+
 #include <vector>
 
 static Mutex sLibraryLock;
@@ -805,6 +806,21 @@ JNI_FUNC(jobject, PdfiumCore, nativeGetDestPageIndex)(JNI_ARGS, jlong docPtr, jl
     }
     unsigned long index = FPDFDest_GetDestPageIndex(doc->pdfDocument, dest);
     return NewInteger(env, (jint) index);
+}
+
+JNI_FUNC(jstring, PdfiumCore, nativeGetLinkText)(JNI_ARGS, jlong docPtr, jlong linkPtr){
+    DocumentFile *doc = reinterpret_cast<DocumentFile*>(docPtr);
+    FPDF_LINK link = reinterpret_cast<FPDF_LINK>(linkPtr);
+
+
+
+    size_t bufferLen = FPDFAction_GetURIPath(doc->pdfDocument, action, NULL, 0);
+    if (bufferLen <= 0) {
+        return env->NewStringUTF("");
+    }
+    std::string uri;
+    FPDFAction_GetURIPath(doc->pdfDocument, action, WriteInto(&uri, bufferLen), bufferLen);
+    return env->NewStringUTF(uri.c_str());
 }
 
 JNI_FUNC(jstring, PdfiumCore, nativeGetLinkURI)(JNI_ARGS, jlong docPtr, jlong linkPtr){

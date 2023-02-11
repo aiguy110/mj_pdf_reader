@@ -19,7 +19,7 @@ class SearchResultAdapter(
         return SearchResultViewHolder(
             SearchResultItemBinding.inflate(LayoutInflater.from(parent.context), parent, false),
             searchResultFunctions,
-            this
+            searchResultAdapter = this
         )
     }
 

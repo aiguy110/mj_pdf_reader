@@ -51,7 +51,7 @@ class SearchResultViewHolder(
     }
 
     private fun stylizeText(searchResult: SearchResult): Spannable {
-        val color = "#019a66"
+        val color = "#019a66"       // should be extracted
         val spannable = SpannableString(searchResult.text)
 
         // stylize nested query result

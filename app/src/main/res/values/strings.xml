@@ -222,8 +222,8 @@
     <string name="search_results">Search Results</string>
     <string name="copied_to_clipboard">Text copied to clipboard</string>
     <string name="copy_all">Copy All</string>
-    <string name="increase_font">Increase Font</string>
-    <string name="decrease_font">Decrease Font</string>
+    <string name="increase_text_size">Increase Size</string>
+    <string name="decrease_text_size">Decrease Size</string>
     <string name="search_input_empty">No input! To see a text version of the PDF, try Text Mode.</string>
     <string name="search_dialog_title">Search (experimental)</string>
     <string name="search_dialog_message">This app tries to extract text from PDF, so it may not be accurate or correct</string>
@@ -263,12 +263,30 @@
     <string name="screenshot_saved">Screenshot saved successfully</string>
     <string name="failed_save_screenshot">Couldn\'t save the screenshot!</string>
     <string name="pdf_links">Links Embedded in the File</string>
-    <string name="links_in_file">Links in File</string>
+    <string name="links_in_file">Links in the File</string>
     <string name="page_number">[0/0]</string>
     <string name="searching">Searching…</string>
     <string name="expand_search_result_text">Expand search result text to show more</string>
     <string name="no_table_of_contents">No Table of Contents</string>
     <string name="too_short_query">Too Short Query</string>
     <string name="too_short_query_message">WARNING: The search query \'%s\' is too short! Your phone may struggle to handle too many results. If it misbehaves afterward, close the app and open it again.</string>
+    <string name="loading">Loading…</string>
+    <string name="no_links_put_in_pdf">No links deliberately embedded in the document.</string>
+    <string name="links_activity_title">Links Embedded in The PDF</string>
+    <string name="too_many_results_may_be_slow">Too many results! Searching the results could be slow.</string>
+    <string name="links_in_document">Links in Document</string>
+    <string name="number_of_filtered_results">"%,d filtered results."</string>
+    <string name="number_of_results">"%,d results."</string>
+    <string name="no_app_to_open_link">Didn\'t find an appropriate app to open the link</string>
+    <string name="copy_link_url">Copy link URL</string>
+    <string name="failed_to_extract_text">Failed to extract text</string>
+    <string name="page_counter_label">Page: %d/%d</string>
+    <string name="next_page">Next Page</string>
+    <string name="prev_page">Prev Page</string>
+    <string name="text_color">Text Color</string>
+    <string name="background_color">Background Color</string>
+    <string name="reset_to_default">Reset to Default</string>
+    <string name="proceed_anyway">Proceed Anyway</string>
+    <string name="page_out_of_bound">Page #%d doesn\'t exist in this PDF.</string>
 
 </resources>

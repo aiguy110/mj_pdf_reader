@@ -120,7 +120,14 @@ class AboutActivity : AppCompatActivity() {
             )
             .addAttributions(
                 Attribution.Builder("MJ PDF's fork of Android PdfViewer")
-                    .addCopyrightNotice("Copyright 2017 Bartosz Schiller")
+                    .addCopyrightNotice("Forked by Mudlej")
+                    .addLicense(License.APACHE)
+                    .setWebsite("https://gitlab.com/mudlej_android/mj_pdf_reader/-/tree/main/AndroidPdfViewer")
+                    .build()
+            )
+            .addAttributions(
+                Attribution.Builder("MJ PDF's fork of PdfiumAndroid")
+                    .addCopyrightNotice("Forked by Mudlej")
                     .addLicense(License.APACHE)
                     .setWebsite("https://gitlab.com/mudlej_android/mj_pdf_reader/-/tree/main/AndroidPdfViewer")
                     .build()
@@ -153,6 +160,13 @@ class AboutActivity : AppCompatActivity() {
                         "SIL Open Font",
                         "https://github.com/Templarian/MaterialDesign/blob/master/LICENSE"
                     )
+                    .setWebsite("https://materialdesignicons.com/")
+                    .build()
+            )
+            .addAttributions(
+                Attribution.Builder(" ColorPicker")
+                    .addCopyrightNotice("Copyright 2018 Hong Duan")
+                    .addLicense(License.APACHE)
                     .setWebsite("https://materialdesignicons.com/")
                     .build()
             )

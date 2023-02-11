@@ -63,10 +63,10 @@ import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
-import androidx.core.text.isDigitsOnly
 import androidx.core.view.*
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
@@ -89,12 +89,12 @@ import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
 import com.gitlab.mudlej.MjPdfReader.ui.*
 import com.gitlab.mudlej.MjPdfReader.ui.about.AboutActivity
 import com.gitlab.mudlej.MjPdfReader.ui.bookmark.BookmarksActivity
+import com.gitlab.mudlej.MjPdfReader.ui.link.LinksActivity
 import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.settings.SettingsActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
 import com.gitlab.mudlej.MjPdfReader.util.*
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.shockwave.pdfium.PdfPasswordException
@@ -134,6 +134,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appTitle: TextView
     private lateinit var appTitlePageNumber: TextView
+    private lateinit var showSearchBar: () -> Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "-----------onCreate: ${pdf.name} ")
@@ -166,6 +167,7 @@ class MainActivity : AppCompatActivity() {
 
         displayFromUri(pdf.uri)
         setButtonsFunctionalities()
+        setUpSecondaryBar()
         //showAppFeaturesDialogOnFirstRun()
     }
 
@@ -285,7 +287,7 @@ class MainActivity : AppCompatActivity() {
         pdfView.maxZoom = pref.getMaxZoom()
         pdfView.zoomTo(pdf.zoom)
 
-        viewConfigurator   // creates a Configurator
+        viewConfigurator   // creates a PDFView.Configurator
             .defaultPage(pageNumber)
             .onPageChange { page: Int, pageCount: Int -> setCurrentPage(page, pageCount) }
             .enableAnnotationRendering(Preferences.annotationRenderingDefault)
@@ -331,7 +333,7 @@ class MainActivity : AppCompatActivity() {
                 pageText = binding.pdfView.getPageText(pageNumber)
             }
             catch (e: Throwable) {
-                Log.e("PdfBox", "extractPageText($pageNumber): error while stripping text", e)
+                Log.e("PDFium", "extractPageText($pageNumber): error while extracting text", e)
                 showFailedExtractTextSnackbar(pageNumber)
             }
 
@@ -354,6 +356,69 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Couldn't find text in this page.", Toast.LENGTH_LONG).show()
     }
 
+    private fun setUpSecondaryBar() {
+        val buttons: MutableList<ImageView> = mutableListOf()
+
+        // padding values
+        val paddingHorDp = 16
+        val paddingVerDp = 8
+        val density = resources.displayMetrics.density
+        val paddingHorizontal = (paddingHorDp * density).toInt()    // convert to pixels
+        val paddingVertical = (paddingVerDp * density).toInt()      // convert to pixels
+
+        val toggleTheme = ImageView(this)
+        toggleTheme.setImageResource(R.drawable.ic_toggle_theme)
+        toggleTheme.setOnClickListener { switchPdfTheme() }
+        buttons.add(toggleTheme)
+
+        val openFile = ImageView(this)
+        openFile.setImageResource(R.drawable.ic_folder)
+        openFile.setOnClickListener { pickFile() }
+        buttons.add(openFile)
+
+        val copyPageText = ImageView(this)
+        copyPageText.setImageResource(R.drawable.ic_copy)
+        copyPageText.setOnClickListener { copyPageText(bypass = true) }
+        buttons.add(copyPageText)
+
+        val bookmarks = ImageView(this)
+        bookmarks.setImageResource(R.drawable.ic_book_bookmark)
+        bookmarks.setOnClickListener { showBookmarks() }
+        buttons.add(bookmarks)
+
+        //val goToPage = ImageView(this)
+        //goToPage.setImageResource(R.drawable.ic_shortcut)
+        //goToPage.setOnClickListener { goToPage() }
+        //buttons.add(goToPage)
+
+        val shareFile = ImageView(this)
+        shareFile.setImageResource(R.drawable.ic_share)
+        shareFile.setOnClickListener { shareFile(pdf.uri, FileType.PDF) }
+        buttons.add(shareFile)
+
+        val search = ImageView(this)
+        search.setImageResource(R.drawable.search_icon)
+        search.setOnClickListener { showSearchBar() }
+        buttons.add(search)
+
+        val textMode = ImageView(this)
+        textMode.setImageResource(R.drawable.ic_text)
+        textMode.setOnClickListener { navToTextMode() }
+        buttons.add(textMode)
+
+        for (button in buttons) {
+            button.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical)
+            binding.secondBarLayout.addView(button)
+        }
+
+        // show it or hide it based on preferences
+        if (pref.getSecondBarEnabled() && !pdf.isFullScreenToggled) {
+            binding.secondBarLayout.visibility = View.VISIBLE
+        }
+        else {
+            binding.secondBarLayout.visibility = View.GONE
+        }
+    }
 
     @SuppressLint("SourceLockedOrientationActivity")
     private fun setButtonsFunctionalities() {
@@ -705,11 +770,15 @@ class MainActivity : AppCompatActivity() {
     private fun toggleFullscreen() {
         fun showUi() {
             supportActionBar?.show()
+            if (pref.getSecondBarEnabled()) {
+                binding.secondBarLayout.visibility = View.VISIBLE
+            }
             binding.pdfView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
         }
 
         fun hideUi() {
             supportActionBar?.hide()
+            binding.secondBarLayout.visibility = View.GONE
             binding.pdfView.systemUiVisibility = (
                     View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                             or View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -863,96 +932,86 @@ class MainActivity : AppCompatActivity() {
             R.id.linksListOption -> showLinks()
             R.id.shareFileOption -> shareFile(pdf.uri, FileType.PDF)
             R.id.printFileOption -> printFile()
-            R.id.searchOption -> {
-                val dialog = createNewSearchDialog()
-                dialog.show()
-            }
+            //R.id.searchOption -> searchFileClicked()
+            R.id.toggleSecondBar -> toggleSecondBar()
             R.id.additionalOptionsOption -> showAdditionalOptions()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
     }
 
-    private fun createNewSearchDialog(): AlertDialog.Builder {
-        val searchLayout = LayoutInflater.from(this).inflate(R.layout.input_layout, null) as TextInputLayout
-        return AlertDialog.Builder(this, R.style.MJDialogThemeLight)
-            .setTitle(resources.getString(R.string.search))
-            .setMessage(resources.getString(R.string.search_dialog_message))
-            .setView(searchLayout)
-            .setPositiveButton(resources.getText(R.string.search)) { searchDialog, _ ->
-                val query = searchLayout.editText?.text ?: return@setPositiveButton
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        // set search functionality
+        val searchView = menu.findItem(R.id.searchOption).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
                 fun startSearchActivity() {
-                    Intent(this, SearchActivity::class.java).also { searchIntent ->
+                    Intent(this@MainActivity, SearchActivity::class.java).also { searchIntent ->
                         searchIntent.putExtra(PDF.filePathKey, pdf.uri.toString())
-                        searchIntent.putExtra(PDF.searchQueryKey, query.toString())
+                        searchIntent.putExtra(PDF.searchQueryKey, query)
                         startActivityForResult(searchIntent, PDF.startSearchActivity)
                     }
                 }
+
                 if (query.isBlank() || query.length < 3) {
-                    AlertDialog.Builder(this)
+                    AlertDialog.Builder(this@MainActivity)
                         .setTitle(getString(R.string.too_short_query))
                         .setMessage(getString(R.string.too_short_query_message).format(query))
-                        .setNeutralButton("Proceed Anyway") {badQueryDialog, _ ->
+                        .setNeutralButton(getString(R.string.proceed_anyway)) { _, _ ->
                             startSearchActivity()
                         }
-                        .setPositiveButton(resources.getText(R.string.ok)) { badQueryDialog, _ ->
-                            searchDialog.dismiss()
+                        .setPositiveButton(getText(R.string.ok)) { badQueryDialog, _ ->
                             badQueryDialog.dismiss()
-                            createNewSearchDialog().show()
                         }
                         .show()
                 }
                 else {
                     startSearchActivity()
                 }
+                return false
             }
-            .setNegativeButton(resources.getText(R.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
-            }
+
+            override fun onQueryTextChange(query: String) = false
+        })
+
+        // create a lambda to trigger the search
+        showSearchBar = { menu.performIdentifierAction(R.id.searchOption, 0) }
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
-    private fun showLinks() {
-        Snackbar.make(binding.root, "Under working", Snackbar.LENGTH_SHORT).show()
-        showLinksDialog(this, binding.pdfView, pdf)
-    }
-
-    private fun showBookmarks() {
-        binding.progressBar.visibility = View.VISIBLE
-        CoroutineScope(Dispatchers.Default).launch {
-            val bookmarks = binding.pdfView.tableOfContents.map { bookmark -> Bookmark(bookmark, level = 0) }
-            Intent(this@MainActivity, BookmarksActivity::class.java).also { bookmarkIntent ->
-                bookmarkIntent.putExtra(PDF.pdfBookmarksKey, Gson().toJson(bookmarks))
-                withContext(Dispatchers.Main) {
-                    startActivityForResult(bookmarkIntent, PDF.startBookmarksActivity)
-                }
+    private fun toggleSecondBar() {
+        binding.apply {
+            if (secondBarLayout.visibility == View.VISIBLE) {
+                secondBarLayout.visibility = View.GONE
+                pref.setSecondBarEnabled(false)
+            }
+            else {
+                secondBarLayout.visibility = View.VISIBLE
+                pref.setSecondBarEnabled(true)
             }
         }
     }
 
+    private fun showLinks() {
+        Intent(this@MainActivity, LinksActivity::class.java).also { linksIntent ->
+            linksIntent.putExtra(PDF.filePathKey, pdf.uri.toString())
+            startActivityForResult(linksIntent, PDF.startLinksActivity)
+        }
+    }
+
+    private fun showBookmarks() {
+        Intent(this@MainActivity, BookmarksActivity::class.java).also { bookmarkIntent ->
+            bookmarkIntent.putExtra(PDF.filePathKey, pdf.uri.toString())
+            startActivityForResult(bookmarkIntent, PDF.startBookmarksActivity)
+        }
+    }
+
     private fun goToPage() {
-        // create EditText for input
-        val inputLayout = LayoutInflater.from(this)
-            .inflate(R.layout.only_integers_input_layout, null) as TextInputLayout
-        inputLayout.hint = "Current page ${pdf.pageNumber + 1}/${pdf.length}"
-
-        AlertDialog.Builder(this, R.style.MJDialogThemeLight)
-            .setTitle(getString(R.string.go_to_page))
-            .setView(inputLayout)
-            .setPositiveButton(getString(R.string.go_to)) { dialog, _ ->
-                val query = inputLayout.editText?.text.toString().lowercase().trim()
-
-                // check if the user provided input
-                if (query.isEmpty()) {
-                    Toast.makeText(this, getString(R.string.no_input), Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                if (query.isDigitsOnly())
-                    binding.pdfView.jumpTo(query.toInt() - 1)
-
-                dialog.dismiss()
-            }
-            .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
-            .show()
+        fun goToPage(pageIndex: Int) {
+            binding.pdfView.jumpTo(pageIndex)
+        }
+       showGoToPageDialog(this, pdf.pageNumber, pdf.length, ::goToPage)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -967,24 +1026,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navToTextMode() {
-        Toast.makeText(this, "Text Mode is not available yet", Toast.LENGTH_SHORT).show()
-        return
-
         if (!checkHasFile()) return
+        //Toast.makeText(this, "Text Mode is still under development", Toast.LENGTH_SHORT).show()
 
-        if (!pdf.isExtractingTextFinished) {
-            Toast.makeText(
-                this,
-                getString(R.string.app_still_extracting_text), Toast.LENGTH_LONG
-            ).show()
-
-            return
+        Intent(this, TextModeActivity::class.java).also {
+            it.putExtra(PDF.filePathKey, pdf.uri.toString())
+            startActivityForResult(it, PDF.startSearchActivity)
         }
-        val intent = Intent(this, TextModeActivity::class.java)
-        extras.putExtra(pdf.uri.toString(), pdf.text)
-        intent.putExtra(Preferences.uriKey, pdf.uri.toString())
-        intent.putExtra(Preferences.pdfLengthKey, pdf.length)
-        startActivity(intent)
     }
 
     private fun showAdditionalOptions() {
@@ -1153,8 +1201,15 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             PDF.startBookmarksActivity -> {
                 if (resultCode == PDF.BOOKMARK_RESULT_OK) {
-                    val pageNumber = intent?.getIntExtra(PDF.chosenBookmarkKey, pdf.pageNumber)
-                    pageNumber?.let { binding.pdfView.jumpTo(it) }
+                    val pageIndex = intent?.getIntExtra(PDF.chosenBookmarkKey, pdf.pageNumber) ?: return
+                    binding.pdfView.jumpTo(pageIndex)
+                }
+            }
+            PDF.startLinksActivity -> {
+                if (resultCode == PDF.LINK_RESULT_OK) {
+                    val pageNumber = intent?.getIntExtra(PDF.linkResultKey, pdf.pageNumber) ?: return
+                    val pageIndex = pageNumber - 1
+                    binding.pdfView.jumpTo(pageIndex)
                 }
             }
             PDF.startSearchActivity -> {
@@ -1196,7 +1251,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }
 
 enum class FileType { IMAGE, PDF }

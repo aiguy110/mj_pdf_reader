@@ -130,5 +130,7 @@ dependencies {
     // kotlin coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
+    // A color picker for Android by Hong Duan
+    implementation 'com.github.duanhong169:colorpicker:1.1.6'
 
 }

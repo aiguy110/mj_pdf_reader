@@ -69,6 +69,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val finishedExtractionDialogKey = "finishedExtraction"
         const val copyTextDialogKey = "copyTextDialog"
         const val turnPageByVolumeButtonsKey = "turnPageByVolumeButtons"
+        const val secondBarEnabledKey = "secondBarEnabled"
 
         // Default values
         const val firstInstallDefault = true
@@ -90,9 +91,9 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val partSizeDefault = 256f
         const val thumbnailRatioDefault = 0.3f
         const val pdfLengthDefault = 0
-        const val finishedExtractionDialogDefault = false
         const val copyTextDialogDefault = true
         const val turnPageByVolumeButtonsDefault = false
+        const val secondBarEnabledDefault = false
 
         // Colors
         const val pdfDarkBackgroundColor = -0x313132          // -0x313132 = 0xffcecece
@@ -120,9 +121,9 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getPartSize() = prefMan.getFloat(partSizeKey, partSizeDefault)
     fun getThumbnailRation() = prefMan.getFloat(thumbnailRatioKey, thumbnailRatioDefault)
     fun getMaxZoom() = prefMan.getFloat(maxZoomKey, maxZoomDefault)
-    fun getFinishedExtractionDialog() = prefMan.getBoolean(finishedExtractionDialogKey, finishedExtractionDialogDefault)
     fun getCopyTextDialog() = prefMan.getBoolean(copyTextDialogKey, copyTextDialogDefault)
     fun getTurnPageByVolumeButtons() = prefMan.getBoolean(turnPageByVolumeButtonsKey, turnPageByVolumeButtonsDefault)
+    fun getSecondBarEnabled() = prefMan.getBoolean(secondBarEnabledKey, secondBarEnabledDefault)
 
     // put values in Shared Preferences
     fun setFirstInstall(value: Boolean) = prefMan.edit().putBoolean(firstInstallKey, value).apply()
@@ -139,7 +140,8 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setPartSize(value: Float) = prefMan.edit().putFloat(partSizeKey, value).apply()
     fun setThumbnailRatio(value: Float) = prefMan.edit().putFloat(thumbnailRatioKey, value).apply()
     fun setMaxZoom(value: Float) = prefMan.edit().putFloat(maxZoomKey, value).apply()
-    fun setFinishedExtractionDialog(value: Boolean) = prefMan.edit().putBoolean(finishedExtractionDialogKey, value).apply()
     fun setCopyTextDialog(value: Boolean) = prefMan.edit().putBoolean(copyTextDialogKey, value).apply()
     fun setTurnPageByVolumeButtons(value: Boolean) = prefMan.edit().putBoolean(turnPageByVolumeButtonsKey, value).apply()
+    fun setSecondBarEnabled(value: Boolean) = prefMan.edit().putBoolean(secondBarEnabledKey, value).apply()
+
 }

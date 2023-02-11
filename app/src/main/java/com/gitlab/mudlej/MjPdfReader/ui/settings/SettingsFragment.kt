@@ -134,14 +134,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
         // ----------------- Text Section ------------------
-        // Configure and add Finished Extraction Snackbar Switch
-        val finishedExtractionSnackbarSwitch = SwitchPreferenceCompat(requireContext())
-        finishedExtractionSnackbarSwitch.title = getString(R.string.finished_extraction_title)
-        finishedExtractionSnackbarSwitch.setDefaultValue(Preferences.finishedExtractionDialogDefault)
-        finishedExtractionSnackbarSwitch.key = Preferences.finishedExtractionDialogKey
-        finishedExtractionSnackbarSwitch.summary = getString(R.string.finished_extraction_summary)
-        finishedExtractionSnackbarSwitch.isIconSpaceReserved = false
-
         // Configure and add Show Copy Text Dialog Switch
         val showCopyTextDialogSwitch = SwitchPreferenceCompat(requireContext())
         showCopyTextDialogSwitch.title = getString(R.string.show_copy_dialog_title)
@@ -153,7 +145,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // add the switches to the second section
         val textSection: PreferenceCategory? = findPreference("textSection")
         textSection?.isIconSpaceReserved = false
-        textSection?.addPreference(finishedExtractionSnackbarSwitch)
         textSection?.addPreference(showCopyTextDialogSwitch)
 
 

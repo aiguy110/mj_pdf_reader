@@ -43,36 +43,32 @@
 
 package com.gitlab.mudlej.MjPdfReader.ui
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.content.Intent
 import android.net.Uri
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
+import androidx.core.text.isDigitsOnly
 import com.github.barteksc.pdfviewer.PDFView
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
-import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
+import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
 import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
-import com.gitlab.mudlej.MjPdfReader.util.indexesOf
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.shockwave.pdfium.PdfDocument
-import java.util.concurrent.Executors
 
 private const val TAG = "Dialogs"
 
@@ -237,47 +233,6 @@ fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
         .show()
 }
 
-fun showLinksDialog(activity: MainActivity, pdfView: PDFView, pdf: PDF) {
-    val originalPageNumber = pdf.pageNumber
-    val links = mutableListOf<PdfDocument.Link?>()
-    // This is not working because getLinks(i) can only
-    // see links in pages the pdfView visited and stayed there for a bit
-    for (i in 0..pdf.length) {
-        pdfView.jumpTo(i)
-        pdfView.loadPages()
-    }
-    for (i in 0..pdf.length) {
-        //pdfView.jumpTo(i)
-        Log.d(TAG, "showLinksDialog: pdfView.getLinks($i).size.: ${pdfView.getLinks(i)?.size}")
-        pdfView.getLinks(i)?.let {
-            it.forEach { link -> if (link.uri != null) links.add(link)}
-        }
-    }
-
-    pdfView.jumpTo(originalPageNumber)
-    Log.d(TAG, "showLinksDialog: links.size: ${links.size}")
-    var linksLabels = links.map {
-        // e.g. Page 48: (NOT USED NOW)
-        //      https://ww.startpage.com/
-        //"${activity.getString(R.string.page)} ${it?.destPageIdx?.plus(1)}:\n${it?.uri}"
-        it?.uri.toString()
-    }
-
-    if (linksLabels.isEmpty()) linksLabels = listOf(activity.getString(R.string.no_links))
-
-    // create and show the bookmarks dialog
-    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
-        .setTitle(activity.getString(R.string.pdf_links) + "(${links.size})")
-        .setItems(linksLabels.toTypedArray()) { dialog, which ->
-            if (links.isEmpty()) return@setItems
-
-            val page = links[which]?.destPageIdx ?: return@setItems
-            pdfView.jumpTo(page)
-            dialog.dismiss()
-        }
-        .show()
-}
-
 fun showCopyPageTextDialog(
     activity: MainActivity,
     pageNumber: Int,
@@ -332,5 +287,73 @@ fun showUnderDevelopmentDialog(activity: TextModeActivity) {
         .setNegativeButton(activity.getString(R.string.go_back)) { dialog, _ ->
             dialog.dismiss(); activity.finish()
         }
+        .show()
+}
+
+
+fun showSearchDialog(activity: Activity, pdf: PDF) {
+    val searchLayout = LayoutInflater.from(activity).inflate(R.layout.input_layout, null) as TextInputLayout
+    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
+        .setTitle(activity.getString(R.string.search))
+        .setMessage(activity.getString(R.string.search_dialog_message))
+        .setView(searchLayout)
+        .setPositiveButton(activity.getText(R.string.search)) { searchDialog, _ ->
+            val query = searchLayout.editText?.text ?: return@setPositiveButton
+            fun startSearchActivity() {
+                Intent(activity, SearchActivity::class.java).also { searchIntent ->
+                    searchIntent.putExtra(PDF.filePathKey, pdf.uri.toString())
+                    searchIntent.putExtra(PDF.searchQueryKey, query.toString())
+                    activity.startActivityForResult(searchIntent, PDF.startSearchActivity)
+                }
+            }
+            if (query.isBlank() || query.length < PDF.MIN_SEARCH_QUERY) {
+                AlertDialog.Builder(activity)
+                    .setTitle(activity.getString(R.string.too_short_query))
+                    .setMessage(activity.getString(R.string.too_short_query_message).format(query))
+                    .setNeutralButton(activity.getString(R.string.proceed_anyway)) { _, _ ->
+                        startSearchActivity()
+                    }
+                    .setPositiveButton(activity.getText(R.string.ok)) { badQueryDialog, _ ->
+                        searchDialog.dismiss()
+                        badQueryDialog.dismiss()
+                        showSearchDialog(activity, pdf)
+                    }
+                    .show()
+            }
+            else {
+                startSearchActivity()
+            }
+        }
+        .setNegativeButton(activity.getText(R.string.cancel)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        .show()
+}
+
+fun showGoToPageDialog(activity: Activity, pageIndex: Int, pdfLength: Int, goToPageFunc: (Int) -> Unit) {
+    // create EditText for input
+    val inputLayout = LayoutInflater
+        .from(activity)
+        .inflate(R.layout.only_integers_input_layout, null) as TextInputLayout
+
+    inputLayout.hint = "Current page ${pageIndex + 1}/$pdfLength"
+
+    AlertDialog.Builder(activity, R.style.MJDialogThemeLight)
+        .setTitle(activity.getString(R.string.go_to_page))
+        .setView(inputLayout)
+        .setPositiveButton(activity.getString(R.string.go_to)) { dialog, _ ->
+            val query = inputLayout.editText?.text.toString().lowercase().trim()
+
+            // check if the user provided input
+            if (query.isEmpty()) {
+                Toast.makeText(activity, activity.getString(R.string.no_input), Toast.LENGTH_SHORT).show()
+                return@setPositiveButton
+            }
+            if (query.isDigitsOnly())
+                goToPageFunc(query.toInt() - 1)
+
+            dialog.dismiss()
+        }
+        .setNegativeButton(activity.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
         .show()
 }

@@ -1,226 +1,373 @@
-/*
-* Note: This is an experimental class, and the code is just a draft
-* several operations should be done off UI
-* */
-
 package com.gitlab.mudlej.MjPdfReader.ui.text_mode
 
+import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.Html
-import android.util.Log
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.preference.PreferenceManager
 import com.gitlab.mudlej.MjPdfReader.R
-import com.gitlab.mudlej.MjPdfReader.data.Preferences
+import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityTextModeBinding
-import com.gitlab.mudlej.MjPdfReader.ui.showUnderDevelopmentDialog
-import com.gitlab.mudlej.MjPdfReader.util.ExtendedDataHolder
+import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractor
+import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractorFactory
+import com.gitlab.mudlej.MjPdfReader.ui.showGoToPageDialog
+import com.gitlab.mudlej.MjPdfReader.util.getFileName
+import com.gitlab.mudlej.MjPdfReader.util.indexesOf
+import com.gitlab.mudlej.MjPdfReader.util.newColorPicker
+import com.gitlab.mudlej.MjPdfReader.util.showOptionalIcons
 import com.google.android.material.snackbar.Snackbar
-import java.util.concurrent.Executors
+import top.defaults.colorpicker.ColorPickerPopup.ColorPickerObserver
 
-class TextModeActivity : AppCompatActivity() {
-    private val TAG = "TextMode"
+
+class TextModeActivity  : AppCompatActivity() {
     private lateinit var binding: ActivityTextModeBinding
+    private lateinit var pdfExtractor: PdfExtractor
+    private lateinit var prefManager: SharedPreferences
+    private lateinit var pdfUri: Uri
 
-    private val extras = ExtendedDataHolder.instance
-    private lateinit var pdfText: Map<Int, String>
-    private lateinit var allText: String
-    private var isAllTextReady = false
+    private var textSize = DEFAULT_FONT_SIZE
+    private var textColor = DEFAULT_TEXT_COLOR
+    private var backgroundColor = DEFAULT_BACKGROUND_COLOR
 
-    private var pageNum = 0
-    private var pdfLength = 0
-
-    private var fontSize = 16f
-    private val minFontSize = 3f
-    private val maxFontSize = 150f
+    private var pdfLength = -1
+    private var pageNumber = DEFAULT_PAGE_NUMBER
+    private var pageText = ""
+    private var searchQuery = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTextModeBinding.inflate(layoutInflater)
+        prefManager = PreferenceManager.getDefaultSharedPreferences(this)
         setContentView(binding.root)
 
+        initPdfUri()
+        initPdfExtractor()
+        loadPref()
         initActionBar()
-        initPdfText()
-
-        // get pages count
-        pdfLength = intent.getIntExtra(Preferences.pdfLengthKey, Preferences.pdfLengthDefault)
-
-        // init font size
-        binding.pageTextView.textSize = fontSize
-
-        // set viewing mode
-        //setPdfPagesMode()
-        setContinuousMode()
+        initData()
+        initUi()
     }
 
+    private fun initPdfUri() {
+        val pdfPath = intent.getStringExtra(PDF.filePathKey)
+        if (pdfPath.isNullOrEmpty()) {
+            badFileExit()
+            return
+        }
+        pdfUri = Uri.parse(pdfPath)
+    }
+
+    private fun initPdfExtractor() {
+        pdfExtractor = PdfExtractorFactory.create(this, pdfUri)
+    }
     private fun initActionBar() {
-        // add back button to the action bar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val pdfTitle = getFileName(this, pdfUri).removeSuffix(".pdf")
+        val actionBar = supportActionBar
+        // Disable the default and enable the custom
+        actionBar?.setDisplayShowTitleEnabled(false)
+        actionBar?.setDisplayShowCustomEnabled(true)
 
-        // set title
-        title = getString(R.string.text_mode_experimental)
+        val customView: View = layoutInflater.inflate(R.layout.actionbar_title, null)
+        val appTitle = customView.findViewById<TextView>(R.id.actionbarTitle)
+        appTitle.text = pdfTitle
+        appTitle.typeface = Typeface.SERIF
+        appTitle.setOnClickListener {
+            if (pdfTitle.isNotBlank()) {
+                Toast.makeText(this, pdfTitle, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        actionBar?.customView = customView
     }
+
+    private fun updatePageText() {
+        pageText = pdfExtractor.getPageText(pageNumber)
+        binding.pageTextView.text = pageText
+        binding.pageTextView.textSize = textSize
+
+        if (searchQuery.isNotEmpty()) {
+            showQueryResultsInPage()
+        }
+    }
+
+    private fun initData() {
+        updatePageText()
+        pdfLength = pdfExtractor.getPageCount()
+        if (pdfLength == -1) {
+            badFileExit()
+        }
+    }
+
+    private fun badFileExit() {
+        Toast.makeText(this, getString(R.string.failed_to_extract_text), Toast.LENGTH_LONG).show()
+        finish()
+    }
+
+    private fun initUi() {
+        binding.apply {
+            nextButton.setOnClickListener { nextPage() }
+            prevButton.setOnClickListener { prevPage() }
+            pageCounter.setOnClickListener {
+                val pageIndex = pageNumber - 1
+                showGoToPageDialog(this@TextModeActivity, pageIndex, pdfLength, ::goToPage)
+            }
+        }
+        updatePageCounter()
+    }
+
+    private fun updatePageCounter() {
+        binding.pageCounter.text = getString(R.string.page_counter_label).format(pageNumber, pdfLength)
+    }
+
+    private fun goToPage(pageIndex: Int) {
+        if (pageIndex in 0 until pdfLength) {
+            pageNumber = pageIndex + 1
+            postUpdatePageNumber()
+        }
+        else {
+            Snackbar.make(
+                binding.root,
+                getString(R.string.page_out_of_bound).format(pageIndex + 1),
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+
+    }
+
+    private fun nextPage() {
+        if (pageNumber < pdfLength) {
+            ++pageNumber
+            postUpdatePageNumber()
+        }
+    }
+
+    private fun prevPage() {
+        if (pageNumber > 1) {
+            --pageNumber
+            postUpdatePageNumber()
+        }
+    }
+
+    private fun postUpdatePageNumber() {
+        savePageNumber()
+        updatePageText()
+        updatePageCounter()
+    }
+
+    private fun increaseTextSize() {
+        if (textSize < MAX_FONT_SIZE) {
+            binding.pageTextView.textSize = ++textSize
+            saveTextSize()
+        }
+    }
+
+    private fun decreaseTextSize() {
+        if (textSize > MIN_FONT_SIZE) {
+            binding.pageTextView.textSize = --textSize
+            saveTextSize()
+        }
+    }
+
+    private fun savePageNumber() {
+        prefManager.edit().putInt(pdfUri.toString(), pageNumber).apply()
+    }
+
+    private fun saveTextSize() {
+        prefManager.edit().putFloat(FONT_SIZE_KEY, textSize).apply()
+    }
+
+    private fun saveTextColor() {
+        prefManager.edit().putInt(TEXT_COLOR_KEY, textColor).apply()
+    }
+
+    private fun saveBackgroundColor() {
+        prefManager.edit().putInt(BACKGROUND_COLOR_KEY, backgroundColor).apply()
+    }
+
+    private fun loadPref() {
+        // load values
+        pageNumber = prefManager.getInt(pdfUri.toString(), DEFAULT_PAGE_NUMBER)
+        textColor = prefManager.getInt(TEXT_COLOR_KEY, DEFAULT_TEXT_COLOR)
+        backgroundColor = prefManager.getInt(BACKGROUND_COLOR_KEY, DEFAULT_BACKGROUND_COLOR)
+        textSize = prefManager.getFloat(FONT_SIZE_KEY, DEFAULT_FONT_SIZE)
+
+        updateValues()
+    }
+
+    private fun resetValuesToDefault() {
+        textColor = DEFAULT_TEXT_COLOR
+        backgroundColor = DEFAULT_BACKGROUND_COLOR
+        textSize = DEFAULT_FONT_SIZE
+        saveTextSize()
+        saveTextColor()
+        saveBackgroundColor()
+        updateValues()
+    }
+
+    private fun setTextColor() {
+        newColorPicker(this)
+            .show(binding.pageTextView, object : ColorPickerObserver() {
+                override fun onColorPicked(color: Int) {
+                    textColor = color
+                    updateTextColor()
+                    saveTextColor()
+                }
+            })
+    }
+
+    private fun setBackgroundColor() {
+        newColorPicker(this)
+            .show(binding.textLayout, object : ColorPickerObserver() {
+                override fun onColorPicked(color: Int) {
+                    backgroundColor = color
+                    updateBackgroundColor()
+                    saveBackgroundColor()
+                }
+            })
+    }
+
+    private fun updateTextColor() {
+        binding.pageTextView.setTextColor(textColor)
+        binding.pageCounter.setTextColor(textColor)
+    }
+
+    private fun updateBackgroundColor() {
+        binding.textLayout.setBackgroundColor(backgroundColor)
+        binding.buttonsLayout.setBackgroundColor(backgroundColor)
+    }
+
+    private fun updateValues() {
+        updateTextColor()
+        updateBackgroundColor()
+        updatePageText()
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.text_mode_menu, menu)
+        menu.showOptionalIcons()
         return true
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        if (isAllTextReady) {
-            menu.findItem(R.id.search_in_text_mode).isVisible = true
-
-            // set search functionality
-            val searchView = menu.findItem(R.id.search_in_text_mode).actionView as SearchView
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    binding.progressBar.visibility = View.VISIBLE
-                    findInTextView(query)
-                    return false
-                }
-                override fun onQueryTextChange(newText: String): Boolean {
-                    return false
-                }
-            })
-//            searchView.setOnCloseListener {
-//                resetTextViewColor()
-//                true
-//            }
-        }
-        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.increase_font -> increaseFontSize()
-            R.id.decrease_font -> decreaseFontSize()
             android.R.id.home -> finish()
+            R.id.increase_text_size -> increaseTextSize()
+            R.id.decrease_text_size -> decreaseTextSize()
+            R.id.text_color -> setTextColor()
+            R.id.background_color -> setBackgroundColor()
+            R.id.reset_to_Default -> resetValuesToDefault()
             else -> super.onOptionsItemSelected(item)
         }
         return true
     }
 
-    private fun findInTextView(query: String) {
-        var queryIndex = -1
-        var lineNumber = 0
-        var resultCount = 0
-        var highlighted = ""
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        // set search functionality
+        val searchView = menu.findItem(R.id.search_in_text_mode).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String) = false
 
-        // Off UI thread
-        Executors.newSingleThreadExecutor().execute {
-            val textView = binding.pageTextView
-            queryIndex = allText.indexOf(query)
-            resultCount = query.count { allText.contains(it)}
-
-            // if there's a match, find line number and color it with RED
-            if (queryIndex != -1) {
-                lineNumber = textView.layout.getLineForOffset(queryIndex)
-                highlighted = "<font color='red'>$query</font>"
+            override fun onQueryTextChange(query: String): Boolean {
+                searchQuery = query
+                showQueryResultsInPage()
+                return false
             }
+        })
+        return super.onPrepareOptionsMenu(menu)
+    }
 
-            // back to UI thread
-            Handler(Looper.getMainLooper()).post {
-                // apply results
-                if (queryIndex != -1) {
-                    textView.text = Html.fromHtml(allText.replace(query, highlighted))
-                    binding.pageTextScrollView.scrollTo(0, textView.layout.getLineTop(lineNumber))
-                }
-                else {
-                    resetTextView()
-                }
-                Snackbar.make(binding.root, "Found $resultCount occurrences",
-                    Snackbar.LENGTH_LONG).show()
-                binding.progressBar.visibility = View.GONE
-            }
+    private fun showQueryResultsInPage() {
+        val indexes = pageText.indexesOf(searchQuery, ignoreCase = true)
+        val stylizedText = stylizeText(searchQuery, indexes)
+        binding.pageTextView.setText(stylizedText, TextView.BufferType.SPANNABLE)
+
+//        if (indexes.size != pageText.length) {
+//            Snackbar.make(
+//                binding.root,
+//                getString(R.string.number_of_results).format(indexes.size),
+//                Snackbar.LENGTH_SHORT
+//            ).show()
+//        }
+    }
+
+    private fun stylizeText(query: String, indexes: List<Int>): Spannable {
+        val color = "#ff335d"   // should be extracted
+        val spannable = SpannableString(pageText)
+
+        if (query.isEmpty() || query.isBlank()) {
+            return spannable
         }
-    }
-
-    private fun resetTextView() {
-//        allText = "<font color='black'>$allText</font>"
-//        binding.pageTextView.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary))
-        binding.pageTextView.text = allText
-    }
-
-    private fun increaseFontSize() {
-        if (fontSize < maxFontSize) binding.pageTextView.textSize = ++fontSize
-    }
-
-    private fun decreaseFontSize() {
-        if (fontSize > minFontSize) binding.pageTextView.textSize = --fontSize
-    }
-
-    private fun initPdfText() {
-        if (intent.getStringExtra(Preferences.uriKey) == null) finish()
-
-        val key = intent.getStringExtra(Preferences.uriKey) as String
-        if (extras.hasExtra(key))
-            try {
-                pdfText = extras.getExtra(key) as Map<Int, String>
-
-                // combine all text in one string off UI
-                Executors.newSingleThreadExecutor().execute {
-                    if (pdfText.values.isEmpty()) allText = "No Text"
-                    else allText = pdfText.values
-                        .reduce { acc, s -> "$acc $s" }
-                        .replace("\n+", "\n")   // replace one or more newline
-
-                    // back to UI thread
-                    Handler(Looper.getMainLooper()).post {
-                        isAllTextReady = true
-                        invalidateOptionsMenu()
-                        binding.pageTextView.text = allText
-                        binding.progressBar.visibility = View.GONE
-                        showUnderDevelopmentDialog(this)
-                    }
-                }
-            }
-            catch (e: ClassCastException) {
-                Log.e(TAG, "Error couldn't cast: ${e.message}")
-                finish()
-            }
         else {
-            Log.e(TAG, "Error: couldn't find pdfText map in extras")
-            finish()
+            spannable.removeSpan(StyleSpan(Typeface.BOLD))
+            spannable.removeSpan(UnderlineSpan())
         }
 
-    }
-
-    private fun setContinuousMode() {
-        binding.apply {
-            buttonsLayout.visibility = View.GONE
+        for (index in indexes) {
+            spannable.setSpan(
+                ForegroundColorSpan(Color.parseColor(color)),
+                index,
+                index + query.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                UnderlineSpan(),
+                index,
+                index + query.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
+        return spannable
     }
 
-    private fun setPdfPagesMode() {
-        binding.apply {
-            buttonsLayout.visibility = View.VISIBLE
-            pageTextView.text = textOrEmpty(pageNum)
-            updatePageCounterView()
-            prevButton.setOnClickListener {
-                if (pageNum > 0) {
-                    pageTextView.text = textOrEmpty(--pageNum)
-                    updatePageCounterView()
-                }
-            }
-            nextButton.setOnClickListener {
-                if (pageNum < pdfLength) {
-                    pageTextView.text = textOrEmpty(++pageNum)
-                    updatePageCounterView()
-                }
-            }
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(PAGE_NUMBER_KEY, pageNumber)
+        outState.putInt(PDF_LENGTH_KEY, pdfLength)
+        outState.putFloat(FONT_SIZE_KEY, textSize)
+        outState.putInt(TEXT_COLOR_KEY, textColor)
+        outState.putInt(BACKGROUND_COLOR_KEY, backgroundColor)
+        outState.putParcelable(URI_KEY, pdfUri)
+        // add font color
+        super.onSaveInstanceState(outState)
     }
 
-    private fun updatePageCounterView() {
-        binding.pageCounter.text = "${getString(R.string.page)}: ${pageNum + 1}/${pdfLength}"
+    private fun restoreInstanceState(savedState: Bundle) {
+        pageNumber = savedState.getInt(PAGE_NUMBER_KEY)
+        pdfLength = savedState.getInt(PDF_LENGTH_KEY)
+        textSize = savedState.getFloat(FONT_SIZE_KEY)
+        pdfUri = savedState.getParcelable(URI_KEY) ?: return
     }
 
-    // if null or empty return Empty page, otherwise return it as it is
-    private fun textOrEmpty(i: Int): String
-        = (pdfText[i] ?: "").ifEmpty { getString(R.string.empty_page) }
+    companion object {
+        private const val TAG = "TextModeActivity"
+
+        // default values
+        private const val MIN_FONT_SIZE = 3f
+        private const val MAX_FONT_SIZE = 150f
+        private const val DEFAULT_FONT_SIZE = 16f
+        private const val DEFAULT_TEXT_COLOR = Color.BLACK
+        private const val DEFAULT_BACKGROUND_COLOR = Color.WHITE
+        private const val DEFAULT_PAGE_NUMBER = 1
+
+        // keys
+        private const val URI_KEY = "URI_KEY"
+        private const val PAGE_NUMBER_KEY = "PAGE_NUMBER_KEY"
+        private const val PDF_LENGTH_KEY = "PDF_LENGTH_KEY"
+        private const val FONT_SIZE_KEY = "FONT_SIZE_KEY"
+        private const val TEXT_COLOR_KEY = "TEXT_COLOR_KEY"
+        private const val BACKGROUND_COLOR_KEY = "BACKGROUND_COLOR_KEY"
+    }
 }

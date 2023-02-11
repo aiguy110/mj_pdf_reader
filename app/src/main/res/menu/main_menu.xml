@@ -52,73 +52,70 @@
 
     <item
         android:id="@+id/switchThemeOption"
-        android:orderInCategory="2"
         android:title="@string/switch_theme"
         android:icon="@drawable/ic_toggle_theme"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/openFileOption"
-        android:orderInCategory="3"
         android:title="@string/open_another_pdf"
         android:icon="@drawable/ic_folder"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/copyPageText"
-        android:orderInCategory="4"
         android:title="@string/copy_page_text"
         android:icon="@drawable/ic_copy"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/bookmarksListOption"
-        android:orderInCategory="5"
         android:title="@string/table_of_contents"
         android:icon="@drawable/ic_book_bookmark"
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/linksListOption"
+        android:title="@string/links_in_file"
+        app:showAsAction="never"
+        android:icon="@drawable/ic_link"/>
+
+    <item
         android:id="@+id/goToPageOption"
-        android:orderInCategory="6"
         android:title="@string/go_to_page"
         android:icon="@drawable/ic_shortcut"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/linksListOption"
-        android:orderInCategory="7"
-        android:title="@string/links_in_file"
-        app:showAsAction="never"
-        android:icon="@drawable/ic_link"
-        android:visible="false"/>
 
     <item
         android:id="@+id/shareFileOption"
-        android:orderInCategory="8"
         android:title="@string/share_file"
         android:icon="@drawable/ic_share"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/printFileOption"
-        android:orderInCategory="9"
         android:title="@string/print_file"
         android:icon="@drawable/ic_print"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/searchOption"
-        android:orderInCategory="10"
         android:title="@string/search"
         android:icon="@drawable/search_icon"
-        app:showAsAction="ifRoom" />
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="never|collapseActionView" />
 
     <item
         android:id="@+id/additionalOptionsOption"
         android:title="@string/additional_options"
-        android:orderInCategory="11"
         android:icon="@drawable/ic_more_horizontal"
         app:showAsAction="never"  />
+
+    <item
+        android:id="@+id/toggleSecondBar"
+        android:title="Toggle Shortcuts"
+        android:icon="@drawable/ic_awesome"
+        app:showAsAction="never" />
 
 </menu>

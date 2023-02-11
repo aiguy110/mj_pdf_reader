@@ -221,7 +221,7 @@ fun putEditTextInLinearLayout(activity: MainActivity, searchInput: EditText, lay
     layout.addView(searchInput)
 }
 
-fun copyToClipboard(activity: MainActivity, label: String, text: String) {
+fun copyToClipboard(activity: Activity, label: String, text: String) {
     val clipboard: ClipboardManager = activity.getSystemService(Context.CLIPBOARD_SERVICE)
             as ClipboardManager
     val clip: ClipData = ClipData.newPlainText(label, text)

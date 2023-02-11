@@ -69,7 +69,7 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
         // add back button to the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        title = "Searching..."
+        title = getString(R.string.searching)
     }
 
     private fun initPdfExtractor() {
@@ -161,7 +161,7 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
 
         // show too many results message
         if (searchResults.size > PDF.TOO_MANY_RESULTS) {
-            Snackbar.make(binding.root,"Too many results! Searching the results could be slow.", Snackbar.LENGTH_INDEFINITE).also {
+            Snackbar.make(binding.root,getString(R.string.too_many_results_may_be_slow), Snackbar.LENGTH_INDEFINITE).also {
                 it.setAction(getText(R.string.ok)) { }
                 it.show()
             }
@@ -212,7 +212,11 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
                 val filteredList = searchResults.filter { it.text.contains(query, true) }
                 searchResultAdapter.submitList(filteredList)
                 searchResultAdapter.notifyDataSetChanged() // because the comparator doesn't see the difference in text style
-                Snackbar.make(binding.root, "${filteredList.size} filtered results.", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.number_of_filtered_results).format(filteredList.size),
+                    Snackbar.LENGTH_SHORT
+                ).show()
                 return false
             }
         })
