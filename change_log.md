@@ -1,5 +1,29 @@
-* V1.4.4
+* 2.0.1
+  * Fixed back button not working in Bookmarks Activity.
+  * Fixed displaying search results incorrectly.
+  * Added the option to expand the text of a search result.
 
+* V2.0.0
+  * Rebranded the app as MJ PDF with a new original icon.
+  * Search has become blazingly fast.
+  * You can search the the results of a search.
+  * Added support for Hyperlinks.
+  * Added a Table of Content page.
+  * Added a page to see a list of all the links embedded in the file.
+  * Added Text Mode to view the PDF as text. (configurable text size and color)
+  * Added auto scrolling. (adjustable speed, both direction).
+  * Added a button to lock horizontal scrolling.
+  * Added a button to take a screenshot.
+  * Added a second top bar with seven shortcuts. (hidden by default)
+  * Added icons to all menu items in all pages.
+  * Clicking on the scroll handle shows the 'Go To Page' dialog.
+  * Prevent accidental back pressing by required double press to exit.
+  * Decreased app's size by 27.5%. It became 5.1 Megabytes.
+  * Fixed not remembering the last visited page sometimes.
+  * Fixed hiding the Buttons and Scroll Handle while the user is still interacting with them.
+  * Fixed not being able to reset the zoom to a page-width level by double tapping
+  * Fixed few common crashes.
+  * Fixed no stopping auto scrolling when the user exit the Full Screen Mode.
 
 * V1.4.3+
   * Big increase in performance, especially for big files.
@@ -17,7 +41,6 @@
   * Disabled Text Mode since it's not usable yet and crashes a lot.
   * Hid page scroll handle if the pdf consists of only one page.
   * Improved Copy Page's Text functionality and UI.
-
 
 * V1.4.2
     * Add an option to turn the page using volume buttons.
