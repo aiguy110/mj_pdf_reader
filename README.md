@@ -1,5 +1,8 @@
+# MJ PDF
+MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudlej](https://gitlab.com/mudlej).
+
 <div align="center">
-  <img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="120" />
+  <img src="https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/app/src/main/feature_graphic.png" />
 </div>
 
 # Download
@@ -20,9 +23,6 @@
 * [Underlying Libraries](https://gitlab.com/mudlej_android/mj_pdf_reader#underlying-libraries)
 * [Authors and acknowledgment](https://gitlab.com/mudlej_android/mj_pdf_reader#authors-and-acknowledgment)
 * [License](https://gitlab.com/mudlej_android/mj_pdf_reader#authors-and-acknowledgment)
-
-# MJ PDF
-MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudlej](https://gitlab.com/mudlej).
 
 
 ## MJ PDF Features
@@ -52,7 +52,7 @@ MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudl
 
 | Full Screen | Text Mode |
 |:-:|:-:|
-| ![File Links](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_full_screen_buttons_framed.png) | ![Text Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/text_mode_menu_framed.png) |
+| ![Full Screen](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_full_screen_buttons_framed.png) | ![Text Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/text_mode_menu_framed.png) |
 
 
 ## Permissions and privacy
