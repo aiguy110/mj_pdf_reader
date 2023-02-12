@@ -1,7 +1,7 @@
 # MJ PDF
 MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudlej](https://gitlab.com/mudlej).
 
-![Feature Graphic](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/app/src/main/feature_graphic.png)
+![Feature Graphic](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/app/src/main/feature_graphic.png)
 
 # Download
 - [x] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader)
@@ -43,7 +43,7 @@ MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudl
 ## Screenshots
 | Light Mode | Dark Mode | Main MenuMode |
 |:-:|:-:|:-:|
-| ![Light Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png) | ![Dark Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png) |! [Main Menu](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_main_menu_framed.png) |
+| ![Light Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png) | ![Dark Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png) | ![Main Menu](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_main_menu_framed.png) |
 
 
 ## Permissions and privacy
@@ -110,7 +110,7 @@ MJ PDF uses the GPLv3 license, the original app (PDF View Plus) was under MIT li
 ## More Screenshots
 | Light Mode | Dark Mode | Main MenuMode |
 |:-:|:-:|:-:|
-| ![Light Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png) | ![Dark Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png) |! [Main Menu](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_main_menu_framed.png) |
+| ![Light Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png) | ![Dark Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png) | ![Main Menu](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_main_menu_framed.png) |
 
 | File Links | Search Results | Table of Contents |
 |:-:|:-:|:-:|
