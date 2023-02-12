@@ -15,6 +15,7 @@ MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudl
 * [MJ PDF](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-reader)
 * [Download](https://gitlab.com/mudlej_android/mj_pdf_reader#download)
 * [Screenshots](https://gitlab.com/mudlej_android/mj_pdf_reader#screenshots)
+* [More Screenshots](https://gitlab.com/mudlej_android/mj_pdf_reader#more-screenshots)
 * [MJ PDF Features](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-reader-features)
 * [Permissions and privacy](https://gitlab.com/mudlej_android/mj_pdf_reader#permissions-and-privacy)
 * [MJ PDF V2.0.0 Release Notes](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-v200-release-notes)
@@ -45,14 +46,6 @@ MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudl
 | Light Mode | Dark Mode | Main MenuMode |
 |:-:|:-:|:-:|
 | ![Light Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png) | ![Dark Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png) |! [Main Menu](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_main_menu_framed.png) |
-
-| File Links | Search Results | Table of Contents |
-|:-:|:-:|:-:|
-| ![File Links](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/links_framed.png) | ![Search Results](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/search_results_framed.png) | ![Table of Contents](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/table_of_contents_framed.png) |
-
-| Full Screen | Text Mode |
-|:-:|:-:|
-| ![Full Screen](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_full_screen_buttons_framed.png) | ![Text Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/text_mode_menu_framed.png) |
 
 
 ## Permissions and privacy
@@ -113,3 +106,18 @@ And Forked [ AndroidPdfViewer](https://github.com/barteksc/AndroidPdfViewer) to 
 
 ## License
 MJ PDF uses the GPLv3 license, the original app (PDF View Plus) was under MIT license
+
+
+
+## More Screenshots
+| Light Mode | Dark Mode | Main MenuMode |
+|:-:|:-:|:-:|
+| ![Light Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png) | ![Dark Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png) |! [Main Menu](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_main_menu_framed.png) |
+
+| File Links | Search Results | Table of Contents |
+|:-:|:-:|:-:|
+| ![File Links](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/links_framed.png) | ![Search Results](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/search_results_framed.png) | ![Table of Contents](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/table_of_contents_framed.png) |
+
+| Full Screen | Text Mode |
+|:-:|:-:|
+| ![Full Screen](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_full_screen_buttons_framed.png) | ![Text Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/text_mode_menu_framed.png) |
