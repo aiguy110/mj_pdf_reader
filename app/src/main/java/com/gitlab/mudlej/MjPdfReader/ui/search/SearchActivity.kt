@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gitlab.mudlej.MjPdfReader.R
@@ -115,6 +114,12 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
                 }
 
                 pageText.indexesOf(query, ignoreCase = true).forEach { indexInPage ->
+//                    Log.d(tag, "search: ${
+//                        pageText.substring(
+//                            max(indexInPage - 10, indexInPage),
+//                            min(indexInPage + 10, pdfExtractor.getPageCount() + indexInPage + 10)
+//                        )}"
+//                    )
                     searchResults.add(getPageResult(query, indexInPage, pageText, pageNumber))
                 }
                 lastPageLiveData.postValue(pageNumber)
@@ -125,33 +130,39 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
     }
 
     private fun getPageResult(
-        query: String, indexInPage: Int, pageText: String, pageNumber: Int, textOffset: Int? = null
+        query: String,
+        indexInPage: Int,
+        pageText: String,
+        pageNumber: Int,
+        textOffset: Int? = null,
+        expanded: Boolean = false
     ): SearchResult {
-        val offset = PDF.SEARCH_RESULT_OFFSET
+
+        val offset = textOffset ?: PDF.SEARCH_RESULT_OFFSET
         val count = query.length
 
-        val resultText = pageText.substring(
-            startIndex = max(0, indexInPage - offset),
-            endIndex = min(pageText.length, indexInPage + count + offset)
-        )
+        val starting = max(0, indexInPage - offset)
+        val ending = min(pageText.length, indexInPage + count + offset)
+        val resultText = pageText.substring(startIndex = starting, endIndex = ending)
 
-        // trim half words
-        val index = resultText.indexOf(query, ignoreCase = true)
+        // remove half words (e.g. "er can I found hi" -> "can I found")
+        val queryIndex = indexInPage - starting
         val firstSpace = resultText.indexOf(" ") + 1
-        val start = if (firstSpace != -1) min(firstSpace, index) else 0
+        val start = if (firstSpace != -1) min(firstSpace, queryIndex) else 0
 
         val lastSpace = resultText.lastIndexOf(" ")
-        val end = if (lastSpace != -1) max(lastSpace, index + count) else resultText.length
+        val end = if (lastSpace != -1) max(lastSpace, queryIndex + count) else resultText.length
 
         val trimmedText = resultText.substring(start, end)
-        val newStart = index - start
+        val newStart = queryIndex - start
 
         return SearchResult(
             originalIndex = indexInPage,
             inputStart = newStart,
             inputEnd = newStart + count,
             text = trimmedText,
-            pageNumber = pageNumber
+            pageNumber = pageNumber,
+            expanded = expanded
         )
     }
 
@@ -235,24 +246,25 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
         finish()
     }
 
-    // TODO: Not working properly yet
+    // TODO:
     override fun onShowMoreResultTextClicked(searchResult: SearchResult, searchResultIndex: Int): SearchResult {
         val query = searchResult.text.substring(searchResult.inputStart, searchResult.inputEnd)
         val pageText = pdfExtractor.getPageText(searchResult.pageNumber)
-        val newInputIndex = pageText.indexOf(searchResult.text) + searchResult.inputStart
 
-        return searchResult.apply {
-            val newSearchResult = SearchResult(
-                originalIndex = searchResult.originalIndex,
-                inputStart = newInputIndex,
-                inputEnd = newInputIndex + query.length,
-                pageText,
-                searchResult.pageNumber,
-                expanded = true,
-                longText = true
-            )
-            searchResults[searchResultIndex] = newSearchResult
-            searchResultAdapter.notifyItemChanged(searchResultIndex)
-        }
+        val newSearchResult = getPageResult(
+            query,
+            searchResult.originalIndex,
+            pageText,
+            searchResult.pageNumber,
+            200,
+            expanded = true
+        )
+        val index = searchResults.indexOf(searchResult)
+        if (index == -1) throw RuntimeException("index is -1!!")
+        searchResults[index] = newSearchResult
+        searchResultAdapter.notifyItemChanged(index)
+        //searchResultAdapter.notifyItemChanged(searchResultIndex)
+
+        return newSearchResult
     }
 }
