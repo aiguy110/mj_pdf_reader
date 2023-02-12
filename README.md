@@ -43,7 +43,7 @@ MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudl
 
 
 ## Screenshots
-| Light Mode | Dark Mode | Main MenuMode |
+| Light Mode | Dark Mode | Main Menu |
 |:-:|:-:|:-:|
 | ![Light Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_framed.png) | ![Dark Mode](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/dark_framed.png) | ![Main Menu](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/main/screenshots/light_main_menu_framed.png) |
 
