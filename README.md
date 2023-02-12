@@ -65,7 +65,9 @@ The following permissions are required to provide specific features in the app:
 ## MJ PDF V2.0.0 Release Notes
 * Rebranded the app as MJ PDF with a new original icon.  
 * Search has become blazingly fast.
-* Added the ability to filter search results.
+* Added the ability to filter search results by another query.
+* Search results are expandable if you want to see more context.
+* The chosen search result will be highlighted in the PDF.
 * Added support for Hyperlinks.
 * Added a Table of Content page.
 * Added a page to see a list of all the links embedded in the file.
