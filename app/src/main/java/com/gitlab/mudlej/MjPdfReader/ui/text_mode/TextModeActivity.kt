@@ -42,6 +42,7 @@ class TextModeActivity  : AppCompatActivity() {
     private var textSize = DEFAULT_FONT_SIZE
     private var textColor = DEFAULT_TEXT_COLOR
     private var backgroundColor = DEFAULT_BACKGROUND_COLOR
+    private var buttonColor = DEFAULT_BUTTON_COLOR
 
     private var pdfLength = -1
     private var pageNumber = DEFAULT_PAGE_NUMBER
@@ -204,11 +205,16 @@ class TextModeActivity  : AppCompatActivity() {
         prefManager.edit().putInt(BACKGROUND_COLOR_KEY, backgroundColor).apply()
     }
 
+    private fun saveButtonColor() {
+        prefManager.edit().putInt(BUTTON_COLOR_KEY, buttonColor).apply()
+    }
+
     private fun loadPref() {
         // load values
         pageNumber = prefManager.getInt(pdfUri.toString(), DEFAULT_PAGE_NUMBER)
         textColor = prefManager.getInt(TEXT_COLOR_KEY, DEFAULT_TEXT_COLOR)
         backgroundColor = prefManager.getInt(BACKGROUND_COLOR_KEY, DEFAULT_BACKGROUND_COLOR)
+        buttonColor = prefManager.getInt(BUTTON_COLOR_KEY, DEFAULT_BACKGROUND_COLOR)
         textSize = prefManager.getFloat(FONT_SIZE_KEY, DEFAULT_FONT_SIZE)
 
         updateValues()
@@ -218,9 +224,11 @@ class TextModeActivity  : AppCompatActivity() {
         textColor = DEFAULT_TEXT_COLOR
         backgroundColor = DEFAULT_BACKGROUND_COLOR
         textSize = DEFAULT_FONT_SIZE
+        buttonColor = DEFAULT_BUTTON_COLOR
         saveTextSize()
         saveTextColor()
         saveBackgroundColor()
+        saveButtonColor()
         updateValues()
     }
 
@@ -256,12 +264,29 @@ class TextModeActivity  : AppCompatActivity() {
         binding.buttonsLayout.setBackgroundColor(backgroundColor)
     }
 
+    /**
+     * TODO: Disabled currently.
+     */
+    private fun updateButtonsColor() {
+        binding.apply {
+            //prevButton.setBackgroundColor(backgroundColor)
+            //nextButton.setBackgroundColor(backgroundColor)
+        }
+    }
+
     private fun updateValues() {
         updateTextColor()
         updateBackgroundColor()
+        updateButtonsColor()
         updatePageText()
     }
 
+    private fun applyDraculaTheme() {
+        textColor = draculaForegroundColor
+        backgroundColor = draculaBackgroundColor
+        buttonColor = draculaButtonColor
+        updateValues()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.text_mode_menu, menu)
@@ -276,12 +301,12 @@ class TextModeActivity  : AppCompatActivity() {
             R.id.decrease_text_size -> decreaseTextSize()
             R.id.text_color -> setTextColor()
             R.id.background_color -> setBackgroundColor()
+            R.id.dracula_theme -> applyDraculaTheme()
             R.id.reset_to_Default -> resetValuesToDefault()
             else -> super.onOptionsItemSelected(item)
         }
         return true
     }
-
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         // set search functionality
         val searchView = menu.findItem(R.id.search_in_text_mode).actionView as SearchView
@@ -367,6 +392,7 @@ class TextModeActivity  : AppCompatActivity() {
         private const val DEFAULT_FONT_SIZE = 16f
         private const val DEFAULT_TEXT_COLOR = Color.BLACK
         private const val DEFAULT_BACKGROUND_COLOR = Color.WHITE
+        private const val DEFAULT_BUTTON_COLOR = 2503224    // should be extracted
         private const val DEFAULT_PAGE_NUMBER = 1
 
         // keys
@@ -376,5 +402,12 @@ class TextModeActivity  : AppCompatActivity() {
         private const val FONT_SIZE_KEY = "FONT_SIZE_KEY"
         private const val TEXT_COLOR_KEY = "TEXT_COLOR_KEY"
         private const val BACKGROUND_COLOR_KEY = "BACKGROUND_COLOR_KEY"
+        private const val BUTTON_COLOR_KEY = "BUTTON_COLOR_KEY"
+
+
+        // dracula theme
+        val draculaBackgroundColor = Color.parseColor("#282a36")
+        val draculaForegroundColor = Color.parseColor("#f8f8f2")
+        val draculaButtonColor = Color.parseColor("#44475a")
     }
 }

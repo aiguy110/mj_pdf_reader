@@ -68,6 +68,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/dracula_theme"
+        android:title="@string/dracula_theme"
+        android:icon="@drawable/ic_night_light"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/reset_to_Default"
         android:title="@string/reset_to_default"
         android:icon="@drawable/ic_refresh"
