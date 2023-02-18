@@ -1,7 +1,11 @@
+* 2.0.2
+  * Updated PDFium to 112.0.5579.0
+
 * 2.0.1
   * Fixed back button not working in Bookmarks Activity.
   * Fixed displaying search results incorrectly.
   * Added the option to expand the text of a search result.
+  * Added an option to switch to a dark theme (dracula theme) for the text and color in Text Mode.
 
 * V2.0.0
   * Rebranded the app as MJ PDF with a new original icon.

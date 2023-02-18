@@ -4,17 +4,12 @@
 
 ### Not Urgent
 - [ ] Adding an option to crop margins.
-- [ ] Add the ability to expand search results.
 - [ ] add a 'go to page' like Librera's
-- [ ] Adding an option to disable zooming in Full Screen Mode.
-- [ ] Adding an option to disable double-tap or customize it in the settings.
-- [ ] Adding highlight functionality.
-- [ ] fix search for a sentence across pages
+- [ ] Adding an option to disable double tapping in Full Screen Mode.
 - [ ] Add search in bookmarks activity
 - [ ] Add expand / collapse all in bookmarks activity
 - [ ] add an option to export saved reading progress
 - [ ] make Full Screen Mode utilize 100% of the screen. (even around the notch)
-- [ ] clicking on autoscroll speed textView shows a dialog to enter it manually
 - [ ] "only thing i'd like to have an option on is tap for next page." could be added as an option in the bottom bar.6
 - [ ] Prevent crashing when opening large files for a long time. (400MB+, 30M+)
 
@@ -71,11 +66,15 @@
 - [x] changing font size in text mode takes too much and freezes UI thread
 - [x] Add links list dialog.
 - [x] Stop Auto-Scrolling when the user exit the Full Screen Mode.
- 
+- [x] Add the ability to expand search results.
+
 ## IGNORED
 - [ ] add a pop up after enabling Dark Mode for app to enable it for pdf as well
+- [ ] fix search for a sentence across pages
+- [ ] clicking on autoscroll speed textView shows a dialog to enter it manually
  
 ## To DO in MJ Reader
 - [ ] Remember the user chose speed for auto scrolling for each book.
 - [ ] Add a home activity with multiple pages (PDFs folders, Recent, Favorite, want to read, finished)
 - [ ] Items in each page has an info card similar to that in Sebaq.
+- [ ] Adding highlight functionality.
