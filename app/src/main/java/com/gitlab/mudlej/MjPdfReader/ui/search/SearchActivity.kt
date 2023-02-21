@@ -246,7 +246,6 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
         finish()
     }
 
-    // TODO:
     override fun onShowMoreResultTextClicked(searchResult: SearchResult, searchResultIndex: Int): SearchResult {
         val query = searchResult.text.substring(searchResult.inputStart, searchResult.inputEnd)
         val pageText = pdfExtractor.getPageText(searchResult.pageNumber)
@@ -260,7 +259,10 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
             expanded = true
         )
         val index = searchResults.indexOf(searchResult)
-        if (index == -1) throw RuntimeException("index is -1!!")
+        if (index == -1) {
+            //throw RuntimeException("index is -1!!")
+            return searchResult
+        }
         searchResults[index] = newSearchResult
         searchResultAdapter.notifyItemChanged(index)
         //searchResultAdapter.notifyItemChanged(searchResultIndex)

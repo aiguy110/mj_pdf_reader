@@ -6,6 +6,7 @@
 - [ ] Adding an option to crop margins.
 - [ ] add a 'go to page' like Librera's
 - [ ] Adding an option to disable double tapping in Full Screen Mode.
+- [ ] straight line up/down scrolling when the page is zoomed in
 - [ ] Add search in bookmarks activity
 - [ ] Add expand / collapse all in bookmarks activity
 - [ ] add an option to export saved reading progress

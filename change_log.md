@@ -1,5 +1,9 @@
 * 2.0.2
-  * Updated PDFium to 112.0.5579.0
+  * Preventing crashing when a user clicks on show more for text results when another one is expanding.
+  * DEV: Updated PDFium lib to 112.0.5579.0
+  * DEV: Updated Libpng lib to 1.6.39
+  * DEV: Updated FreeType lib to 2.13.0
+  * DEV: added ~450 lines of scripts to fetch, build and copy all of the dependencies and native code with a single command.  
 
 * 2.0.1
   * Fixed back button not working in Bookmarks Activity.

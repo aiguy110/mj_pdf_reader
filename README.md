@@ -7,25 +7,25 @@ MJ PDF is a fast, minimalist, powerful and totally free PDF viewer made by [Mudl
 # Download & Links
 - [x] [Play Store](https://play.google.com/store/apps/details?id=com.gitlab.mudlej.MjPdfReader)
 - [x] [IzzyOnDroid Repo](https://apt.izzysoft.de/fdroid/index/apk/com.gitlab.mudlej.MjPdfReader)
-- [ ] [Direct Download (V2.0.1)](https://gitlab.com/mudlej_android/mj_pdf_reader/-/raw/V2.0.1+-stable/app/release/app-release.apk)
-- [ ] F-droid (no progress yet)
+- [x] [Direct Download (V2.0.1)](https://archive.org/details/mj-pdf-v2-0-1)
+- [ ] F-droid (still trying)
 - [x] [Github Page for issues](https://github.com/mudlej/mj_pdf/)
 
 
 # TABLE OF CONTENTS
-* [MJ PDF](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-reader)
-* [Download](https://gitlab.com/mudlej_android/mj_pdf_reader#download)
-* [Screenshots](https://gitlab.com/mudlej_android/mj_pdf_reader#screenshots)
-* [Github Page](https://gitlab.com/mudlej_android/mj_pdf_reader#github-page)
+* [MJ PDF](#mj-pdf)
+* [Download & Links](#download--links)
+* [Screenshots](#screenshots)
+* [Github Page](#github-page)
 * [More Screenshots](https://gitlab.com/mudlej_android/mj_pdf_reader/-/tree/main/screenshots)
-* [MJ PDF Features](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-reader-features)
-* [Permissions and privacy](https://gitlab.com/mudlej_android/mj_pdf_reader#permissions-and-privacy)
-* [MJ PDF V2.0.0 Release Notes](https://gitlab.com/mudlej_android/mj_pdf_reader#mj-pdf-v200-release-notes)
+* [MJ PDF Features](#mj-pdf-features)
+* [Permissions and privacy](#permissions-and-privacy)
+* [MJ PDF V2.0.0 Release Notes](#mj-pdf-v200-release-notes)
 * [MJ PDF TO-DO List](https://gitlab.com/mudlej_android/mj_pdf_reader/-/blob/main/todo.md)
-* [What is different from PDF Viewer Plus](https://gitlab.com/mudlej_android/mj_pdf_reader#what-is-different-from-pdf-viewer-plus)
-* [Underlying Libraries](https://gitlab.com/mudlej_android/mj_pdf_reader#underlying-libraries)
-* [Authors and acknowledgment](https://gitlab.com/mudlej_android/mj_pdf_reader#authors-and-acknowledgment)
-* [License](https://gitlab.com/mudlej_android/mj_pdf_reader#authors-and-acknowledgment)
+* [What is different from PDF Viewer Plus](#what-is-different-from-pdf-viewer-plus)
+* [Underlying Libraries](#underlying-libraries)
+* [Authors and acknowledgment](#authors-and-acknowledgment)
+* [License](#authors-and-acknowledgment)
 
 
 ## MJ PDF Features
@@ -107,9 +107,8 @@ I Forked [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) to update it
 And Forked [ AndroidPdfViewer](https://github.com/barteksc/AndroidPdfViewer) to add features (like extracting PDF text) and modify some of its behavior (like scroll handle).
 
 * Updated PDFium to 112.0.5579.0 (in v2.0.2) ([source code](https://pdfium.googlesource.com/pdfium/+/refs/heads/main), [building script](https://github.com/bblanchon/pdfium-binaries))
-* Updated libpng to 1.6.37 ([source code](https://sourceforge.net/projects/libpng/files/libpng16/1.6.37/), [building script](https://github.com/kota-kota/libpng-build))
-* Updated Freetype to 2.12.1 ([source code](https://github.com/freetype/freetype), [building script](https://github.com/kota-kota/freetype-build))
-
+* Updated libpng to 1.6.39 ([source code](https://sourceforge.net/projects/libpng/files/libpng16/1.6.37/), [building script](https://github.com/kota-kota/libpng-build))
+* Updated Freetype to 2.13.0 ([source code](https://github.com/freetype/freetype), [building script](https://github.com/kota-kota/freetype-build))
 
 ## Authors and acknowledgment
 - MJ PDF is made by [Mudlej](https://gitlab.com/mudlej).
