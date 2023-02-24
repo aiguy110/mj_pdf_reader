@@ -1,8 +1,7 @@
-import os
 import shutil
 
-from build_dependencies.common import log, get_lib_path, delete_file_if_exists
-from build_dependencies.values import Arch, ARCH_NAMES, SHARED_CPP_LIBS_PATH, FILE_NAMES, LIB_EXTENSION, Lib, \
+from build_dependencies.common import log, get_lib_path, delete_file_if_exists, get_shared_cpp_libs_path
+from build_dependencies.values import Arch, ARCH_NAMES, FILE_NAMES, LIB_EXTENSION, Lib, \
     LIB_CPP_DIR_NAMES
 
 LIB_FILENAME = FILE_NAMES[Lib.cpp_shared] + LIB_EXTENSION
@@ -17,7 +16,7 @@ def copy_shared_cpp_libs():
         delete_file_if_exists(target_lib_path)
         log("Cleared any old lib.")
 
-        source_lib_path = f"{SHARED_CPP_LIBS_PATH}/{LIB_CPP_DIR_NAMES[arch]}/{LIB_FILENAME}"
+        source_lib_path = f"{get_shared_cpp_libs_path()}/{LIB_CPP_DIR_NAMES[arch]}/{LIB_FILENAME}"
         log(f"Copying from:{source_lib_path}")
 
         shutil.copy(source_lib_path, target_lib_path)

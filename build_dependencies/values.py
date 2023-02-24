@@ -6,12 +6,18 @@ BUILD = "build"
 LIBPNG_BUILD = "libpng_build"
 FREETYPE_BUILD = "freetype_build"
 BUILD_TYPE = "Release"  # Release or Debug
-LIB_FOLDER_PATH = "PdfiumAndroid/src/main/jni/lib"
-SHARED_CPP_LIBS_PATH = "/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib"
+LIB_DIR_PATH = "PdfiumAndroid/src/main/jni/lib"
+CMAKE_DIR_PATH = f"{os.getcwd()}/build_dependencies/cmake"
+
+
+def get_toolchain_path(ndk_path):
+    return os.path.join(ndk_path, "build/cmake")
+
 
 # Toolchain path
 NDK_PATH = "/opt/android-ndk/"
-TOOLCHAIN = os.path.join(NDK_PATH, "build/cmake/android.toolchain.cmake")
+DEFAULT_TOOLCHAIN = get_toolchain_path(NDK_PATH)
+ANDROID_TOOLCHAIN_FILENAME = "android.toolchain.cmake"
 ANDROID_PLATFORM = "19"
 
 
@@ -63,3 +69,4 @@ FREETYPE_URL = "https://sourceforge.net/projects/freetype/files/latest/download"
 # LIBPNG_URL = "https://sourceforge.net/projects/libpng/files/libpng16/1.6.37/libpng-1.6.37.tar.xz/download"
 # FREETYPE_URL_TEMPLATE = "https://gitlab.freedesktop.org/freetype/freetype/-/archive/VER-{VERSION}/freetype-VER-{VERSION}.tar"
 # FREETYPE_URL = "https://gitlab.freedesktop.org/freetype/freetype/-/archive/master/freetype-master.tar.gz"
+

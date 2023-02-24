@@ -1,5 +1,5 @@
 * 2.0.2
-  * Preventing crashing when a user clicks on show more for text results when another one is expanding.
+  * Prevented crashing when a user clicks on show more for text results when another one is expanding.
   * DEV: Updated PDFium lib to 112.0.5579.0
   * DEV: Updated Libpng lib to 1.6.39
   * DEV: Updated FreeType lib to 2.13.0

@@ -5,7 +5,10 @@ import tarfile
 
 import requests
 
-from build_dependencies.values import LIB_FOLDER_PATH, ARCH_NAMES, ANDROID_PLATFORM, TOOLCHAIN, BUILD_TYPE
+from build_dependencies.values import LIB_DIR_PATH, ARCH_NAMES, DEFAULT_TOOLCHAIN, ANDROID_TOOLCHAIN_FILENAME, \
+    get_toolchain_path, FILE_NAMES, Lib
+
+alternative_cpp_path = ""
 
 
 # ------------------------------------------------------------
@@ -68,64 +71,42 @@ def move_file(filename, target):
 
 
 def get_lib_path(arch, lib_filename, levels_up=2):
-    return f"{'../' * levels_up}{LIB_FOLDER_PATH}/{ARCH_NAMES[arch]}/{lib_filename}"
+    return f"{'../' * levels_up}{LIB_DIR_PATH}/{ARCH_NAMES[arch]}/{lib_filename}"
 
 
-def build_libpng(arch, LIBPNG_DIR):
-    INSTALL_PREFIX = os.path.abspath(os.path.join(LIBPNG_DIR, "lib", ARCH_NAMES[arch]))
-    # cmake generator
-    cmd = ["cmake"]
-    cmd += ["-DCMAKE_TOOLCHAIN_FILE=" + TOOLCHAIN]
-    cmd += ["-DANDROID_ABI=" + ARCH_NAMES[arch]]
-    cmd += ["-DANDROID_PLATFORM=" + ANDROID_PLATFORM]
-    cmd += ["-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX]
-    cmd += ["-DPNG_TESTS=OFF -DHAVE_LD_VERSION_SCRIPT=OFF"]
+def get_toolchain():
+    path = os.path.join(DEFAULT_TOOLCHAIN, ANDROID_TOOLCHAIN_FILENAME)
+    if os.path.exists(path):
+        return path
 
-    if BUILD_TYPE == "Debug":
-        cmd += ["-DPNG_DEBUG=ON"]
-    cmd += [".."]
-    run_cmd(cmd)
-
-    # cmake build
-    cmd = ["cmake --build ."]
-    cmd += ["--config " + BUILD_TYPE]
-    run_cmd(cmd)
-
-    # cmake install
-    cmd = ["cmake --install ."]
-    cmd += ["--config " + BUILD_TYPE]
-    run_cmd(cmd)
+    log(f"Searching for {ANDROID_TOOLCHAIN_FILENAME}")
+    toolchain_path = get_toolchain_path(find_ndk_path())
+    return os.path.join(toolchain_path, ANDROID_TOOLCHAIN_FILENAME)
 
 
-def build_freetype(arch, FREETYPE_DIR, LIBPNG_DEPENDENCY_PATH):
-    # libpng dependency paths
-    LIBPNG_INCLUDE_PATH = os.path.abspath(os.path.join(os.getcwd(), LIBPNG_DEPENDENCY_PATH, "lib", ARCH_NAMES[arch], "include"))
-    LIBPNG_LIBRARY_PATH = os.path.abspath(os.path.join(os.getcwd(), LIBPNG_DEPENDENCY_PATH, "lib", ARCH_NAMES[arch], "lib", "libpng16.a"))
-    print(LIBPNG_INCLUDE_PATH)
-    print(LIBPNG_LIBRARY_PATH)
+def find_ndk_path():
+    try:
+        return os.environ["ANDROID_NDK"]
+    except KeyError:
+        error(f"Couldn't locate ANDROID_NDK. Thus, can't locate {ANDROID_TOOLCHAIN_FILENAME}")
+        exit(1)
 
-    INSTALL_PREFIX = os.path.abspath(os.path.join(FREETYPE_DIR, "lib", ARCH_NAMES[arch]))
-    # cmake generator
-    cmd = ["cmake"]
-    cmd += ["-DCMAKE_POSITION_INDEPENDENT_CODE=ON"]
-    cmd += ["-DCMAKE_TOOLCHAIN_FILE=" + TOOLCHAIN]
-    cmd += ["-DBUILD_SHARED_LIBS=true"]
-    cmd += ["-DANDROID_ABI=" + ARCH_NAMES[arch]]
-    cmd += ["-DANDROID_PLATFORM=" + ANDROID_PLATFORM]
-    cmd += ["-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX]
-    cmd += ["-DFT_WITH_ZLIB=ON -D FT_WITH_PNG=ON"]
-    cmd += ["-DPNG_PNG_INCLUDE_DIR=" + LIBPNG_INCLUDE_PATH]
-    cmd += ["-DPNG_LIBRARY=" + LIBPNG_LIBRARY_PATH]
-    cmd += [".."]
-    run_cmd(cmd)
 
-    # cmake build
-    cmd = ["cmake --build ."]
-    cmd += ["--config " + BUILD_TYPE]
-    run_cmd(cmd)
+def get_shared_cpp_libs_path():
+    global alternative_cpp_path
 
-    # cmake install
-    cmd = ["cmake --install ."]
-    cmd += ["--config " + BUILD_TYPE]
-    run_cmd(cmd)
+    path = os.path.join(find_ndk_path(), "toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib")
+    if os.path.exists(path):
+        return path
 
+    if alternative_cpp_path != "":
+        return alternative_cpp_path
+
+    log(f"Couldn't find {FILE_NAMES[Lib.cpp_shared]} libs at {path}")
+    log("Hint: you can try yo find the path  using 'find / -name libc++_shared.so 2>/dev/null'")
+    alternative_cpp_path = input("Enter the path manually: ")
+    if os.path.exists(alternative_cpp_path):
+        return alternative_cpp_path
+
+    error(f"Couldn't find the path you entered: {alternative_cpp_path}")
+    exit(1)

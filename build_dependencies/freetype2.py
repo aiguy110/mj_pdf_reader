@@ -3,12 +3,13 @@ import os
 import shutil
 
 from build_dependencies.common import download_file, extract_tar_file, log, delete_if_exists, \
-    delete_file_if_exists, get_lib_path, build_freetype
+    delete_file_if_exists, get_lib_path, run_cmd, get_toolchain
 from build_dependencies.values import Arch, FILE_NAMES, LIB_EXTENSION, Lib, FREETYPE_BUILD, \
-    ARCH_NAMES, LIBPNG_BUILD, FREETYPE_URL
+    ARCH_NAMES, LIBPNG_BUILD, FREETYPE_URL, ANDROID_PLATFORM, BUILD_TYPE
 
 BUILT_LIB_NAME = "libfreetype.so"
 DOWNLOADED_LIB_PATH = f"{FREETYPE_BUILD}/{BUILT_LIB_NAME}"
+
 
 def build_freetype_libs():
     LIBPNG_DEPENDENCY_PATH = os.path.join(os.getcwd(), LIBPNG_BUILD)
@@ -58,6 +59,39 @@ def build_freetype_libs():
 
     os.chdir("../")
     os.chdir("../")
+
+
+def build_freetype(arch, FREETYPE_DIR, LIBPNG_DEPENDENCY_PATH):
+    # libpng dependency paths
+    LIBPNG_INCLUDE_PATH = os.path.abspath(os.path.join(os.getcwd(), LIBPNG_DEPENDENCY_PATH, "lib", ARCH_NAMES[arch], "include"))
+    LIBPNG_LIBRARY_PATH = os.path.abspath(os.path.join(os.getcwd(), LIBPNG_DEPENDENCY_PATH, "lib", ARCH_NAMES[arch], "lib", "libpng16.a"))
+    print(LIBPNG_INCLUDE_PATH)
+    print(LIBPNG_LIBRARY_PATH)
+
+    INSTALL_PREFIX = os.path.abspath(os.path.join(FREETYPE_DIR, "lib", ARCH_NAMES[arch]))
+    # cmake generator
+    cmd = ["cmake"]
+    cmd += ["-DCMAKE_POSITION_INDEPENDENT_CODE=ON"]
+    cmd += ["-DCMAKE_TOOLCHAIN_FILE=" + get_toolchain()]
+    cmd += ["-DBUILD_SHARED_LIBS=true"]
+    cmd += ["-DANDROID_ABI=" + ARCH_NAMES[arch]]
+    cmd += ["-DANDROID_PLATFORM=" + ANDROID_PLATFORM]
+    cmd += ["-DCMAKE_INSTALL_PREFIX=" + INSTALL_PREFIX]
+    cmd += ["-DFT_WITH_ZLIB=ON -D FT_WITH_PNG=ON"]
+    cmd += ["-DPNG_PNG_INCLUDE_DIR=" + LIBPNG_INCLUDE_PATH]
+    cmd += ["-DPNG_LIBRARY=" + LIBPNG_LIBRARY_PATH]
+    cmd += [".."]
+    run_cmd(cmd)
+
+    # cmake build
+    cmd = ["cmake --build ."]
+    cmd += ["--config " + BUILD_TYPE]
+    run_cmd(cmd)
+
+    # cmake install
+    cmd = ["cmake --install ."]
+    cmd += ["--config " + BUILD_TYPE]
+    run_cmd(cmd)
 
 
 if __name__ == "__main__":

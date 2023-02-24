@@ -6,12 +6,10 @@ from build_dependencies.libpng import build_libpng_libs
 from build_dependencies.freetype2 import build_freetype_libs
 from build_dependencies.shared_cpp_lib import copy_shared_cpp_libs
 from build_dependencies.native_code import build_native_code
-
-# Install path
-INSTALL_PATH = "PdfiumAndroid/src/main/jni/lib"
+from build_dependencies.values import LIB_DIR_PATH
 
 log("Start " + __file__)
-log("INSTALL_PATH: " + INSTALL_PATH)
+log("INSTALL_PATH: " + LIB_DIR_PATH)
 
 os.chdir("build_dependencies")
 fetch_prebuilt_pdfium()
