@@ -125,7 +125,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         turnPageByVolumeButtonsSwitch.summary = getString(R.string.turn_page_by_volume_buttons_summary)
         turnPageByVolumeButtonsSwitch.isIconSpaceReserved = false
 
-        // add the switches to the second section
+        // add the switches to the second section.
         val secondSection: PreferenceCategory? = findPreference("scrollSection")
         secondSection?.isIconSpaceReserved = false
         secondSection?.addPreference(horizontalScrollSwitch)
