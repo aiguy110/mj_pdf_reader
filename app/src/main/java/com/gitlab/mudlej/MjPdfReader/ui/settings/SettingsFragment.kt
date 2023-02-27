@@ -183,6 +183,5 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val thirdSection: PreferenceCategory? = findPreference("experimentalSection")
         thirdSection?.isIconSpaceReserved = false
         thirdSection?.addPreference(appDarkThemeSwitch)
-
     }
 }
