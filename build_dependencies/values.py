@@ -56,6 +56,13 @@ PDFIUM_URLS = {
     Arch.armeabi: "https://github.com/bblanchon/pdfium-binaries/releases/latest/download/pdfium-android-arm.tgz",
 }
 
+PDFIUM_PATHS = {
+    Arch.x86: "../../../../bblanchon/pdfium-android-x86.tgz",
+    Arch.x86_64: "../../../../bblanchon/pdfium-android-x64.tgz",
+    Arch.arm64: "../../../../bblanchon/pdfium-android-arm64.tgz",
+    Arch.armeabi: "../../../../bblanchon/pdfium-android-arm.tgz",
+}
+
 LIB_CPP_DIR_NAMES = {
     Arch.x86: "i686-linux-android",
     Arch.x86_64: "x86_64-linux-android",
