@@ -103,6 +103,8 @@ public class PDFView extends RelativeLayout {
     public static final float DEFAULT_MID_SCALE = 1.75f;
     public static final float DEFAULT_MIN_SCALE = 1.0f;
 
+    public static final float NORMAL_SCALE = 1.0f;
+
     private float minZoom = DEFAULT_MIN_SCALE;
     private float midZoom = DEFAULT_MID_SCALE;
     private float maxZoom = DEFAULT_MAX_SCALE;
@@ -1218,7 +1220,7 @@ public class PDFView extends RelativeLayout {
     }
 
     public void resetZoomWithAnimation() {
-        zoomWithAnimation(minZoom);
+        zoomWithAnimation(NORMAL_SCALE);   // mudlej: I think double tap should always reset to 1f rather than the min zoom
     }
 
     public void zoomWithAnimation(float centerX, float centerY, float scale) {

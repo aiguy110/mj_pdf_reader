@@ -8,8 +8,7 @@ class LinkViewHolder(
     private val binding: LinkItemBinding,
     private val linkFunctions: LinkFunctions,
     private val activity: LinksActivity
-)
-    : RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(link: Link) {
         //binding.linkText.text = link.text     // not extracted yet
         binding.linkUri.text = link.url
