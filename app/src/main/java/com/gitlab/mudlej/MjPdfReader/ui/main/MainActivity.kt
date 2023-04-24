@@ -109,7 +109,6 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 import kotlin.system.exitProcess
 
-
 class MainActivity : AppCompatActivity() {
     enum class AdditionalOptions { APP_SETTINGS, TEXT_MODE, METADATA, ADVANCED_CONFIG, ABOUT }
 
@@ -1237,7 +1236,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "Failed to highlight search result", Toast.LENGTH_SHORT).show()
                     }
                     else {
-                        binding.pdfView.resetZoom()         // it won't work if the user was zoomed in before searching
+                        binding.pdfView.resetZoomWithAnimation()         // it won't work if the user was zoomed in before searching
                         binding.pdfView.reloadPages()
                     }
 

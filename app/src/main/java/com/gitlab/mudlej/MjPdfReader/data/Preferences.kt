@@ -86,9 +86,9 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val screenOnDefault = false
         const val hideDelayDefault = 3000
         const val spacingDefault = 10          // in dp
-        const val minZoomDefault = 1f //0.5f
+        const val minZoomDefault = 0.5f //0.5f
         const val midZoomDefault = 2.0f
-        const val maxZoomDefault = 5.0f
+        const val maxZoomDefault = 10.0f
         const val partSizeDefault = 256f
         const val thumbnailRatioDefault = 0.3f
         const val pdfLengthDefault = 0
@@ -103,7 +103,7 @@ class Preferences(private val prefMan: SharedPreferences) {
 
         // Constants
         const val minMaxZoom = 1f
-        const val maxMaxZoom = 10f
+        const val maxMaxZoom = 100f
         const val minPartSize = 5f
         const val maxPartSize = 1000f
         const val AUTO_SCROLL_UNIT = 0.25
