@@ -275,7 +275,8 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
                 handler.removeCallbacks(hidePageScrollerRunnable);
                 if (pdfView.isSwipeVertical()) {
                     currentPos = event.getRawY() - getY();
-                } else {
+                }
+                else {
                     currentPos = event.getRawX() - getX();
                 }
                 pageLengthText.setVisibility(VISIBLE);

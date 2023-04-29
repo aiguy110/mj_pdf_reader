@@ -43,16 +43,17 @@
 
 package com.gitlab.mudlej.MjPdfReader.repository
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import android.net.Uri
+import androidx.room.PrimaryKey
+import androidx.room.Entity
+import java.time.LocalDateTime
 
-@Dao
-interface SavedLocationDao {
-    @Query("SELECT pageNumber FROM SavedLocation WHERE hash = :hash")
-    fun findSavedPage(hash: String?): Int?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(saveLocations: SavedLocation)
-}
+@Entity
+data class PdfRecord(
+    @PrimaryKey val hash: String,
+    var uri: Uri,
+    val pageNumber: Int,
+    val length: Int,
+    val fileName: String,
+    var lastOpened: LocalDateTime
+)

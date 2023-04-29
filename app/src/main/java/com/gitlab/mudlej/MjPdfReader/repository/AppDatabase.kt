@@ -44,13 +44,19 @@
 package com.gitlab.mudlej.MjPdfReader.repository
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.Room
+import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.gitlab.mudlej.MjPdfReader.util.DataConverter
 
-@Database(entities = [SavedLocation::class], version = 1, exportSchema = false)
+@Database(
+    entities = [PdfRecord::class],
+    version = 2,
+    exportSchema = true
+)
+@TypeConverters(DataConverter::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun savedLocationDao(): SavedLocationDao
+    abstract fun savedLocationDao(): PdfRecordDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null
@@ -60,8 +66,18 @@ abstract class AppDatabase : RoomDatabase() {
                 return INSTANCE as AppDatabase
             }
             val location = context.cacheDir.absolutePath + "/" + DATABASE_NAME
-            INSTANCE = Room.databaseBuilder(context, AppDatabase::class.java, location).build()
+            INSTANCE = Room.databaseBuilder(context, AppDatabase::class.java, location)
+                .addMigrations(MIGRATION_1_2)
+                .build()
             return INSTANCE as AppDatabase
         }
+    }
+}
+
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            "CREATE TABLE `PdfRecord` (`id` INTEGER, `name` TEXT, PRIMARY KEY(`id`))"
+        )
     }
 }

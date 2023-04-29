@@ -60,6 +60,12 @@ android {
         versionName "2.0.1"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildFeatures {
@@ -80,6 +86,8 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled = true // for LocalDateTime before api < 26
+
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -132,5 +140,8 @@ dependencies {
 
     // A color picker for Android by Hong Duan
     implementation 'com.github.duanhong169:colorpicker:1.1.6'
+
+    //  required fir desugar for LocalDateTime with old APIs
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.0.9")
 
 }

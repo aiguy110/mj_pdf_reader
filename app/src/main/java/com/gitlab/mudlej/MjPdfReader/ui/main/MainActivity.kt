@@ -87,9 +87,11 @@ import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManager
 import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManagerImpl
 import com.gitlab.mudlej.MjPdfReader.manager.print.PdfDocumentAdapter
 import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
+import com.gitlab.mudlej.MjPdfReader.repository.PdfRecord
 import com.gitlab.mudlej.MjPdfReader.ui.*
 import com.gitlab.mudlej.MjPdfReader.ui.about.AboutActivity
 import com.gitlab.mudlej.MjPdfReader.ui.bookmark.BookmarksActivity
+import com.gitlab.mudlej.MjPdfReader.ui.home.HomeActivity
 import com.gitlab.mudlej.MjPdfReader.ui.link.LinksActivity
 import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.settings.SettingsActivity
@@ -104,6 +106,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.math.absoluteValue
 import kotlin.math.sign
@@ -160,7 +163,12 @@ class MainActivity : AppCompatActivity() {
             restoreInstanceState(savedInstanceState)
         } else {
             pdf.uri = intent.data
-            if (pdf.uri == null) pickFile()
+            if (pdf.uri == null) {
+                Intent(this, HomeActivity::class.java).also {
+                    startActivity(it)
+                }
+                //pickFile()
+            }
         }
 
         displayFromUri(pdf.uri)
@@ -263,7 +271,7 @@ class MainActivity : AppCompatActivity() {
         if (pdf.pageNumber == 0) {
             lifecycleScope.launchWhenCreated {
                 val hash = computeHash(this@MainActivity, pdf) ?: return@launchWhenCreated
-                val pageNumber = databaseManager.findLocation(hash)
+                val pageNumber = databaseManager.findPageNumber(hash)
 
                 pdf.fileHash = hash
                 pdf.pageNumber = pageNumber
@@ -303,11 +311,39 @@ class MainActivity : AppCompatActivity() {
             .pageSnap(pref.getPageSnap())
             .pageFling(pref.getPageFling())
             .nightMode(pref.getPdfDarkTheme())
+            .onLoad {
+                createPdfRecord()
+            }
             .load()
 
 
         // Show the page scroll handler for 3 seconds when the pdf is loaded then hide it.
         pdfView.performTap()
+    }
+
+    private fun createPdfRecord() {
+        lifecycleScope.launchWhenCreated {
+            if (databaseManager.hasRecord(pdf.fileHash as String)) {
+                databaseManager.setLastOpened(
+                    pdf.fileHash
+                        ?: computeHash(this@MainActivity, pdf)
+                        ?: throw RuntimeException("No fileHash while create PdfRecord"),
+                    LocalDateTime.now()
+                )
+            }
+            else {
+                databaseManager.saveRecordInBackground(PdfRecord(
+                    pdf.fileHash
+                        ?: computeHash(this@MainActivity, pdf)
+                        ?: throw RuntimeException("No fileHash while create PdfRecord"),
+                    pdf.uri ?: throw RuntimeException("No fileUri while create PdfRecord"),
+                    pdf.pageNumber,
+                    pdf.length,
+                    pdf.name,
+                    LocalDateTime.now()
+                ))
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -884,7 +920,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launchWhenCreated {
-            databaseManager.saveLocationInBackground(hash, pageNumber)
+            databaseManager.setPageNumber(hash, pageNumber)
         }
     }
 

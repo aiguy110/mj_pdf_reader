@@ -43,9 +43,29 @@
 
 package com.gitlab.mudlej.MjPdfReader.repository
 
-import androidx.room.PrimaryKey
-import androidx.room.ColumnInfo
-import androidx.room.Entity
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import java.time.LocalDateTime
 
-@Entity
-data class SavedLocation(@PrimaryKey val hash: String, val pageNumber: Int)
+@Dao
+interface PdfRecordDao {
+
+    @Query("SELECT pageNumber FROM PdfRecord WHERE hash = :fileHash")
+    fun findSavedPage(fileHash: String?): Int?
+
+    @Query("UPDATE PdfRecord SET pageNumber = :page WHERE hash = :hash")
+    fun updatePageNumber(hash: String?, page: Int): Int?
+
+    @Query("UPDATE PdfRecord SET lastOpened = :lastOpened WHERE hash = :hash")
+    fun updateLastOpened(hash: String?, lastOpened: LocalDateTime)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(saveLocations: PdfRecord)
+
+    @Query("SELECT EXISTS(SELECT * FROM PdfRecord WHERE hash = :fileHash)")
+    fun hasRecord(fileHash: String): Boolean
+
+
+}
