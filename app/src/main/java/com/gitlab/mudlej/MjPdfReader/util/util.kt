@@ -254,3 +254,8 @@ private fun openScreenshot(activity: Activity, imageFile: File) {
     intent.setDataAndType(uri, "image/*")
     activity.startActivity(intent)
 }
+
+fun Int.divideToPercent(divideTo: Int): Int {
+    return if (divideTo == 0) 0
+    else ((this / divideTo.toDouble()) * 100).toInt()
+}

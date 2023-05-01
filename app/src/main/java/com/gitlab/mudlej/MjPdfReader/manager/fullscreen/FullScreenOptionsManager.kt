@@ -4,7 +4,7 @@ import android.view.View
 
 interface FullScreenOptionsManager {
 
-    enum class VisibilityState { VISIBLE, INVISIBLE, NONE }
+    enum class VisibilityState { VISIBLE, INVISIBLE }
 
     fun isVisible(): Boolean
 

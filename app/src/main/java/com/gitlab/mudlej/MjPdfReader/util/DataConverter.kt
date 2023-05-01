@@ -24,6 +24,9 @@ class DataConverter {
     @TypeConverter fun fromBitmap(obj: Bitmap?): String? = gson.toJson(obj)
     @TypeConverter fun toBitmap(json: String?): Bitmap? = gson.fromJson(json, object : TypeToken<Bitmap>() {}.type)
 
-    @TypeConverter fun fromLocalDateTime(obj: LocalDateTime?): String? = gson.toJson(obj)
-    @TypeConverter fun toLocalDateTime(json: String?): LocalDateTime? = gson.fromJson(json, object : TypeToken<LocalDateTime>() {}.type)
+    @TypeConverter fun fromLocalDateTime(obj: LocalDateTime?): String = obj.toString()
+    @TypeConverter fun toLocalDateTime(json: String?): LocalDateTime? {
+        return LocalDateTime.parse(json)
+        //return gson.fromJson(json, object : TypeToken<LocalDateTime>() {}.type)
+    }
 }

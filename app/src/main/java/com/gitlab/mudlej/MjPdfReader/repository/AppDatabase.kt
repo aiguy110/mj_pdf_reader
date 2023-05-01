@@ -45,18 +45,22 @@ package com.gitlab.mudlej.MjPdfReader.repository
 
 import android.content.Context
 import androidx.room.*
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.migration.AutoMigrationSpec
 import com.gitlab.mudlej.MjPdfReader.util.DataConverter
 
 @Database(
     entities = [PdfRecord::class],
-    version = 2,
-    exportSchema = true
+    version = 3,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2, spec = AppDatabase.MyAutoMigration::class),
+        AutoMigration(from = 1, to = 3, spec = AppDatabase.MyAutoMigration::class),
+        AutoMigration(from = 2, to = 3),
+    ]
 )
 @TypeConverters(DataConverter::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun savedLocationDao(): PdfRecordDao
+    abstract fun pdfRecordDao(): PdfRecordDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null
@@ -67,17 +71,21 @@ abstract class AppDatabase : RoomDatabase() {
             }
             val location = context.cacheDir.absolutePath + "/" + DATABASE_NAME
             INSTANCE = Room.databaseBuilder(context, AppDatabase::class.java, location)
-                .addMigrations(MIGRATION_1_2)
+                //.addMigrations(MIGRATION_1_2)
                 .build()
             return INSTANCE as AppDatabase
         }
     }
+
+    @RenameTable(fromTableName = "SavedLocation", toTableName = "PdfRecord")
+    class MyAutoMigration : AutoMigrationSpec
+
 }
 
-val MIGRATION_1_2 = object : Migration(1, 2) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(
-            "CREATE TABLE `PdfRecord` (`id` INTEGER, `name` TEXT, PRIMARY KEY(`id`))"
-        )
-    }
-}
+//val MIGRATION_1_2 = object : Migration(1, 2) {
+//    override fun migrate(database: SupportSQLiteDatabase) {
+//        database.execSQL(
+//            "CREATE TABLE `PdfRecord` (`id` INTEGER, `name` TEXT, PRIMARY KEY(`id`))"
+//        )
+//    }
+//}

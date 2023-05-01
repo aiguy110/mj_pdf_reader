@@ -44,22 +44,33 @@
 package com.gitlab.mudlej.MjPdfReader.repository
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.gitlab.mudlej.MjPdfReader.enums.ReadingStatus
 import java.time.LocalDateTime
 
 @Dao
 interface PdfRecordDao {
 
+    @Query("SELECT * FROM PdfRecord")
+    fun findAll(): List<PdfRecord>
+
     @Query("SELECT pageNumber FROM PdfRecord WHERE hash = :fileHash")
     fun findSavedPage(fileHash: String?): Int?
 
-    @Query("UPDATE PdfRecord SET pageNumber = :page WHERE hash = :hash")
-    fun updatePageNumber(hash: String?, page: Int): Int?
+    @Query("UPDATE PdfRecord SET pageNumber = :page WHERE hash = :fileHash")
+    fun updatePageNumber(fileHash: String?, page: Int): Int?
 
-    @Query("UPDATE PdfRecord SET lastOpened = :lastOpened WHERE hash = :hash")
-    fun updateLastOpened(hash: String?, lastOpened: LocalDateTime)
+    @Query("UPDATE PdfRecord SET lastOpened = :lastOpened WHERE hash = :fileHash")
+    fun updateLastOpened(fileHash: String?, lastOpened: LocalDateTime)
+
+    @Query("UPDATE PdfRecord SET favorite = :favorite WHERE hash = :fileHash")
+    fun updateFavorite(fileHash: String?, favorite: Boolean)
+
+    @Query("UPDATE PdfRecord SET reading = :readingStatus WHERE hash = :fileHash")
+    fun updateReading(fileHash: String, readingStatus: ReadingStatus)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(saveLocations: PdfRecord)
@@ -67,5 +78,6 @@ interface PdfRecordDao {
     @Query("SELECT EXISTS(SELECT * FROM PdfRecord WHERE hash = :fileHash)")
     fun hasRecord(fileHash: String): Boolean
 
-
+    @Delete()
+    fun delete(record: PdfRecord)
 }

@@ -290,5 +290,21 @@
     <string name="page_out_of_bound">Page #%d doesn\'t exist in this PDF.</string>
     <string name="press_back_again">Press back again to exit</string>
     <string name="dracula_theme">Dracula Theme</string>
+    <string name="non_clickable_pdf_icon">non-clickable PDF icon</string>
+    <string name="recently_opened">Recently Opened</string>
+    <string name="delete">Delete</string>
+    <string name="delete_dialog_title">Are you sure?</string>
+    <string name="delete_dialog_message">Deleting the save record will make the app forget everything it knows about the PDF.</string>
+    <string name="list_mode">List Mode</string>
+    <string name="filter_list_dialog_title">Filter Files</string>
+    <string name="status">Status</string>
+    <string name="favorite">Favorite</string>
+    <string name="favorite_icon">favorite icon</string>
+    <string name="last_opened_key">Last Opened:</string>
+    <string name="pdf_cover_image">PDF cover Image</string>
+    <string name="all_files">All Files</string>
+    <string name="about_record">About Record</string>
+    <string name="record_percentage_template">(%d%%)</string>
+    <string name="pages">pages</string>
 
 </resources>

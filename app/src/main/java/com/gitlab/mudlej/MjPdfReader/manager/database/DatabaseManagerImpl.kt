@@ -1,5 +1,6 @@
 package com.gitlab.mudlej.MjPdfReader.manager.database
 
+import com.gitlab.mudlej.MjPdfReader.enums.ReadingStatus
 import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
 import com.gitlab.mudlej.MjPdfReader.repository.PdfRecord
 import kotlinx.coroutines.CoroutineScope
@@ -10,33 +11,57 @@ import java.time.LocalDateTime
 
 class DatabaseManagerImpl(private val database: AppDatabase): DatabaseManager {
 
+    override suspend fun findAllRecords(): List<PdfRecord> {
+        return withContext(Dispatchers.IO) {
+            database.pdfRecordDao().findAll()
+        }
+    }
+
     override suspend fun saveRecordInBackground(pdfRecord: PdfRecord) {
         CoroutineScope(Dispatchers.IO).launch {
-            database.savedLocationDao().insert(pdfRecord)
+            database.pdfRecordDao().insert(pdfRecord)
         }
     }
 
     override suspend fun findPageNumber(fileHash: String): Int {
         return withContext(Dispatchers.IO) {
-            database.savedLocationDao().findSavedPage(fileHash) ?: 0
+            database.pdfRecordDao().findSavedPage(fileHash) ?: 0
         }
     }
 
     override suspend fun setPageNumber(fileHash: String, page: Int) {
         withContext(Dispatchers.IO) {
-            database.savedLocationDao().updatePageNumber(fileHash, page)
+            database.pdfRecordDao().updatePageNumber(fileHash, page)
         }
     }
 
     override suspend fun hasRecord(fileHash: String): Boolean {
         return withContext(Dispatchers.IO) {
-            database.savedLocationDao().hasRecord(fileHash)
+            database.pdfRecordDao().hasRecord(fileHash)
         }
     }
 
     override suspend fun setLastOpened(fileHash: String, lastOpened: LocalDateTime) {
         return withContext(Dispatchers.IO) {
-            database.savedLocationDao().updateLastOpened(fileHash, lastOpened)
+            database.pdfRecordDao().updateLastOpened(fileHash, lastOpened)
+        }
+    }
+
+    override suspend fun removeRecord(record: PdfRecord) {
+        withContext(Dispatchers.IO) {
+            database.pdfRecordDao().delete(record)
+        }
+    }
+
+    override suspend fun setFavorite(fileHash: String, favorite: Boolean) {
+        withContext(Dispatchers.IO) {
+            database.pdfRecordDao().updateFavorite(fileHash, favorite)
+        }
+    }
+
+    override suspend fun setReading(fileHash: String, readingStatus: ReadingStatus) {
+        withContext(Dispatchers.IO) {
+            database.pdfRecordDao().updateReading(fileHash, readingStatus)
         }
     }
 }

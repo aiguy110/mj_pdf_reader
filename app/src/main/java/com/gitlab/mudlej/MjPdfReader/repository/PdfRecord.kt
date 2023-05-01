@@ -43,17 +43,81 @@
 
 package com.gitlab.mudlej.MjPdfReader.repository
 
+import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
+import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 import androidx.room.Entity
+import com.gitlab.mudlej.MjPdfReader.data.PDF
+import com.gitlab.mudlej.MjPdfReader.enums.ReadingStatus
+import com.gitlab.mudlej.MjPdfReader.util.computeHash
+import com.gitlab.mudlej.MjPdfReader.util.getFileName
+import java.io.File
 import java.time.LocalDateTime
 
 @Entity
 data class PdfRecord(
-    @PrimaryKey val hash: String,
-    var uri: Uri,
+    @PrimaryKey
+    val hash: String,
+
     val pageNumber: Int,
+
+    @ColumnInfo(defaultValue = UNSET_VALUE)
+    var uri: Uri,
+
+    @ColumnInfo(defaultValue = UNSET_LENGTH)
     val length: Int,
+
+    @ColumnInfo(defaultValue = UNSET_VALUE)
     val fileName: String,
-    var lastOpened: LocalDateTime
-)
+
+    @ColumnInfo(defaultValue = UNSET_DATE)
+    var lastOpened: LocalDateTime,
+
+    @ColumnInfo(defaultValue = UNSET_READING_STATUS)
+    var reading: ReadingStatus,
+
+    @ColumnInfo(defaultValue = UNSET_FAVORITE)
+    var favorite: Boolean,
+) {
+
+    companion object {
+
+        fun from(context: Context, entry: Map.Entry<String, File>): PdfRecord {
+            return PdfRecord(
+                entry.key,
+                0,
+                entry.value.toUri(),
+                0,
+                getFileName(context, entry.value.toUri()),
+                LocalDateTime.now(),
+                ReadingStatus.UNSET,
+                false
+            )
+        }
+
+        fun from(context: Context, pdf: PDF): PdfRecord {
+            return PdfRecord(
+                pdf.fileHash
+                    ?: computeHash(context, pdf)
+                    ?: throw RuntimeException("No fileHash while create PdfRecord"),
+                pdf.pageNumber,
+                pdf.uri ?: throw RuntimeException("No fileUri while create PdfRecord"),
+                pdf.length,
+                pdf.name.removeSuffix(".pdf"),
+                LocalDateTime.now(),
+                ReadingStatus.UNSET,
+                false
+            )
+        }
+
+        const val UNSET_NAME = "Unknown Name"
+        const val UNSET_DATE = "-999999999-01-01T00:00" // LocalDateTime.MIN
+        const val UNSET_VALUE = ""
+        const val UNSET_LENGTH = "-1"
+        const val UNSET_PAGE_NUMBER = "0"
+        const val UNSET_READING_STATUS = "UNSET"
+        const val UNSET_FAVORITE = false.toString()
+    }
+}

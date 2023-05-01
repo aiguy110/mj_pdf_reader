@@ -30,13 +30,17 @@
         <item name="android:textColor">@color/topBarColor</item>
     </style>
 
-
     <style name="MJDialogThemeDark" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:background">@color/topBarBackgroundColor</item>
-        <item name="android:textColor">@color/topBarColor</item>
-        <item name="textColorAlertDialogListItem">@color/topBarColor</item>
-        <item name="buttonBarPositiveButtonStyle">@color/topBarColor</item>
-        <item name="buttonBarNegativeButtonStyle">@color/topBarColor</item>
+        <item name="android:background">@color/darkBackground</item>
+        <item name="android:textColor">@color/onDarkBackground</item>
+        <item name="textColorAlertDialogListItem">@color/onDarkBackground</item>
+        <item name="colorAccent">@color/redAccent</item>        // checked choice button circle color
+        <item name="colorControlNormal">@color/redAccent</item> // unchecked choice button circle color
+        <item name="android:textColorPrimary">@color/onDarkBackground</item>    // Dialog message text color
+
+
+        <!--        <item name="buttonBarPositiveButtonStyle">@color/topBarColor</item>-->
+<!--        <item name="buttonBarNegativeButtonStyle">@color/topBarColor</item>-->
     </style>
 
     <style name="MJDialogThemeLight" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -45,4 +49,10 @@
         <item name="android:negativeButtonText">@color/topBarBackgroundColor</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay.App.roundedImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">5%</item>
+    </style>
+
+    <color name="redAccent">#E91E63</color>
 </resources>

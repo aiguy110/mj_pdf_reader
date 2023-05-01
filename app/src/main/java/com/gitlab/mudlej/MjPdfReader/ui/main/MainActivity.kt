@@ -81,10 +81,14 @@ import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.*
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
+import com.gitlab.mudlej.MjPdfReader.enums.AdditionalOptions
+import com.gitlab.mudlej.MjPdfReader.enums.FileType
+import com.gitlab.mudlej.MjPdfReader.enums.ReadingStatus
 import com.gitlab.mudlej.MjPdfReader.manager.database.DatabaseManager
 import com.gitlab.mudlej.MjPdfReader.manager.database.DatabaseManagerImpl
 import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManager
 import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManagerImpl
+import com.gitlab.mudlej.MjPdfReader.manager.permission.PermissionManager
 import com.gitlab.mudlej.MjPdfReader.manager.print.PdfDocumentAdapter
 import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
 import com.gitlab.mudlej.MjPdfReader.repository.PdfRecord
@@ -113,7 +117,6 @@ import kotlin.math.sign
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
-    enum class AdditionalOptions { APP_SETTINGS, TEXT_MODE, METADATA, ADVANCED_CONFIG, ABOUT }
 
     private val shouldStopExtracting: MutableMap<Int, Boolean> = mutableMapOf()
     private val TAG = "MainActivity"
@@ -122,6 +125,7 @@ class MainActivity : AppCompatActivity() {
     private var doubleBackToExitPressedOnce = false
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private lateinit var fullScreenOptionsManager: FullScreenOptionsManager
+    private lateinit var permissionManager: PermissionManager
     private lateinit var databaseManager: DatabaseManager
     private lateinit var pref: Preferences
     private val pdf = PDF()
@@ -151,14 +155,22 @@ class MainActivity : AppCompatActivity() {
         pref = Preferences(PreferenceManager.getDefaultSharedPreferences(this))
         fullScreenOptionsManager = FullScreenOptionsManagerImpl(binding, pdf, pref.getHideDelay().toLong())
         databaseManager = DatabaseManagerImpl(AppDatabase.getInstance(applicationContext))
+        permissionManager = PermissionManager(this)
 
         Constants.THUMBNAIL_RATIO = pref.getThumbnailRation()
         Constants.PART_SIZE = pref.getPartSize()
 
-        // Show Into Activity and Features Dialog on the first install
-        onFirstInstall()
+        // Show Intro Activity and Features Dialog on the first install
+        if (pref.getFirstInstall()) {
+            onFirstInstall()
+            finish()
+            return
+        }
 
-        // Create PDF by restoring it in case of an activity restart OR open filer picker
+        // navigate to settings to get permission to manage storage
+        permissionManager.checkStoragePermission { }
+
+        // Create PDF by restoring it in case of an activity restart OR ...
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState)
         } else {
@@ -167,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                 Intent(this, HomeActivity::class.java).also {
                     startActivity(it)
                 }
-                //pickFile()
+                finish()
             }
         }
 
@@ -222,22 +234,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onFirstInstall() {
-        val isFirstRun = pref.getFirstInstall()
-        if (isFirstRun) {
-            // To avoid com.github.paolorotolo.appintro.AppIntroBaseFragment.onCreateView
-            // android.content.res.Resources$NotFoundException
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                startActivity(Intent(this, MainIntroActivity::class.java))
-            }
-            pref.setFirstInstall(false)
-            pref.setShowFeaturesDialog(true)
+        // To avoid com.github.paolorotolo.appintro.AppIntroBaseFragment.onCreateView
+        // android.content.res.Resources$NotFoundException
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            startActivity(Intent(this, MainIntroActivity::class.java))
         }
+        pref.setFirstInstall(false)
+        pref.setShowFeaturesDialog(true)
+
     }
 
     private fun pickFile() {
         try {
             launchers.pdfPicker.launch(arrayOf(PDF.FILE_TYPE))
-        } catch (e: ActivityNotFoundException) {
+        }
+        catch (e: ActivityNotFoundException) {
             // alert user that file manager not working
             Toast.makeText(this, R.string.toast_pick_file_error, Toast.LENGTH_LONG).show()
         }
@@ -311,19 +322,16 @@ class MainActivity : AppCompatActivity() {
             .pageSnap(pref.getPageSnap())
             .pageFling(pref.getPageFling())
             .nightMode(pref.getPdfDarkTheme())
-            .onLoad {
-                createPdfRecord()
-            }
+            .onLoad { createPdfRecord() }
             .load()
 
-
-        // Show the page scroll handler for 3 seconds when the pdf is loaded then hide it.
+        // Show the page scroll handler for a while when the pdf is loaded then hide it.
         pdfView.performTap()
     }
 
     private fun createPdfRecord() {
         lifecycleScope.launchWhenCreated {
-            if (databaseManager.hasRecord(pdf.fileHash as String)) {
+            if (databaseManager.hasRecord(pdf.fileHash as String)) {   // TODO: This must be friendly to old scheme V1.0
                 databaseManager.setLastOpened(
                     pdf.fileHash
                         ?: computeHash(this@MainActivity, pdf)
@@ -332,16 +340,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             else {
-                databaseManager.saveRecordInBackground(PdfRecord(
-                    pdf.fileHash
-                        ?: computeHash(this@MainActivity, pdf)
-                        ?: throw RuntimeException("No fileHash while create PdfRecord"),
-                    pdf.uri ?: throw RuntimeException("No fileUri while create PdfRecord"),
-                    pdf.pageNumber,
-                    pdf.length,
-                    pdf.name,
-                    LocalDateTime.now()
-                ))
+                databaseManager.saveRecordInBackground(PdfRecord.from(this@MainActivity, pdf))
             }
         }
     }
@@ -365,8 +364,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 pageText = binding.pdfView.getPageText(pageNumber)
-            }
-            catch (e: Throwable) {
+            } catch (e: Throwable) {
                 Log.e("PDFium", "extractPageText($pageNumber): error while extracting text", e)
                 showFailedExtractTextSnackbar(pageNumber)
             }
@@ -448,8 +446,7 @@ class MainActivity : AppCompatActivity() {
         // show it or hide it based on preferences
         if (pref.getSecondBarEnabled() && !pdf.isFullScreenToggled) {
             binding.secondBarLayout.visibility = View.VISIBLE
-        }
-        else {
+        } else {
             binding.secondBarLayout.visibility = View.GONE
         }
     }
@@ -637,7 +634,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun simplifySpeed(scrollBy: Double): Int {
-        return (scrollBy.absoluteValue *  (1 / Preferences.AUTO_SCROLL_UNIT)).toInt()
+        return (scrollBy.absoluteValue * (1 / Preferences.AUTO_SCROLL_UNIT)).toInt()
     }
 
     private fun changeScrollingSpeed(scrollBy: Double, interval: Double, isIncreasing: Boolean): Double {
@@ -823,10 +820,10 @@ class MainActivity : AppCompatActivity() {
             supportActionBar?.hide()
             binding.secondBarLayout.visibility = View.GONE
             binding.pdfView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            )
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                            or View.SYSTEM_UI_FLAG_FULLSCREEN
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    )
         }
 
         if (!pdf.isFullScreenToggled) {
@@ -1006,8 +1003,7 @@ class MainActivity : AppCompatActivity() {
                             badQueryDialog.dismiss()
                         }
                         .show()
-                }
-                else {
+                } else {
                     startSearchActivity()
                 }
                 return false
@@ -1027,8 +1023,7 @@ class MainActivity : AppCompatActivity() {
             if (secondBarLayout.visibility == View.VISIBLE) {
                 secondBarLayout.visibility = View.GONE
                 pref.setSecondBarEnabled(false)
-            }
-            else {
+            } else {
                 secondBarLayout.visibility = View.VISIBLE
                 pref.setSecondBarEnabled(true)
             }
@@ -1053,7 +1048,7 @@ class MainActivity : AppCompatActivity() {
         fun goToPage(pageIndex: Int) {
             binding.pdfView.jumpTo(pageIndex)
         }
-       showGoToPageDialog(this, pdf.pageNumber, pdf.length, ::goToPage)
+        showGoToPageDialog(this, pdf.pageNumber, pdf.length, ::goToPage)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -1201,7 +1196,8 @@ class MainActivity : AppCompatActivity() {
 
             // e.g.     ~/Pictures/app_name/screenshot1.jpg
             contentValues.put(
-                MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/${getString(R.string.mj_app_name)}/"
+                MediaStore.MediaColumns.RELATIVE_PATH,
+                Environment.DIRECTORY_PICTURES + "/${getString(R.string.mj_app_name)}/"
             )
 
             val imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
@@ -1270,8 +1266,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (!succeeded) {
                         Toast.makeText(this, "Failed to highlight search result", Toast.LENGTH_SHORT).show()
-                    }
-                    else {
+                    } else {
                         binding.pdfView.resetZoomWithAnimation()         // it won't work if the user was zoomed in before searching
                         binding.pdfView.reloadPages()
                     }
@@ -1282,7 +1277,7 @@ class MainActivity : AppCompatActivity() {
                         .replace("\t", " ")
 
                     // show a snackbar with a button that will remove the highlight (it wills still be cached for a bit)
-                    Snackbar.make(binding.root, "Result: $resultText" , Snackbar.LENGTH_INDEFINITE)
+                    Snackbar.make(binding.root, "Result: $resultText", Snackbar.LENGTH_INDEFINITE)
                         .setAction(getString(R.string.ok)) {
                             binding.pdfView.clearSearchResultsHighlight(searchResult.pageNumber)
                         }
@@ -1295,19 +1290,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed()
-            return
+        if (pdf.isFullScreenToggled && !doubleBackToExitPressedOnce) {
+            doubleBackToExitPressedOnce = true
+            Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_SHORT).show()
+            Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         }
-
-        doubleBackToExitPressedOnce = true
-        Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_SHORT).show()
-
-        Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+        else {
+            super.onBackPressed()
+        }
     }
 }
-
-enum class FileType { IMAGE, PDF }
 
 
 /*

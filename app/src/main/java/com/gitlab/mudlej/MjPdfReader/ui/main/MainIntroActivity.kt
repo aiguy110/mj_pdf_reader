@@ -44,22 +44,32 @@
 package com.gitlab.mudlej.MjPdfReader.ui.main
 
 import android.Manifest
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import androidx.fragment.app.Fragment
 import com.github.paolorotolo.appintro.AppIntro
 import com.github.paolorotolo.appintro.model.SliderPage
 import com.github.paolorotolo.appintro.AppIntroFragment
+import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
+import com.gitlab.mudlej.MjPdfReader.manager.permission.PermissionManager
+import com.gitlab.mudlej.MjPdfReader.ui.home.HomeActivity
 
 class MainIntroActivity : AppIntro() {
     //private var themeColor = "#263238"
-    private var themeColor =  "#202020"
+    private var themeColor = "#202020"
     var bg = Color.parseColor(themeColor)
+
+    private lateinit var permissionManager: PermissionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        permissionManager = PermissionManager(this)
         supportActionBar?.hide()
 
         val first = SliderPage()
@@ -93,6 +103,9 @@ class MainIntroActivity : AppIntro() {
 
     override fun onDonePressed(currentFragment: Fragment) {
         super.onDonePressed(currentFragment)
+        Intent(this, MainActivity::class.java).also { mainIntent ->
+            startActivity(mainIntent)
+        }
         finish()
     }
 }

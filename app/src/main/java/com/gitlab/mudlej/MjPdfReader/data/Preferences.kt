@@ -44,6 +44,7 @@
 package com.gitlab.mudlej.MjPdfReader.data
 
 import android.content.SharedPreferences
+import com.gitlab.mudlej.MjPdfReader.enums.ListFilter
 
 class Preferences(private val prefMan: SharedPreferences) {
 
@@ -71,6 +72,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val turnPageByVolumeButtonsKey = "turnPageByVolumeButtons"
         const val secondBarEnabledKey = "secondBarEnabled"
         const val scrollSpeedKey = "scrollSpeed"
+        const val listFilterKey = "listFilter"
 
         // Default values
         const val firstInstallDefault = true
@@ -96,6 +98,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val turnPageByVolumeButtonsDefault = false
         const val secondBarEnabledDefault = false
         const val scrollSpeedDefault = 3
+        const val listFilterDefault = "RECENT"  // ListFilter.RECENT.name
 
         // Colors
         const val pdfDarkBackgroundColor = -0x313132          // -0x313132 = 0xffcecece
@@ -128,6 +131,7 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getTurnPageByVolumeButtons() = prefMan.getBoolean(turnPageByVolumeButtonsKey, turnPageByVolumeButtonsDefault)
     fun getSecondBarEnabled() = prefMan.getBoolean(secondBarEnabledKey, secondBarEnabledDefault)
     fun getScrollSpeed() = prefMan.getInt(scrollSpeedKey, scrollSpeedDefault)
+    fun getListFilter() = ListFilter.valueOf(prefMan.getString(listFilterKey, listFilterDefault) as String)
 
     // put values in Shared Preferences
     fun setFirstInstall(value: Boolean) = prefMan.edit().putBoolean(firstInstallKey, value).apply()
@@ -148,5 +152,6 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setTurnPageByVolumeButtons(value: Boolean) = prefMan.edit().putBoolean(turnPageByVolumeButtonsKey, value).apply()
     fun setSecondBarEnabled(value: Boolean) = prefMan.edit().putBoolean(secondBarEnabledKey, value).apply()
     fun setScrollSpeed(value: Int) = prefMan.edit().putInt(scrollSpeedKey, value).apply()
+    fun setListFilter(value: ListFilter) = prefMan.edit().putString(listFilterKey, value.name).apply()
 
 }

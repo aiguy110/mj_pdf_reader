@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
@@ -30,22 +31,22 @@ class PermissionManager(private val activity: AppCompatActivity) {
                 storageGrantedFunc()
             }
         }
-        else {
-            MaterialAlertDialogBuilder(activity)
-                .setCancelable(false)
-                .setTitle("Not Supported")
-                .setMessage("This app doesn't support anything below SDK 30 (Android 10) yet.")
-                .show()
-        }
+//        else {
+//            AlertDialog.Builder(activity)
+//                .setCancelable(false)
+//                .setTitle("Not Supported")
+//                .setMessage("This app doesn't support anything below SDK 30 (Android 10) yet.")
+//                .show()
+//        }
         return false;
     }
 
-    private val requestPermissionLauncher = activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    val requestPermissionLauncher = activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
-                MaterialAlertDialogBuilder(activity)
+                AlertDialog.Builder(activity)
                     .setCancelable(false)
-                    .setTitle("You're Stupid")
+                    .setTitle("Really?")
                     .setMessage("For real? How can I work right now?!")
                     .setPositiveButton("Ask Again") { _, _ -> checkStoragePermission(storageGrantedFunc) }
                     //.setNegativeButton("I'm stupid") { dialog, _ -> dialog.dismiss() }

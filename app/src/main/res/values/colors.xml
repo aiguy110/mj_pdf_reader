@@ -17,9 +17,12 @@
     <color name="topBarColor">@color/grey</color>
     <color name="topBarBackgroundColor">#202020</color>
     <color name="topBarBackgroundOffColor">#2F2F2F</color>
+    <color name="favorite">#FF0052</color>
+    <color name="darkBackground">#212121</color>
+    <color name="onDarkBackground">@color/bright</color>
 
 
-<!--    // Color of Action bar-->
+    <!--    // Color of Action bar-->
 <!--    //supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#232e32")))-->
 <!--    //        window.statusBarColor = Color.parseColor("#1b2529")-->
 
