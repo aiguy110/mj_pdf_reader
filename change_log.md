@@ -5,6 +5,7 @@
   * DEV: Updated FreeType lib to 2.13.0
   * DEV: added ~500 lines of scripts to fetch, build and copy all of the dependencies and native code with a single command.
   * Added the missing "page fling" setting in the settings.
+  * Fixed the second top bar hiding part of the page.
 
 * 2.0.1
   * Fixed back button not working in Bookmarks Activity.

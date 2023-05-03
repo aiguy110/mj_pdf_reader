@@ -6,7 +6,8 @@
 <!--        <item name="android:windowTranslucentNavigation">true</item>-->
     </style>
 
-    <style name="MJ_PDF_THEME" parent="Theme.AppCompat.DayNight.DarkActionBar" >
+<!--    <style name="MJ_PDF_THEME" parent="Theme.AppCompat.DayNight.DarkActionBar" >-->
+    <style name="MJ_PDF_THEME" parent="Theme.Material3.Dark" >
         <item name="android:actionOverflowButtonStyle">@style/MJ_PDF_THEME.OverFlow</item>
         <item name="actionOverflowMenuStyle">@style/CMOptionsMenu</item>
         <item name="android:itemTextAppearance">@style/TextAppearance</item>
@@ -14,10 +15,8 @@
 
     <!-- to change (color and margin) of the more icon option in the appBar   -->
     <style name="MJ_PDF_THEME.OverFlow">
-<!--        <item name="android:src">@drawable/ic_more_vert</item>-->
         <item name="android:src">@drawable/ic_more_vert</item>
         <item name="android:padding" tools:targetApi="o">12dp</item>
-
     </style>
 
     <!-- To change the background of options menu-->

@@ -49,6 +49,7 @@ import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
@@ -68,6 +69,7 @@ import com.gitlab.mudlej.MjPdfReader.ui.home.HomeActivity
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
 import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
+import com.gitlab.mudlej.MjPdfReader.util.ColorUtil
 import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
 import com.google.android.material.textfield.TextInputLayout
 import com.shockwave.pdfium.PdfDocument
@@ -340,6 +342,8 @@ fun showGoToPageDialog(activity: Activity, pageIndex: Int, pdfLength: Int, goToP
         .from(activity)
         .inflate(R.layout.only_integers_input_layout, null) as TextInputLayout
 
+    ColorUtil.colorize(activity, inputLayout)
+
     inputLayout.hint = "Current page ${pageIndex + 1}/$pdfLength"
 
     AlertDialog.Builder(activity, R.style.MJDialogThemeDark)
@@ -361,3 +365,4 @@ fun showGoToPageDialog(activity: Activity, pageIndex: Int, pdfLength: Int, goToP
         .setNegativeButton(activity.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
         .show()
 }
+

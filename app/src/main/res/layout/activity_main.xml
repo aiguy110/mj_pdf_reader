@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     ~ MJ PDF
     ~ Copyright (C) 2023 Mudlej
     ~
@@ -38,61 +37,60 @@
     ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     ~ SOFTWARE.
 -->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLayout"
-    android:clipChildren="false"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/darkBackground"
+    android:clipChildren="false"
     tools:context="com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/pickFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/pick_file"
-        android:backgroundTint="@color/dark"
-        android:textColor="@color/white"
         android:layout_gravity="center"
-        app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="@color/dark"
+        android:text="@string/pick_file"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/secondBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
         android:background="@color/topBarBackgroundOffColor"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/secondBarLayout"
-        app:layout_constraintBottom_toBottomOf="parent">
-    <com.github.barteksc.pdfviewer.PDFView
-        android:id="@+id/pdfView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/secondBarLayout">
+
+        <com.github.barteksc.pdfviewer.PDFView
+            android:id="@+id/pdfView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-6dp"
         android:layout_gravity="top"
+        android:layout_marginTop="-6dp"
         android:indeterminate="true"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -102,14 +100,13 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:gravity="start"
+            android:orientation="vertical"
             android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            >
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/exitFullScreenButton"
@@ -122,13 +119,13 @@
                     android:id="@+id/exitFullScreenImage"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:src="@drawable/close_icon"
                     android:background="@drawable/button_background"
+                    android:contentDescription="@string/exit_fullscreen_button"
                     android:shadowColor="#ffffff"
                     android:shadowDx="1.5"
                     android:shadowDy="1.5"
                     android:shadowRadius="3"
-                    android:contentDescription="@string/exit_fullscreen_button" />
+                    android:src="@drawable/close_icon" />
             </LinearLayout>
 
             <LinearLayout
@@ -142,60 +139,58 @@
                     android:id="@+id/rotateScreenImage"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_screen_rotate"
                     android:background="@drawable/button_background"
+                    android:contentDescription="@string/rotate_screen"
                     android:shadowColor="#ffffff"
                     android:shadowDx="1.5"
                     android:shadowDy="1.5"
                     android:shadowRadius="3"
-                    android:contentDescription="@string/rotate_screen" />
+                    android:src="@drawable/ic_screen_rotate" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/brightnessButtonLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:padding="12dp"
-                android:visibility="invisible"
-                android:orientation="horizontal">
+                android:visibility="invisible">
 
                 <ImageView
                     android:id="@+id/brightnessButton"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_brightness"
                     android:background="@drawable/button_background"
+                    android:contentDescription="@string/rotate_screen"
                     android:shadowColor="#ffffff"
                     android:shadowDx="1.5"
                     android:shadowDy="1.5"
                     android:shadowRadius="3"
-                    android:contentDescription="@string/rotate_screen" />
+                    android:src="@drawable/ic_brightness" />
 
                 <androidx.appcompat.widget.AppCompatSeekBar
                     android:id="@+id/brightnessSeekBar"
-                    android:layout_height="match_parent"
                     android:layout_width="200dp"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
-                    android:thumbTint="@color/topBarBackgroundColor"
-                    android:progressTint="@color/topBarBackgroundColor"
                     android:background="@drawable/seekbar_background"
-                    android:visibility="invisible"
-                    />
+                    android:progressTint="@color/topBarBackgroundColor"
+                    android:thumbTint="@color/topBarBackgroundColor"
+                    android:visibility="invisible" />
 
                 <TextView
                     android:id="@+id/brightnessPercentage"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:padding="4dp"
                     android:layout_marginStart="8dp"
-                    android:textColor="@color/topBarBackgroundColor"
                     android:background="@drawable/seekbar_background"
+                    android:padding="4dp"
                     android:text="35%"
+                    android:textColor="@color/topBarBackgroundColor"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:visibility="invisible"
-                    />
+                    android:visibility="invisible" />
 
             </LinearLayout>
 
@@ -203,86 +198,80 @@
                 android:id="@+id/autoScrollLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:visibility="invisible"
-                android:orientation="horizontal"
                 android:divider="@drawable/auto_scroll_button_divider"
-                android:showDividers="middle">
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:showDividers="middle"
+                android:visibility="invisible">
 
                 <ImageView
                     android:id="@+id/autoScrollButton"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:padding="2dp"
                     android:layout_marginEnd="3dp"
-                    android:src="@drawable/ic_auto_scroll"
                     android:background="@drawable/button_background"
+                    android:padding="2dp"
                     android:shadowColor="#ffffff"
                     android:shadowDx="1.5"
                     android:shadowDy="1.5"
                     android:shadowRadius="3"
-                     />
+                    android:src="@drawable/ic_auto_scroll" />
 
                 <ImageView
                     android:id="@+id/reverseAutoScrollButton"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:padding="2dp"
                     android:layout_marginHorizontal="3dp"
-                    android:src="@drawable/ic_reverse_direction"
                     android:background="@drawable/seekbar_background"
-                    android:visibility="invisible"
-                    />
+                    android:padding="2dp"
+                    android:src="@drawable/ic_reverse_direction"
+                    android:visibility="invisible" />
 
                 <ImageView
                     android:id="@+id/decreaseScrollSpeedButton"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:padding="2dp"
                     android:layout_marginHorizontal="3dp"
-                    android:src="@drawable/ic_decrease"
                     android:background="@drawable/seekbar_background"
-                    android:visibility="invisible"
-                     />
+                    android:padding="2dp"
+                    android:src="@drawable/ic_decrease"
+                    android:visibility="invisible" />
 
                 <ImageView
                     android:id="@+id/increaseScrollSpeedButton"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:padding="2dp"
                     android:layout_marginHorizontal="3dp"
-                    android:src="@drawable/ic_increase"
                     android:background="@drawable/seekbar_background"
-                    android:visibility="invisible"
-                     />
+                    android:padding="2dp"
+                    android:src="@drawable/ic_increase"
+                    android:visibility="invisible" />
 
                 <ImageView
                     android:id="@+id/toggleAutoScrollButton"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:padding="2dp"
                     android:layout_marginHorizontal="3dp"
-                    android:src="@drawable/ic_start"
                     android:background="@drawable/seekbar_background"
-                    android:visibility="invisible"
-                    />
+                    android:padding="2dp"
+                    android:src="@drawable/ic_start"
+                    android:visibility="invisible" />
 
                 <TextView
                     android:id="@+id/autoScrollSpeedText"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="3dp"
+                    android:background="@drawable/seekbar_background"
+                    android:fontFamily="monospace"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
-                    android:layout_marginHorizontal="3dp"
                     android:textColor="@color/topBarBackgroundColor"
-                    android:background="@drawable/seekbar_background"
-                    tools:text="1"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:fontFamily="monospace"
                     android:visibility="invisible"
-                    />
+                    tools:text="1" />
 
             </LinearLayout>
 
@@ -297,13 +286,13 @@
                     android:id="@+id/toggleHorizontalSwipeImage"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_horizontal_swipe_locked"
                     android:background="@drawable/button_background"
+                    android:padding="2dp"
                     android:shadowColor="#ffffff"
                     android:shadowDx="1.5"
                     android:shadowDy="1.5"
-                    android:shadowRadius="3" />
+                    android:shadowRadius="3"
+                    android:src="@drawable/ic_horizontal_swipe_locked" />
             </LinearLayout>
 
             <LinearLayout
@@ -317,28 +306,28 @@
                     android:id="@+id/screenshotImage"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_screenshot"
                     android:background="@drawable/button_background"
+                    android:contentDescription="@string/rotate_screen"
+                    android:padding="2dp"
                     android:shadowColor="#ffffff"
                     android:shadowDx="1.5"
                     android:shadowDy="1.5"
                     android:shadowRadius="3"
-                    android:contentDescription="@string/rotate_screen" />
+                    android:src="@drawable/ic_screenshot" />
             </LinearLayout>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
-<!--        android:id="@+id/bottomNavigation"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="bottom"-->
-<!--        android:minHeight="?android:attr/actionBarSize"-->
-<!--        app:itemIconTint="?menuIconColor"-->
-<!--        app:itemTextColor="?menuIconColor"-->
-<!--        app:labelVisibilityMode="unlabeled"-->
-<!--        app:menu="@menu/fab_menu" />-->
+    <!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+    <!--        android:id="@+id/bottomNavigation"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_gravity="bottom"-->
+    <!--        android:minHeight="?android:attr/actionBarSize"-->
+    <!--        app:itemIconTint="?menuIconColor"-->
+    <!--        app:itemTextColor="?menuIconColor"-->
+    <!--        app:labelVisibilityMode="unlabeled"-->
+    <!--        app:menu="@menu/fab_menu" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

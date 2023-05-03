@@ -101,6 +101,7 @@ import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.settings.SettingsActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
 import com.gitlab.mudlej.MjPdfReader.util.*
+import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -746,8 +747,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureTheme() {
-        // This should be moved to the onCreate or xml files
-        window.statusBarColor = Color.parseColor("#1a1b1b")
+        //window.statusBarColor = Color.parseColor("#1a1b1b")
+
+        // for M3
+        //val color = SurfaceColors.SURFACE_2.getColor(this)
+        val color = ContextCompat.getColor(this, R.color.darkBackground)
+        window.statusBarColor = color       // Set color of system statusBar same as ActionBar
+        window.navigationBarColor = color   // Set color of system navigationBar same as BottomNavigationView
 
         val pdfView = binding.pdfView
 

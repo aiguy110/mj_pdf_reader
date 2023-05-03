@@ -30,6 +30,7 @@ import com.gitlab.mudlej.MjPdfReader.manager.storage.StorageManager
 import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
 import com.gitlab.mudlej.MjPdfReader.repository.PdfRecord
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
+import com.gitlab.mudlej.MjPdfReader.util.ColorUtil
 import com.gitlab.mudlej.MjPdfReader.util.FileUtil
 import com.gitlab.mudlej.MjPdfReader.util.StringUtil.formatEnumToTitle
 import com.gitlab.mudlej.MjPdfReader.util.StringUtil.formatTitleToEnum
@@ -61,6 +62,9 @@ class HomeActivity : AppCompatActivity(), RecordFunctions {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Theming
+        ColorUtil.colorize(this, window)
 
         // init
         databaseManager = DatabaseManagerImpl(AppDatabase.getInstance(applicationContext))
