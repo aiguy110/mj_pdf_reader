@@ -52,6 +52,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -167,7 +168,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 return@setOnPreferenceClickListener true
             }
 
-            AlertDialog.Builder(requireContext())
+            MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.caution))
                 .setMessage(getString(R.string.app_dark_dialog_message))
                 .setPositiveButton(getString(R.string.ok)) { dialog, _ ->

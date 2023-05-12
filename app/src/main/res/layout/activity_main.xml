@@ -47,13 +47,11 @@
     android:layout_height="match_parent"
     tools:context="com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity">
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/pickFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/pick_file"
-        android:backgroundTint="@color/dark"
-        android:textColor="@color/white"
         android:layout_gravity="center"/>
 
     <com.github.barteksc.pdfviewer.PDFView
@@ -82,7 +80,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:background="@color/topBarBackgroundOffColor"
             app:layout_constraintTop_toTopOf="parent"
             />
 
@@ -163,8 +160,6 @@
                     android:layout_height="match_parent"
                     android:layout_width="200dp"
                     android:layout_marginStart="8dp"
-                    android:thumbTint="@color/topBarBackgroundColor"
-                    android:progressTint="@color/topBarBackgroundColor"
                     android:background="@drawable/seekbar_background"
                     android:visibility="invisible"
                     />
@@ -176,7 +171,6 @@
                     android:layout_gravity="center_vertical"
                     android:padding="4dp"
                     android:layout_marginStart="8dp"
-                    android:textColor="@color/topBarBackgroundColor"
                     android:background="@drawable/seekbar_background"
                     android:text="35%"
                     android:textSize="20sp"
@@ -262,7 +256,6 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
                     android:layout_marginHorizontal="3dp"
-                    android:textColor="@color/topBarBackgroundColor"
                     android:background="@drawable/seekbar_background"
                     tools:text="1"
                     android:textSize="18sp"

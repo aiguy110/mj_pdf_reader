@@ -95,6 +95,7 @@ import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.settings.SettingsActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
 import com.gitlab.mudlej.MjPdfReader.util.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -713,9 +714,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureTheme() {
-        // This should be moved to the onCreate or xml files
-        window.statusBarColor = Color.parseColor("#1a1b1b")
-
         val pdfView = binding.pdfView
 
         // set background color behind pages
@@ -960,7 +958,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 if (query.isBlank() || query.length < 3) {
-                    AlertDialog.Builder(this@MainActivity)
+                    MaterialAlertDialogBuilder(this@MainActivity)
                         .setTitle(getString(R.string.too_short_query))
                         .setMessage(getString(R.string.too_short_query_message).format(query))
                         .setNeutralButton(getString(R.string.proceed_anyway)) { _, _ ->
@@ -1073,7 +1071,6 @@ class MainActivity : AppCompatActivity() {
 
                 textView.setCompoundDrawablesWithIntrinsicBounds(items[position].icon, 0, 0, 0)
                 textView.text = items[position].title
-                textView.setTextColor(resources.getColor(R.color.topBarColor))
 
                 val padding = (10 * resources.displayMetrics.density + 0.5f).toInt()
                 textView.compoundDrawablePadding = padding
@@ -1081,7 +1078,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        AlertDialog.Builder(this, R.style.MJDialogThemeDark)
+        MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.settings))
             .setAdapter(adapter) { dialog, item ->
                 when (item) {
