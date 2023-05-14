@@ -64,9 +64,6 @@ class HomeActivity : AppCompatActivity(), RecordFunctions {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Theming
-        ColorUtil.colorize(this, window)
-
         // init
         databaseManager = DatabaseManagerImpl(AppDatabase.getInstance(applicationContext))
         pref = Preferences(PreferenceManager.getDefaultSharedPreferences(this))
@@ -108,6 +105,7 @@ class HomeActivity : AppCompatActivity(), RecordFunctions {
     }
 
     private fun initUi() {
+        ColorUtil.colorize(this, window)
         title = getString(R.string.recently_opened)
         recordAdapter.submitList(records)
         addRecordSwipeFunctionality()

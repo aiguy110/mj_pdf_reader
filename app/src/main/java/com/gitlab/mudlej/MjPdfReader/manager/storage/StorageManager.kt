@@ -36,14 +36,13 @@ class StorageManager {
     }
 
     private fun readAllFiles(): FileTreeWalk {
-        val allFiles = File(ROOT_DIR).walk()
+        return File(ROOT_DIR).walk()
             .onEnter { file ->                        // before entering this dir check if
                 !file.isHidden                             // it is not hidden
                 && file != ANDROID_DIR                     // it is not Android directory
                 && file != DATA_DIR                        // it is not data directory
                 && !File(file, ".nomedia").exists()   // there is no .nomedia file inside
             }
-        return allFiles
     }
 
     private fun printFilesMap() {

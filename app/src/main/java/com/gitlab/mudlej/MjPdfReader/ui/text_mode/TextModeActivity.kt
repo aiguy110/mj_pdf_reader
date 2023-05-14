@@ -25,6 +25,7 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityTextModeBinding
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractor
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractorFactory
 import com.gitlab.mudlej.MjPdfReader.ui.showGoToPageDialog
+import com.gitlab.mudlej.MjPdfReader.util.ColorUtil
 import com.gitlab.mudlej.MjPdfReader.util.getFileName
 import com.gitlab.mudlej.MjPdfReader.util.indexesOf
 import com.gitlab.mudlej.MjPdfReader.util.newColorPicker
@@ -119,6 +120,7 @@ class TextModeActivity  : AppCompatActivity() {
     }
 
     private fun initUi() {
+        ColorUtil.colorize(this, window)
         binding.apply {
             nextButton.setOnClickListener { nextPage() }
             prevButton.setOnClickListener { prevPage() }

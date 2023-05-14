@@ -13,6 +13,7 @@ import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityBookmarksBinding
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractor
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractorFactory
+import com.gitlab.mudlej.MjPdfReader.util.ColorUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,6 +76,7 @@ class BookmarksActivity : AppCompatActivity(), BookmarkFunctions {
     }
 
     private fun initUi() {
+        ColorUtil.colorize(this, window)
         title = getString(R.string.table_of_contents)
         bookmarkAdapter.submitList(bookmarks)
         binding.bookmarksRecyclerView.apply {

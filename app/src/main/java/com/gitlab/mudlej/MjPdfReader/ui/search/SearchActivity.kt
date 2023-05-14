@@ -17,6 +17,7 @@ import com.gitlab.mudlej.MjPdfReader.data.SearchResult
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivitySearchBinding
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractor
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractorFactory
+import com.gitlab.mudlej.MjPdfReader.util.ColorUtil
 import com.gitlab.mudlej.MjPdfReader.util.indexesOf
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -46,10 +47,15 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
 
         showProgressBar()
         initPdfExtractor()
-        initActionBar()
         initSearchResults()
-        initLoadingProgressBar()
+        initUi()
+    }
+
+    private fun initUi() {
+        ColorUtil.colorize(this, window)
+        initActionBar()
         initRecyclerView()
+        initLoadingProgressBar()
     }
 
     private fun initLoadingProgressBar() {

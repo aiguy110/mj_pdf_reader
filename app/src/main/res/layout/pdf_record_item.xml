@@ -8,7 +8,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/pdfRecordView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_elevated_pdf"
-                app:tint="@color/bright"
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="10dp"
                 android:contentDescription="@string/non_clickable_pdf_icon"
@@ -43,7 +42,6 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 tools:text="Title of the PDF File"
-                android:textColor="@color/bright"
                 android:textSize="16sp"
                 android:maxLines="2"
                 android:ellipsize="end"
@@ -60,7 +58,6 @@
                 android:src="@drawable/info_icon"
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="2dp"
-                app:tint="@color/bright"
                 android:contentDescription="@string/non_clickable_pdf_icon"
                 app:layout_constraintHorizontal_bias="1"
                 app:layout_constraintTop_toTopOf="parent"
@@ -69,5 +66,5 @@
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
