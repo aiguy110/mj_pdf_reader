@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/topBarColor"
+    android:backgroundTint="?colorControlNormal"
     android:background="@drawable/bookmark_list_item_background">
 
     <TextView
@@ -17,7 +17,6 @@
         android:paddingVertical="8dp"
         tools:text="PAGE\n154"
         android:textSize="18sp"
-        android:textColor="@color/topBarBackgroundColor"
         android:textAlignment="center"
         android:gravity="center"
         android:maxLines="2"
@@ -35,7 +34,7 @@
         android:paddingHorizontal="10dp"
         tools:text="When the big guy hit the big wall with a big hammer."
         android:textSize="18sp"
-        android:textColor="@color/topBarBackgroundColor"
+
         android:maxLines="4"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/resultPageNumber"
@@ -51,7 +50,6 @@
         android:paddingEnd="16dp"
         android:paddingVertical="8dp"
         android:src="@drawable/ic_solid_arrow_down"
-        app:tint="@color/topBarBackgroundColor"
         app:layout_constraintStart_toEndOf="@id/resultText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

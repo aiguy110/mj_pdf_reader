@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:src="@drawable/ic_small_arrow_right"
-        app:tint="@color/primaryColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/childrenBookmarkLayout"
@@ -27,7 +26,6 @@
         android:layout_marginEnd="10dp"
         tools:text="Part 1: Introduction"
         android:textSize="24sp"
-        android:textColor="@color/primaryColor"
         app:layout_constraintStart_toEndOf="@id/toggleButton"
         app:layout_constraintEnd_toStartOf="@id/bookmarkPageNumber"
         app:layout_constraintTop_toTopOf="parent"
@@ -40,7 +38,6 @@
         android:layout_marginEnd="10dp"
         tools:text="45"
         android:textSize="20sp"
-        android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/childrenBookmarkLayout"/>

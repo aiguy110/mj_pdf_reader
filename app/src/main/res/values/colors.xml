@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <color name="colorPrimary">#263238</color>
-    <color name="colorPrimaryDark">#202A2F</color>
-    <color name="colorAccent">#009688</color>
-
-    <color name="colorBrightOpposite">#FDF9F9</color>
-    <color name="colorDarkOpposite">#263238</color>
+    <color name="md_theme_primary">#006874</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#97F0FF</color>
+    <color name="md_theme_onPrimaryContainer">#001F24</color>
+    <color name="md_theme_secondary">#4A6267</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#CDE7EC</color>
+    <color name="md_theme_onSecondaryContainer">#051F23</color>
+    <color name="md_theme_tertiary">#525E7D</color>
+    <color name="md_theme_onTertiary">#FFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#DAE2FF</color>
+    <color name="md_theme_onTertiaryContainer">#0E1B37</color>
+    <color name="md_theme_error">#BA1A1A</color>
+    <color name="md_theme_errorContainer">#FFDAD6</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_onErrorContainer">#410002</color>
+    <color name="md_theme_background">#FAFDFD</color>
+    <color name="md_theme_onBackground">#191C1D</color>
+    <color name="md_theme_surface">#FAFDFD</color>
+    <color name="md_theme_onSurface">#191C1D</color>
+    <color name="md_theme_surfaceVariant">#DBE4E6</color>
+    <color name="md_theme_onSurfaceVariant">#3F484A</color>
+    <color name="md_theme_outline">#6F797A</color>
+    <color name="md_theme_inverseOnSurface">#EFF1F1</color>
+    <color name="md_theme_inverseSurface">#2E3132</color>
+    <color name="md_theme_inversePrimary">#4FD8EB</color>
+    <color name="md_theme_shadow">#000000</color>
+    <color name="md_theme_surfaceTint">#006874</color>
+    <color name="md_theme_outlineVariant">#BFC8CA</color>
+    <color name="md_theme_scrim">#000000</color>
 
     <color name="bright">#FDF9F9</color>
     <color name="dark">#263238</color>
-    <color name="white">#ffffff</color>
-    <color name="grey">#CDCDCD</color>
-    <color name="darkGrey">#959595</color>
-
-    <color name="topBarColor">@color/grey</color>
-    <color name="topBarBackgroundColor">#202020</color>
-    <color name="topBarBackgroundOffColor">#2F2F2F</color>
-    <color name="favorite">#FF0052</color>
-    <color name="darkBackground">#212121</color>
-    <color name="onDarkBackground">@color/bright</color>
-
-
-    <!--    // Color of Action bar-->
-<!--    //supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#232e32")))-->
-<!--    //        window.statusBarColor = Color.parseColor("#1b2529")-->
+    <color name="scrollbar">#222222</color>
 
 </resources>

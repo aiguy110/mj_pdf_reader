@@ -44,43 +44,36 @@
 package com.gitlab.mudlej.MjPdfReader.ui
 
 import android.app.Activity
-import android.app.Dialog
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.lifecycleScope
 import com.github.barteksc.pdfviewer.PDFView
 import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
-import com.gitlab.mudlej.MjPdfReader.ui.home.HomeActivity
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
 import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
-import com.gitlab.mudlej.MjPdfReader.util.ColorUtil
 import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.shockwave.pdfium.PdfDocument
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 private const val TAG = "Dialogs"
 
 fun showAppFeaturesDialog(context: Context) {
     val end = "\n\n"
-    val dialog = AlertDialog.Builder(context, R.style.MJDialogThemeDark)
+    val dialog = MaterialAlertDialogBuilder(context)
         .setTitle("${context.resources.getString(R.string.mj_app_name)} ${BuildConfig.VERSION_NAME} Features")
         .setMessage(
             "* Fast & smooth experience." + end +
@@ -108,7 +101,7 @@ fun showAppFeaturesDialog(context: Context) {
 }
 
 fun showMetaDialog(context: Context, meta: PdfDocument.Meta) {
-    AlertDialog.Builder(context, R.style.MJDialogThemeDark)
+    MaterialAlertDialogBuilder(context)
         .setTitle(R.string.metadata)
         .setMessage(
             "${context.getString(R.string.pdf_title)}: ${meta.title}\n" +
@@ -122,7 +115,7 @@ fun showMetaDialog(context: Context, meta: PdfDocument.Meta) {
 }
 
 fun showHowToExitFullscreenDialog(context: Context, pref: Preferences) {
-    AlertDialog.Builder(context, R.style.MJDialogThemeDark)
+    MaterialAlertDialogBuilder(context)
         .setTitle(context.getString(R.string.exit_fullscreen_title))
         .setMessage(context.getString(R.string.exit_fullscreen_message))
         .setPositiveButton(context.getString(R.string.exit_fullscreen_positive)) { _, _ ->
@@ -141,7 +134,7 @@ fun showAskForPasswordDialog(
     dialogBinding: PasswordDialogBinding,
     displayFunc: (Uri?) -> Unit)
 {
-    val alert = AlertDialog.Builder(context, R.style.MJDialogThemeDark)
+    val alert = MaterialAlertDialogBuilder(context)
         .setTitle(R.string.protected_pdf)
         .setView(dialogBinding.root)
         .setIcon(R.drawable.lock_icon)
@@ -161,11 +154,12 @@ fun showPartSizeDialog(activity: MainActivity, pref: Preferences) {
     val minMaxZoom = Preferences.minMaxZoom
 
     // create dialog layout
-    val dialog = Dialog(activity)
+    val builder = MaterialAlertDialogBuilder(activity)
+    builder.setTitle(R.string.advanced)
     val inflater = activity.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
     val layout: View = inflater.inflate(R.layout.advanced_dialog,
         activity.findViewById(R.id.partSizeSeekbar))
-    dialog.setContentView(layout)
+    builder.setView(layout)
 
     // set partSize TextView and Seekbar
     val partSizeText = layout.findViewById(R.id.partSizeText) as TextView
@@ -197,27 +191,22 @@ fun showPartSizeDialog(activity: MainActivity, pref: Preferences) {
         override fun onStopTrackingTouch(p0: SeekBar?) {}
     })
 
-    // set buttons functionalities
-    val applyButton = layout.findViewById(R.id.applyButton) as Button
-    applyButton.setOnClickListener {
+    builder.setPositiveButton(R.string.apply, null)
+    builder.setNeutralButton(R.string.reset, null)
+    builder.setNegativeButton(R.string.cancel, null)
+
+    val dialog = builder.create()
+    dialog.show()
+    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
         pref.setPartSize(partSizeText.text.toString().toFloat())
         pref.setMaxZoom(maxZoomText.text.toString().toFloat())
         activity.recreate()
     }
-
-    val cancelButton = layout.findViewById(R.id.cancelButton) as Button
-    cancelButton.setOnClickListener {
-        dialog.dismiss()
-    }
-
-    val resetButton = layout.findViewById(R.id.resetButton) as Button
-    resetButton.setOnClickListener {
+    dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
         pref.setPartSize(Preferences.partSizeDefault)
         pref.setMaxZoom(Preferences.maxZoomDefault)
         activity.recreate()
     }
-
-    dialog.show()
 }
 
 fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
@@ -227,7 +216,7 @@ fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
     if (bookmarks.isEmpty()) bookmarks = listOf(activity.getString(R.string.no_bookmarks))
 
     // create and show the bookmarks dialog
-    AlertDialog.Builder(activity, R.style.MJDialogThemeDark)
+    MaterialAlertDialogBuilder(activity)
         .setTitle(activity.getString(R.string.bookmarks))
         .setItems(bookmarks.toTypedArray()) { dialog, which ->
             if (pdfView.tableOfContents.isEmpty()) return@setItems
@@ -252,7 +241,6 @@ fun showCopyPageTextDialog(
     val pageTextView = TextView(activity)
     pageTextView.setPadding(30, 20, 30, 0)
     pageTextView.setTextIsSelectable(true)
-    pageTextView.setTextColor(ContextCompat.getColor(activity, R.color.topBarBackgroundColor))
     pageTextView.textSize = 18f
     pageTextView.text = pageText
 
@@ -261,7 +249,7 @@ fun showCopyPageTextDialog(
     //scrollView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
     //scrollView.scrollBarSize = 2
 
-    AlertDialog.Builder(activity, R.style.MJDialogThemeDark)
+    MaterialAlertDialogBuilder(activity)
         .setView(scrollView)
         .setTitle("${activity.getString(R.string.selectable_text)} #${pageNumber + 1}")
         .setNegativeButton(activity.getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
@@ -286,7 +274,7 @@ fun showCopyPageTextDialog(
 }
 
 fun showUnderDevelopmentDialog(activity: TextModeActivity) {
-    AlertDialog.Builder(activity, R.style.MJDialogThemeDark)
+    MaterialAlertDialogBuilder(activity)
         .setTitle(activity.getString(R.string.this_is_experimental))
         .setMessage(activity.getString(R.string.this_is_experimental_message))
         .setPositiveButton(activity.getString(R.string.ok)) { dialog, _ -> dialog.dismiss()}
@@ -299,7 +287,7 @@ fun showUnderDevelopmentDialog(activity: TextModeActivity) {
 
 fun showSearchDialog(activity: Activity, pdf: PDF) {
     val searchLayout = LayoutInflater.from(activity).inflate(R.layout.input_layout, null) as TextInputLayout
-    AlertDialog.Builder(activity, R.style.MJDialogThemeDark)
+    MaterialAlertDialogBuilder(activity)
         .setTitle(activity.getString(R.string.search))
         .setMessage(activity.getString(R.string.search_dialog_message))
         .setView(searchLayout)
@@ -313,7 +301,7 @@ fun showSearchDialog(activity: Activity, pdf: PDF) {
                 }
             }
             if (query.isBlank() || query.length < PDF.MIN_SEARCH_QUERY) {
-                AlertDialog.Builder(activity)
+                MaterialAlertDialogBuilder(activity)
                     .setTitle(activity.getString(R.string.too_short_query))
                     .setMessage(activity.getString(R.string.too_short_query_message).format(query))
                     .setNeutralButton(activity.getString(R.string.proceed_anyway)) { _, _ ->
@@ -342,11 +330,9 @@ fun showGoToPageDialog(activity: Activity, pageIndex: Int, pdfLength: Int, goToP
         .from(activity)
         .inflate(R.layout.only_integers_input_layout, null) as TextInputLayout
 
-    ColorUtil.colorize(activity, inputLayout)
-
     inputLayout.hint = "Current page ${pageIndex + 1}/$pdfLength"
 
-    AlertDialog.Builder(activity, R.style.MJDialogThemeDark)
+    MaterialAlertDialogBuilder(activity)
         .setTitle(activity.getString(R.string.go_to_page))
         .setView(inputLayout)
         .setPositiveButton(activity.getString(R.string.go_to)) { dialog, _ ->
@@ -365,4 +351,3 @@ fun showGoToPageDialog(activity: Activity, pageIndex: Int, pdfLength: Int, goToP
         .setNegativeButton(activity.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
         .show()
 }
-

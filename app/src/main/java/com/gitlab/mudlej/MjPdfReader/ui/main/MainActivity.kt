@@ -365,7 +365,8 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 pageText = binding.pdfView.getPageText(pageNumber)
-            } catch (e: Throwable) {
+            }
+            catch (e: Throwable) {
                 Log.e("PDFium", "extractPageText($pageNumber): error while extracting text", e)
                 showFailedExtractTextSnackbar(pageNumber)
             }
@@ -447,7 +448,8 @@ class MainActivity : AppCompatActivity() {
         // show it or hide it based on preferences
         if (pref.getSecondBarEnabled() && !pdf.isFullScreenToggled) {
             binding.secondBarLayout.visibility = View.VISIBLE
-        } else {
+        }
+        else {
             binding.secondBarLayout.visibility = View.GONE
         }
     }
@@ -747,14 +749,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureTheme() {
-        //window.statusBarColor = Color.parseColor("#1a1b1b")
-
-        // for M3
-        //val color = SurfaceColors.SURFACE_2.getColor(this)
-        val color = ContextCompat.getColor(this, R.color.darkBackground)
-        window.statusBarColor = color       // Set color of system statusBar same as ActionBar
-        window.navigationBarColor = color   // Set color of system navigationBar same as BottomNavigationView
-
         val pdfView = binding.pdfView
 
         // set background color behind pages
@@ -826,10 +820,10 @@ class MainActivity : AppCompatActivity() {
             supportActionBar?.hide()
             binding.secondBarLayout.visibility = View.GONE
             binding.pdfView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            or View.SYSTEM_UI_FLAG_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    )
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            )
         }
 
         if (!pdf.isFullScreenToggled) {
@@ -999,7 +993,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 if (query.isBlank() || query.length < 3) {
-                    AlertDialog.Builder(this@MainActivity)
+                    MaterialAlertDialogBuilder(this@MainActivity)
                         .setTitle(getString(R.string.too_short_query))
                         .setMessage(getString(R.string.too_short_query_message).format(query))
                         .setNeutralButton(getString(R.string.proceed_anyway)) { _, _ ->
@@ -1009,7 +1003,8 @@ class MainActivity : AppCompatActivity() {
                             badQueryDialog.dismiss()
                         }
                         .show()
-                } else {
+                }
+                else {
                     startSearchActivity()
                 }
                 return false
@@ -1029,7 +1024,8 @@ class MainActivity : AppCompatActivity() {
             if (secondBarLayout.visibility == View.VISIBLE) {
                 secondBarLayout.visibility = View.GONE
                 pref.setSecondBarEnabled(false)
-            } else {
+            }
+            else {
                 secondBarLayout.visibility = View.VISIBLE
                 pref.setSecondBarEnabled(true)
             }
@@ -1110,7 +1106,6 @@ class MainActivity : AppCompatActivity() {
 
                 textView.setCompoundDrawablesWithIntrinsicBounds(items[position].icon, 0, 0, 0)
                 textView.text = items[position].title
-                textView.setTextColor(resources.getColor(R.color.topBarColor))
 
                 val padding = (10 * resources.displayMetrics.density + 0.5f).toInt()
                 textView.compoundDrawablePadding = padding
@@ -1118,7 +1113,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        AlertDialog.Builder(this, R.style.MJDialogThemeDark)
+        MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.settings))
             .setAdapter(adapter) { dialog, item ->
                 when (item) {
@@ -1272,7 +1267,8 @@ class MainActivity : AppCompatActivity() {
 
                     if (!succeeded) {
                         Toast.makeText(this, "Failed to highlight search result", Toast.LENGTH_SHORT).show()
-                    } else {
+                    }
+                    else {
                         binding.pdfView.resetZoomWithAnimation()         // it won't work if the user was zoomed in before searching
                         binding.pdfView.reloadPages()
                     }
@@ -1283,7 +1279,7 @@ class MainActivity : AppCompatActivity() {
                         .replace("\t", " ")
 
                     // show a snackbar with a button that will remove the highlight (it wills still be cached for a bit)
-                    Snackbar.make(binding.root, "Result: $resultText", Snackbar.LENGTH_INDEFINITE)
+                    Snackbar.make(binding.root, "Result: $resultText" , Snackbar.LENGTH_INDEFINITE)
                         .setAction(getString(R.string.ok)) {
                             binding.pdfView.clearSearchResultsHighlight(searchResult.pageNumber)
                         }
