@@ -45,7 +45,6 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        showProgressBar()
         initPdfExtractor()
         initSearchResults()
         initUi()
@@ -54,8 +53,8 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
     private fun initUi() {
         ColorUtil.colorize(this, window)
         initActionBar()
-        initRecyclerView()
         initLoadingProgressBar()
+        initRecyclerView()
     }
 
     private fun initLoadingProgressBar() {
@@ -68,6 +67,10 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
 
     private fun showProgressBar() {
         binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun initActionBar() {
@@ -102,7 +105,7 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
             searchResults = search(query)
             searchResultAdapter.submitList(searchResults)
             withContext(Dispatchers.Main) {
-                binding.progressBar.visibility = View.GONE
+                hideProgressBar()
                 binding.searchProgressBar.hide()
                 postSearch()
             }
@@ -225,7 +228,7 @@ class SearchActivity : AppCompatActivity(), SearchResultFunctions {
 
             override fun onQueryTextChange(query: String): Boolean {
                 searchResultAdapter.nestedQuery = query
-                binding.progressBar.visibility = View.VISIBLE
+                showProgressBar()
                 val filteredList = searchResults.filter { it.text.contains(query, true) }
                 searchResultAdapter.submitList(filteredList)
                 searchResultAdapter.notifyDataSetChanged() // because the comparator doesn't see the difference in text style
