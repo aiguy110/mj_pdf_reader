@@ -71,6 +71,9 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val copyTextDialogKey = "copyTextDialog"
         const val turnPageByVolumeButtonsKey = "turnPageByVolumeButtons"
         const val secondBarEnabledKey = "secondBarEnabled"
+        const val hideButtonsLabelsKey = "hideButtonsLabels"
+        const val doubleTapToExitEnabledKey = "doubleTapToExitEnabled"
+        const val autoFullScreenKey = "autoFullScreenSwitch"
         const val scrollSpeedKey = "scrollSpeed"
         const val listFilterKey = "listFilter"
 
@@ -97,6 +100,9 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val copyTextDialogDefault = true
         const val turnPageByVolumeButtonsDefault = false
         const val secondBarEnabledDefault = false
+        const val hideButtonsLabelsDefault = false
+        const val doubleTapToExitEnabledDefault = true
+        const val autoFullScreenDefault = false
         const val scrollSpeedDefault = 3
         const val listFilterDefault = "RECENT"  // ListFilter.RECENT.name
 
@@ -130,6 +136,9 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getCopyTextDialog() = prefMan.getBoolean(copyTextDialogKey, copyTextDialogDefault)
     fun getTurnPageByVolumeButtons() = prefMan.getBoolean(turnPageByVolumeButtonsKey, turnPageByVolumeButtonsDefault)
     fun getSecondBarEnabled() = prefMan.getBoolean(secondBarEnabledKey, secondBarEnabledDefault)
+    fun getHideButtonsLabels() = prefMan.getBoolean(hideButtonsLabelsKey, hideButtonsLabelsDefault)
+    fun getDoubleTapToExitEnabled() = prefMan.getBoolean(doubleTapToExitEnabledKey, doubleTapToExitEnabledDefault)
+    fun getAutoFullScreen() = prefMan.getBoolean(autoFullScreenKey, autoFullScreenDefault)
     fun getScrollSpeed() = prefMan.getInt(scrollSpeedKey, scrollSpeedDefault)
     fun getListFilter() = ListFilter.valueOf(prefMan.getString(listFilterKey, listFilterDefault) as String)
 
@@ -151,6 +160,9 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setCopyTextDialog(value: Boolean) = prefMan.edit().putBoolean(copyTextDialogKey, value).apply()
     fun setTurnPageByVolumeButtons(value: Boolean) = prefMan.edit().putBoolean(turnPageByVolumeButtonsKey, value).apply()
     fun setSecondBarEnabled(value: Boolean) = prefMan.edit().putBoolean(secondBarEnabledKey, value).apply()
+    fun setDoubleTapToExitEnabled(value: Boolean) = prefMan.edit().putBoolean(doubleTapToExitEnabledKey, value).apply()
+    fun setAutoFullScreen(value: Boolean) = prefMan.edit().putBoolean(autoFullScreenKey, value).apply()
+    fun setHideButtonsLabels(value: Boolean) = prefMan.edit().putBoolean(hideButtonsLabelsKey, value).apply()
     fun setScrollSpeed(value: Int) = prefMan.edit().putInt(scrollSpeedKey, value).apply()
     fun setListFilter(value: ListFilter) = prefMan.edit().putString(listFilterKey, value.name).apply()
 

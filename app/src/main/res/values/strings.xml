@@ -126,6 +126,7 @@
     <string name="settings">Settings</string>
     <string name="alias">Anti-Aliasing</string>
     <string name="scroll">Horizontal Scrolling</string>
+    <string name="double_tap_to_exit">Double Tap to Exit</string>
     <string name="snap">Page Snap</string>
     <string name="snap_summary">Center the view on the current page after each swipe</string>
     <string name="fling">Page Fling</string>
@@ -314,5 +315,8 @@
     <string name="screenshot">Screenshot</string>
     <string name="hide_labels">Hide Labels</string>
     <string name="brightness">Bright.</string>
+    <string name="behavior_settings">Behavior</string>
+    <string name="auto_full_screen">Auto Full Screen</string>
+    <string name="auto_full_screen_summary">When a document is opened, automatically toggle Full Screen Mode.</string>
 
 </resources>

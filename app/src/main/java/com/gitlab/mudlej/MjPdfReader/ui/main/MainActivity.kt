@@ -351,11 +351,18 @@ class MainActivity : AppCompatActivity() {
             .onLoad {
                 configureTheme()
                 createPdfRecord()
+                checkAutoFullScreen()
             }
             .load()
 
         // Show the page scroll handler for a while when the pdf is loaded then hide it.
         pdfView.performTap()
+    }
+
+    private fun checkAutoFullScreen() {
+        if (pref.getAutoFullScreen() && !pdf.isFullScreenToggled) {
+            toggleFullscreen()
+        }
     }
 
     private fun createPdfRecord() {
@@ -496,6 +503,13 @@ class MainActivity : AppCompatActivity() {
             toggleLabelButton.setOnClickListener { toggleLabelButtonListener() }
             pickFile.setOnClickListener { pickFile() }
         }
+        showOrHideButtonsLabels(binding)
+    }
+
+    private fun showOrHideButtonsLabels(binding: ActivityMainBinding) {
+        if (pref.getHideButtonsLabels()) {
+            binding.toggleLabelButton.performClick()
+        }
     }
 
     private fun toggleZoomDisabled(binding: ActivityMainBinding) {
@@ -504,6 +518,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleLabelButtonListener() {
         fullScreenOptionsManager.toggleLabelVisibility(::drawableOf, ::getString)
+
+        val value = !pref.getHideButtonsLabels()
+        pref.setHideButtonsLabels(value)
     }
 
     private fun rotateScreenButtonListener() {
@@ -1396,10 +1413,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (pdf.isFullScreenToggled && !doubleBackToExitPressedOnce) {
+        //if (pdf.isFullScreenToggled && !doubleBackToExitPressedOnce) {
+        if (pref.getDoubleTapToExitEnabled() && !doubleBackToExitPressedOnce) {
             doubleBackToExitPressedOnce = true
             Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_SHORT).show()
-            Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+            Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2500)
         }
         else {
             super.onBackPressed()

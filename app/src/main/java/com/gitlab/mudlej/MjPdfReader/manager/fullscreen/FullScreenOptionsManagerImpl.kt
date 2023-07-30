@@ -122,17 +122,9 @@ class FullScreenOptionsManagerImpl(
     }
 
     override fun toggleLabelVisibility(drawableOf: KFunction1<Int, Drawable?>, getLabel: KFunction1<Int, String?>) {
-        /*
-        *
-            app:iconPadding="0dp"
-            android:insetLeft="20dp"
-            android:insetRight="20dp"
-        * */
         binding.apply {
             if (labelVisibility == VisibilityState.VISIBLE) {
                 exitFullScreenButton.text = ""
-                exitFullScreenButton.iconPadding = 0
-
                 rotateScreenButton.text = ""
                 autoScrollButton.text = ""
                 toggleHorizontalSwipeButton.text = ""

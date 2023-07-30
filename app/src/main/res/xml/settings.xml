@@ -46,8 +46,8 @@
         android:title="@string/quality_settings" />
 
     <PreferenceCategory
-        android:key="scrollSection"
-        android:title="@string/scroll_settings" />
+        android:key="behaviorSection"
+        android:title="@string/behavior_settings" />
 
     <PreferenceCategory
         android:key="textSection"

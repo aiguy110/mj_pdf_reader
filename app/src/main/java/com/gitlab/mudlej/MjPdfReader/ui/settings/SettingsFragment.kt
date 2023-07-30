@@ -43,7 +43,6 @@
 
 package com.gitlab.mudlej.MjPdfReader.ui.settings
 
-import android.app.AlertDialog
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.*
@@ -93,7 +92,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         firstSection?.addPreference(screenOnSwitch)
 
 
-        // ----------------- Scroll Section ------------------
+        // ----------------- Behavior Section ------------------
+
+        // Configure and add Double Tap to Exit On Switch
+        val doubleTapToExitSwitch = SwitchPreferenceCompat(requireContext())
+        doubleTapToExitSwitch.title = getString(R.string.double_tap_to_exit)
+        doubleTapToExitSwitch.setDefaultValue(Preferences.doubleTapToExitEnabledDefault)
+        doubleTapToExitSwitch.key = Preferences.doubleTapToExitEnabledKey
+        doubleTapToExitSwitch.isIconSpaceReserved = false
 
         // Configure and add Keep Screen On Switch
         val horizontalScrollSwitch = SwitchPreferenceCompat(requireContext())
@@ -101,6 +107,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
         horizontalScrollSwitch.setDefaultValue(Preferences.horizontalScrollDefault)
         horizontalScrollSwitch.key = Preferences.horizontalScrollKey
         horizontalScrollSwitch.isIconSpaceReserved = false
+
+
+        // Configure and add Auto Full Screen On Switch
+        val autoFullScreenSwitch = SwitchPreferenceCompat(requireContext())
+        autoFullScreenSwitch.title = getString(R.string.auto_full_screen)
+        autoFullScreenSwitch.setDefaultValue(Preferences.autoFullScreenDefault)
+        autoFullScreenSwitch.key = Preferences.autoFullScreenKey
+        autoFullScreenSwitch.summary = getString(R.string.auto_full_screen_summary)
+        autoFullScreenSwitch.isIconSpaceReserved = false
 
         // Configure and add Page Snap Switch
         val pageSnapSwitch = SwitchPreferenceCompat(requireContext())
@@ -127,9 +142,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         turnPageByVolumeButtonsSwitch.isIconSpaceReserved = false
 
         // add the switches to the second section.
-        val secondSection: PreferenceCategory? = findPreference("scrollSection")
+        val secondSection: PreferenceCategory? = findPreference("behaviorSection")
         secondSection?.isIconSpaceReserved = false
+        secondSection?.addPreference(doubleTapToExitSwitch)
         secondSection?.addPreference(horizontalScrollSwitch)
+        secondSection?.addPreference(autoFullScreenSwitch)
         secondSection?.addPreference(pageSnapSwitch)
         secondSection?.addPreference(pageFlingSwitch)
         secondSection?.addPreference(turnPageByVolumeButtonsSwitch)
