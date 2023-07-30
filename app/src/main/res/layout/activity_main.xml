@@ -89,7 +89,7 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:id="@+id/fullScreenButtonLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -142,11 +142,11 @@
                 android:layout_height="wrap_content">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/dec_brightness_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dec_brightness_button"
                         style="@style/Widget.MaterialComponents.Button.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -171,11 +171,11 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/inc_brightness_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/inc_brightness_button"
                         style="@style/Widget.MaterialComponents.Button.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -274,6 +274,6 @@
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

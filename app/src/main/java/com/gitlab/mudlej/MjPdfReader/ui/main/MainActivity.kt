@@ -55,6 +55,7 @@ import android.net.Uri
 import android.os.*
 import android.print.PrintManager
 import android.provider.MediaStore
+import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.*
@@ -140,6 +141,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appTitle: TextView
     private lateinit var appTitlePageNumber: TextView
     private lateinit var showSearchBar: () -> Unit
+    private var brightness: Int = -1
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "-----------onCreate: ${pdf.name} ")
@@ -158,6 +161,7 @@ class MainActivity : AppCompatActivity() {
         )
         databaseManager = DatabaseManagerImpl(AppDatabase.getInstance(applicationContext))
         permissionManager = PermissionManager(this)
+        brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS) / 2
 
         Constants.THUMBNAIL_RATIO = pref.getThumbnailRation()
         Constants.PART_SIZE = pref.getPartSize()
@@ -179,11 +183,7 @@ class MainActivity : AppCompatActivity() {
             pdf.uri = intent.data
             if (pdf.uri == null) {
                 pickFile()
-                // go to HomePage
-//                Intent(this, HomeActivity::class.java).also {
-//                    startActivity(it)
-//                }
-//                finish()
+                //goToHomePage()
             }
         }
 
@@ -191,6 +191,13 @@ class MainActivity : AppCompatActivity() {
         setButtonsFunctionalities()
         setUpSecondBar()
         //showAppFeaturesDialogOnFirstRun()
+    }
+
+    private fun goToHomePage() {
+        Intent(this, HomeActivity::class.java).also {
+            startActivity(it)
+        }
+        finish()
     }
 
 //    private fun createFullScreenButtons(): List<FullScreenButton> {
@@ -333,6 +340,7 @@ class MainActivity : AppCompatActivity() {
             .pageFitPolicy(FitPolicy.WIDTH)
             .password(pdf.password)
             .swipeHorizontal(pref.getHorizontalScroll())
+            .zoomDisabled(false)
             .autoSpacing(pref.getHorizontalScroll())
             .pageSnap(pref.getPageSnap())
             .pageFling(pref.getPageFling())
@@ -478,10 +486,11 @@ class MainActivity : AppCompatActivity() {
         setAutoScrollButtons(binding)
         binding.apply {
             rotateScreenButton.setOnClickListener { rotateScreenButtonListener() }
-            //brightnessButton.setOnClickListener { brightnessButtonListener(binding) }
+            setBrightnessButtonsListeners(binding)
             autoScrollButton.setOnClickListener { autoScrollButtonListener(binding) }
             screenshotButton.setOnClickListener { takeScreenshot() }
             toggleHorizontalSwipeButton.setOnClickListener { horizontalSwipeButtonListener(binding) }
+            toggleZoomLockButton.setOnClickListener { pdfView.isZoomDisabled = !pdfView.isZoomDisabled }
             toggleLabelButton.setOnClickListener { toggleLabelButtonListener(binding) }
             pickFile.setOnClickListener { pickFile() }
         }
@@ -630,16 +639,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun brightnessButtonListener(binding: ActivityMainBinding) {
-//        binding.apply {
-//            if (brightnessSeekBar.isVisible) {
-//                brightnessSeekBar.visibility = View.GONE
-//                brightnessPercentage.visibility = View.GONE
-//            } else {
-//                brightnessSeekBar.visibility = View.VISIBLE
-//                brightnessPercentage.visibility = View.VISIBLE
-//            }
-//        }
+    private fun setBrightnessButtonsListeners(binding: ActivityMainBinding) {
+        val difference = 5
+        binding.apply {
+            incBrightnessButton.setOnClickListener {
+                changeBrightnessByPercent(difference)
+            }
+            decBrightnessButton.setOnClickListener {
+                changeBrightnessByPercent(-difference)
+            }
+        }
     }
 
     private fun exitFullScreenListener(binding: ActivityMainBinding) {
@@ -679,11 +688,41 @@ class MainActivity : AppCompatActivity() {
         return newSpeed
     }
 
-    private fun updateBrightness(brightness: Int) {
-        //binding.brightnessPercentage.text = "$brightness%"
-        val layout = window.attributes
-        window.attributes.screenBrightness = brightness.toFloat() / 100
-        window.attributes = layout
+    private fun changeBrightnessByPercent(difference: Int) {
+        Log.d(TAG, "changeBrightnessByPercent: Before: $brightness")
+        if (difference < 0 && brightness <= 5) {
+            --brightness
+        }
+        else if (difference > 0 && brightness < 5) {
+            ++brightness
+        }
+        else {
+            brightness += difference
+        }
+
+        brightness = checkBrightness(brightness)
+        Log.d(TAG, "changeBrightnessByPercent: after: $brightness")
+        setBrightnessPercent(brightness)
+    }
+
+    private fun checkBrightness(brightness: Int): Int {
+        return when {
+            brightness < 1 -> 1
+            brightness > 99 -> 100
+            else -> brightness
+        }
+    }
+
+    private fun setBrightnessPercent(brightness: Int) {
+        val newValue = brightness.toFloat() / 100
+        if (newValue > 0) {
+            setBrightness(newValue)
+        }
+    }
+
+    private fun setBrightness(newValue: Float) {
+        window.attributes.screenBrightness = newValue
+        window.attributes = window.attributes   // apply it
     }
 
     public override fun onResume() {

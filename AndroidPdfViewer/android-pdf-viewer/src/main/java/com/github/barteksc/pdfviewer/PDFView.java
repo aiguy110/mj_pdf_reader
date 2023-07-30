@@ -234,7 +234,9 @@ public class PDFView extends RelativeLayout {
 
     private boolean horizontalSwipeDisabled = false;
 
-    private boolean doubletapEnabled = true;
+    private boolean zoomDisabled = false;
+
+    private boolean doubleTapEnabled = true;
 
     private boolean nightMode = false;
 
@@ -469,6 +471,11 @@ public class PDFView extends RelativeLayout {
         this.horizontalSwipeDisabled = horizontalSwipeDisabled;
     }
 
+
+    public void setZoomDisabled(boolean zoomDisabled) {
+        this.zoomDisabled = zoomDisabled;
+    }
+
     public void setNightMode(boolean nightMode) {
         this.nightMode = nightMode;
         if (nightMode) {
@@ -486,12 +493,12 @@ public class PDFView extends RelativeLayout {
         }
     }
 
-    void enableDoubletap(boolean enableDoubletap) {
-        this.doubletapEnabled = enableDoubletap;
+    void enableDoubleTap(boolean enableDoubleTap) {
+        this.doubleTapEnabled = enableDoubleTap;
     }
 
-    boolean isDoubletapEnabled() {
-        return doubletapEnabled;
+    boolean isDoubleTapEnabled() {
+        return doubleTapEnabled;
     }
 
     void onPageError(PageRenderingException ex) {
@@ -1342,6 +1349,10 @@ public class PDFView extends RelativeLayout {
         return horizontalSwipeDisabled;
     }
 
+    public boolean isZoomDisabled() {
+        return zoomDisabled;
+    }
+
     private void setSwipeVertical(boolean swipeVertical) {
         this.swipeVertical = swipeVertical;
     }
@@ -1554,7 +1565,9 @@ public class PDFView extends RelativeLayout {
 
         private boolean horizontalSwipeDisabled = false;
 
-        private boolean enableDoubletap = true;
+        private boolean zoomDisabled = false;
+
+        private boolean enableDoubleTap = true;
 
         private OnDrawListener onDrawListener;
 
@@ -1625,8 +1638,13 @@ public class PDFView extends RelativeLayout {
             return this;
         }
 
-        public Configurator enableDoubletap(boolean enableDoubletap) {
-            this.enableDoubletap = enableDoubletap;
+        public Configurator zoomDisabled(boolean zoomDisabled) {
+            this.zoomDisabled = zoomDisabled;
+            return this;
+        }
+
+        public Configurator enableDoubleTap(boolean enableDoubleTap) {
+            this.enableDoubleTap = enableDoubleTap;
             return this;
         }
 
@@ -1779,8 +1797,9 @@ public class PDFView extends RelativeLayout {
             PDFView.this.callbacks.setLinkHandler(linkHandler);
             PDFView.this.setSwipeEnabled(enableSwipe);
             PDFView.this.setHorizontalSwipeDisabled(horizontalSwipeDisabled);
+            PDFView.this.setZoomDisabled(zoomDisabled);
             PDFView.this.setNightMode(nightMode);
-            PDFView.this.enableDoubletap(enableDoubletap);
+            PDFView.this.enableDoubleTap(enableDoubleTap);
             PDFView.this.setDefaultPage(defaultPage);
             PDFView.this.setSwipeVertical(!swipeHorizontal);
             PDFView.this.enableAnnotationRendering(annotationRendering);
