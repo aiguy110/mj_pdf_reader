@@ -308,5 +308,11 @@
     <string name="pages">pages</string>
     <string name="exit">Exit</string>
     <string name="rotate">Rotate</string>
+    <string name="auto_scroll">Auto Scroll</string>
+    <string name="horizontal_lock">Horiz. Lock</string>
+    <string name="zoom_lock">Zoom Lock</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="hide_labels">Hide Labels</string>
+    <string name="brightness">Bright.</string>
 
 </resources>

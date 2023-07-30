@@ -34,6 +34,6 @@ interface FullScreenOptionsManager {
 
     fun getOnTouchListener(): View.OnTouchListener
 
-    fun toggleLabelVisibility(drawableOf: KFunction1<Int, Drawable?>)
+    fun toggleLabelVisibility(drawableOf: KFunction1<Int, Drawable?>, getLabel: KFunction1<Int, String?>)
 }
 

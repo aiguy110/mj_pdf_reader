@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.view.isVisible
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
@@ -36,7 +37,8 @@ class FullScreenOptionsManagerImpl(
         binding.toggleHorizontalSwipeButton,
         binding.toggleZoomLockButton,
         binding.screenshotButton,
-        binding.toggleLabelButton
+        binding.toggleLabelButton,
+        binding.autoScrollLayout
     )
 
     init {
@@ -50,12 +52,14 @@ class FullScreenOptionsManagerImpl(
             showFullScreenButtons()
         }
         showPageHandle()
+        showAutoScrollLayout()
         visibility = VisibilityState.VISIBLE
     }
 
     override fun hideAll() {
         hideFullScreenButtons()
         hidePageHandle()
+        hideAutoScrollLayout()
         visibility = VisibilityState.INVISIBLE
     }
 
@@ -113,7 +117,7 @@ class FullScreenOptionsManagerImpl(
         }
     }
 
-    override fun toggleLabelVisibility(drawableOf: KFunction1<Int, Drawable?>) {
+    override fun toggleLabelVisibility(drawableOf: KFunction1<Int, Drawable?>, getLabel: KFunction1<Int, String?>) {
         binding.apply {
             if (labelVisibility == VisibilityState.VISIBLE) {
                 exitFullScreenButton.text = ""
@@ -126,16 +130,15 @@ class FullScreenOptionsManagerImpl(
                 
                 brightnessLabel.visibility = View.GONE
                 toggleLabelButton.icon = drawableOf(R.drawable.ic_double_arrow_right)
-
             }
             else {
-                exitFullScreenButton.text = ""
-                rotateScreenButton.text = ""
-                autoScrollButton.text = ""
-                toggleHorizontalSwipeButton.text = ""
-                toggleZoomLockButton.text = ""
-                screenshotButton.text = ""
-                toggleLabelButton.text = ""
+                exitFullScreenButton.text = getLabel(R.string.exit)
+                rotateScreenButton.text = getLabel(R.string.rotate)
+                autoScrollButton.text = getLabel(R.string.auto_scroll)
+                toggleHorizontalSwipeButton.text = getLabel(R.string.horizontal_lock)
+                toggleZoomLockButton.text = getLabel(R.string.zoom_lock)
+                screenshotButton.text = getLabel(R.string.screenshot)
+                toggleLabelButton.text = getLabel(R.string.hide_labels)
 
                 brightnessLabel.visibility = View.VISIBLE
                 toggleLabelButton.icon = drawableOf(R.drawable.ic_double_arrow_left)
@@ -172,6 +175,20 @@ class FullScreenOptionsManagerImpl(
 
     private fun hidePageHandle() {
         binding.pdfView.scrollHandle?.customHide()
+    }
+
+    private fun showAutoScrollLayout() {
+        if (pdf.isFullScreenToggled && pdf.isAutoScrollVisible) {
+            binding.autoScrollLayout.visibility = View.VISIBLE
+            binding.autoScrollSpeedText.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideAutoScrollLayout() {
+        if (pdf.isFullScreenToggled && pdf.isAutoScrollVisible) {
+            binding.autoScrollLayout.visibility = View.GONE
+            binding.autoScrollSpeedText.visibility = View.GONE
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
