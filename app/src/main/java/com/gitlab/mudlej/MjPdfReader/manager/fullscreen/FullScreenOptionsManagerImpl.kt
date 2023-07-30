@@ -10,14 +10,13 @@ import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManager.VisibilityState
-import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.button.FullScreenButton
 import kotlin.reflect.KFunction1
 
 
 class FullScreenOptionsManagerImpl(
     private val binding: ActivityMainBinding,
     private val pdf: PDF,
-    private val buttons: List<FullScreenButton>,
+//    private val buttons: List<FullScreenButton>,
     private val delay: Long
 ) : FullScreenOptionsManager {
 
@@ -130,7 +129,7 @@ class FullScreenOptionsManagerImpl(
 
             }
             else {
-                exitFullScreenButton.text = 
+                exitFullScreenButton.text = ""
                 rotateScreenButton.text = ""
                 autoScrollButton.text = ""
                 toggleHorizontalSwipeButton.text = ""

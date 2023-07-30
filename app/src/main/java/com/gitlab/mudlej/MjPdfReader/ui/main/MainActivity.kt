@@ -86,8 +86,6 @@ import com.gitlab.mudlej.MjPdfReader.manager.database.DatabaseManager
 import com.gitlab.mudlej.MjPdfReader.manager.database.DatabaseManagerImpl
 import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManager
 import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManagerImpl
-import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.button.FullScreenButton
-import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.button.FullScreenButtonFactory
 import com.gitlab.mudlej.MjPdfReader.manager.permission.PermissionManager
 import com.gitlab.mudlej.MjPdfReader.manager.print.PdfDocumentAdapter
 import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
@@ -156,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         // init
         pref = Preferences(PreferenceManager.getDefaultSharedPreferences(this))
         fullScreenOptionsManager = FullScreenOptionsManagerImpl(
-            binding, pdf,  createFullScreenButtons(), pref.getHideDelay().toLong()
+            binding, pdf, pref.getHideDelay().toLong()
         )
         databaseManager = DatabaseManagerImpl(AppDatabase.getInstance(applicationContext))
         permissionManager = PermissionManager(this)
@@ -180,10 +178,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             pdf.uri = intent.data
             if (pdf.uri == null) {
-                Intent(this, HomeActivity::class.java).also {
-                    startActivity(it)
-                }
-                finish()
+                pickFile()
+                // go to HomePage
+//                Intent(this, HomeActivity::class.java).also {
+//                    startActivity(it)
+//                }
+//                finish()
             }
         }
 
@@ -193,18 +193,18 @@ class MainActivity : AppCompatActivity() {
         //showAppFeaturesDialogOnFirstRun()
     }
 
-    private fun createFullScreenButtons(): List<FullScreenButton> {
-        return listOf(
-            FullScreenButtonFactory.exitButton(this, binding.exitFullScreenButton),
-            FullScreenButtonFactory.rotateScreenButton(this, binding.rotateScreenButton),
-            FullScreenButtonFactory.decBrightnessButton(this, binding.decBrightnessButton),
-            FullScreenButtonFactory.incBrightnessButton(this, binding.incBrightnessButton),
-            FullScreenButtonFactory.horizontalSwipeButton(this, binding.toggleHorizontalSwipeButton),
-            FullScreenButtonFactory.zoomLockButton(this, binding.toggleZoomLockButton),
-            FullScreenButtonFactory.screenshotButton(this, binding.screenshotButton),
-            FullScreenButtonFactory.toggleLabelButton(this, binding.toggleLabelButton),
-        )
-    }
+//    private fun createFullScreenButtons(): List<FullScreenButton> {
+//        return listOf(
+//            FullScreenButtonFactory.exitButton(this, binding.exitFullScreenButton),
+//            FullScreenButtonFactory.rotateScreenButton(this, binding.rotateScreenButton),
+//            FullScreenButtonFactory.decBrightnessButton(this, binding.decBrightnessButton),
+//            FullScreenButtonFactory.incBrightnessButton(this, binding.incBrightnessButton),
+//            FullScreenButtonFactory.horizontalSwipeButton(this, binding.toggleHorizontalSwipeButton),
+//            FullScreenButtonFactory.zoomLockButton(this, binding.toggleZoomLockButton),
+//            FullScreenButtonFactory.screenshotButton(this, binding.screenshotButton),
+//            FullScreenButtonFactory.toggleLabelButton(this, binding.toggleLabelButton),
+//        )
+//    }
 
     fun initPdf(pdf: PDF, uri: Uri) {
         pdf.uri = uri

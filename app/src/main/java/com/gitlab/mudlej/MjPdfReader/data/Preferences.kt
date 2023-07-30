@@ -83,12 +83,12 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val pageSnapDefault = false
         const val pageFlingDefault = false
         const val pdfDarkThemeDefault = false
-        const val appFollowSystemThemeDefault = false
+        const val appFollowSystemThemeDefault = true    // NEW: for version v2.1 M3 Theme
         const val annotationRenderingDefault = true
         const val screenOnDefault = false
         const val hideDelayDefault = 3000
-        const val spacingDefault = 10          // in dp
-        const val minZoomDefault = 0.5f //0.5f
+        const val spacingDefault = 10           // in dp
+        const val minZoomDefault = 0.5f         //0.5f
         const val midZoomDefault = 2.0f
         const val maxZoomDefault = 10.0f
         const val partSizeDefault = 256f

@@ -10,16 +10,22 @@ import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
 import com.gitlab.mudlej.MjPdfReader.util.openSelectedDocument
 
 class Launcher(private val activity: MainActivity, private val pdf: PDF) {
+
     fun pdfPicker(): ActivityResultLauncher<Array<String>>
         = activity.registerForActivityResult(ActivityResultContracts.OpenDocument()) {
-            selectedDocumentUri: Uri? -> {
-                openSelectedDocument(activity, pdf, selectedDocumentUri)
-                activity.contentResolver.takePersistableUriPermission(
-                    selectedDocumentUri as Uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-            }
-        }
+            selectedDocumentUri: Uri? -> openSelectedDocument(activity, pdf, selectedDocumentUri)
+    }
+
+//    fun pdfPicker(): ActivityResultLauncher<Array<String>>
+//        = activity.registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+//            selectedDocumentUri: Uri? -> {
+//                openSelectedDocument(activity, pdf, selectedDocumentUri)
+//                activity.contentResolver.takePersistableUriPermission(
+//                    selectedDocumentUri as Uri,
+//                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+//                )
+//            }
+//        }
 
     fun saveToDownloadPermission(requestFunction:(Boolean) -> (Unit))
         = activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
