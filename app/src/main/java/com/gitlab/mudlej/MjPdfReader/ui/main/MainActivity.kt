@@ -1097,7 +1097,7 @@ class MainActivity : AppCompatActivity() {
                 fun startSearchActivity() {
                     Intent(this@MainActivity, SearchActivity::class.java).also { searchIntent ->
                         searchIntent.putExtra(PDF.filePathKey, pdf.uri.toString())
-                        searchIntent.putExtra(PDF.searchQueryKey, query)
+                        searchIntent.putExtra(PDF.searchQueryKey, query.trim())
                         startActivityForResult(searchIntent, PDF.startSearchActivity)
                         supportActionBar?.collapseActionView()  // close it after searching
                     }
