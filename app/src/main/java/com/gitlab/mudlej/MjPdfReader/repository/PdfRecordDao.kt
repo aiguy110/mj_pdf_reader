@@ -60,6 +60,9 @@ interface PdfRecordDao {
     @Query("SELECT pageNumber FROM PdfRecord WHERE hash = :fileHash")
     fun findSavedPage(fileHash: String?): Int?
 
+    @Query("SELECT password FROM PdfRecord WHERE hash = :fileHash")
+    fun findPdfPassword(fileHash: String?): String?
+
     @Query("UPDATE PdfRecord SET pageNumber = :page WHERE hash = :fileHash")
     fun updatePageNumber(fileHash: String?, page: Int): Int?
 
@@ -71,6 +74,9 @@ interface PdfRecordDao {
 
     @Query("UPDATE PdfRecord SET reading = :readingStatus WHERE hash = :fileHash")
     fun updateReading(fileHash: String, readingStatus: ReadingStatus)
+
+    @Query("UPDATE PdfRecord SET password = :password WHERE hash = :fileHash")
+    fun updatePassword(fileHash: String, password: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(saveLocations: PdfRecord)

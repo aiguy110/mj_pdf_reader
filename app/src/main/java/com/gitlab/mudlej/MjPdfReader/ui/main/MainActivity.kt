@@ -109,6 +109,7 @@ import com.google.gson.reflect.TypeToken
 import com.shockwave.pdfium.PdfPasswordException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
@@ -190,7 +191,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        displayFromUri(pdf.uri)
+        displayFromUri(pdf.uri, true)
         setButtonsFunctionalities()
         setUpSecondBar()
         //showAppFeaturesDialogOnFirstRun()
@@ -229,10 +230,6 @@ class MainActivity : AppCompatActivity() {
         appTitlePageNumber = customView.findViewById(R.id.actionbarPageNumber)
         appTitle = customView.findViewById(R.id.actionbarTitle)
 
-        // Change the font family (optional)
-        // appTitle.setTypeface(Typeface.SERIF)
-        // appTitlePageNumber.setTypeface(Typeface.SERIF)
-
         fun titleClickListener() {
             val title = pdf.getTitle()
             if (title.isNotBlank()) {
@@ -267,8 +264,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun displayFromUri(uri: Uri?) {
-        if (uri == null) return
+    fun displayFromUri(uri: Uri?, savePassword: Boolean = false) {
+        if (uri == null) {
+            return
+        }
 
         pdf.name = getFileName(this, uri)
         updateAppTitle()
@@ -280,10 +279,7 @@ class MainActivity : AppCompatActivity() {
             downloadOrShowDownloadedFile(uri)
         }
         else {
-            initPdfViewAndLoad(binding.pdfView.fromUri(pdf.uri))
-
-            // start extracting text in the background
-            //if (!pdf.isExtractingTextFinished) extractPdfText()
+            initPdfViewAndLoad(binding.pdfView.fromUri(pdf.uri), savePassword=savePassword)
         }
     }
 
@@ -291,7 +287,7 @@ class MainActivity : AppCompatActivity() {
         appTitle.text = pdf.getTitleWithPageNumber()
     }
 
-    private fun initPdfViewAndLoad(viewConfigurator: Configurator) {
+    private fun initPdfViewAndLoad(viewConfigurator: Configurator, savePassword: Boolean = false) {
         // attempt to find a saved location for the pdf else assign zero
         if (pdf.pageNumber == 0) {
             lifecycleScope.launchWhenCreated {
@@ -300,16 +296,15 @@ class MainActivity : AppCompatActivity() {
 
                 pdf.fileHash = hash
                 pdf.pageNumber = pageNumber
-
                 withContext(Dispatchers.Main) {
-                    initPdfViewAndLoad(viewConfigurator, pageNumber)
+                    initPdfViewAndLoad(viewConfigurator, pageNumber, savePassword)
                 }
             }
         }
-        else initPdfViewAndLoad(viewConfigurator, pdf.pageNumber)
+        else initPdfViewAndLoad(viewConfigurator, pdf.pageNumber, savePassword)
     }
 
-    private fun initPdfViewAndLoad(viewConfigurator: Configurator, pageNumber: Int) {
+    private fun initPdfViewAndLoad(viewConfigurator: Configurator, pageNumber: Int, savePassword: Boolean) {
         val pdfView = binding.pdfView
         pdfView.useBestQuality(pref.getHighQuality())
         pdfView.minZoom = Preferences.minZoomDefault
@@ -338,7 +333,7 @@ class MainActivity : AppCompatActivity() {
             .nightMode(pref.getPdfDarkTheme())
             .onLoad {
                 configureTheme()
-                createPdfRecord()
+                createPdfRecord(savePassword, pdf)
                 checkAutoFullScreen()
                 configureButtonsLabels(binding)
             }
@@ -354,18 +349,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun createPdfRecord() {
+    private fun createPdfRecord(savePassword: Boolean, pdf: PDF) {
+        val password = if (savePassword) pdf.password else null
         lifecycleScope.launchWhenCreated {
-            if (databaseManager.hasRecord(pdf.fileHash as String)) {   // TODO: This must be friendly to old scheme V1.0
-                databaseManager.setLastOpened(
-                    pdf.fileHash
-                        ?: computeHash(this@MainActivity, pdf)
-                        ?: throw RuntimeException("No fileHash while create PdfRecord"),
-                    LocalDateTime.now()
-                )
+            if (databaseManager.hasRecord(this@MainActivity.pdf.fileHash as String)) {
+                val fileHash = this@MainActivity.pdf.fileHash
+                    ?: computeHash(this@MainActivity, this@MainActivity.pdf)
+                    ?: throw RuntimeException("Failed to compute fileHash while creating PdfRecord")
+
+                databaseManager.setLastOpened(fileHash, LocalDateTime.now())
+                if (password != null) {
+                    databaseManager.setPassword(fileHash, password)
+                }
             }
             else {
-                databaseManager.saveRecordInBackground(PdfRecord.from(this@MainActivity, pdf))
+                val record = PdfRecord.from(this@MainActivity, this@MainActivity.pdf, password)
+                databaseManager.saveRecordInBackground(record)
             }
         }
     }
@@ -870,12 +869,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleFileOpeningError(exception: Throwable) {
-        if (exception is PdfPasswordException) {
+        val fileHash = pdf.fileHash
+        if (exception is PdfPasswordException && fileHash != null) {
             if (pdf.password != null) {
                 Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
-                pdf.password = null // prevent the toast if the user rotates the screen
+                pdf.password = null         // prevent the toast if the user rotates the screen
             }
-            askForPdfPassword()
+
+            lifecycleScope.launchWhenCreated {
+                pdf.password = databaseManager.findPdfPassword(fileHash)
+                withContext(Dispatchers.Main) {
+                    if (pdf.password != null) {
+                        displayFromUri(pdf.uri)
+                    }
+                    else {
+                        askForPdfPassword()
+                    }
+                }
+            }
         }
         else if (couldNotOpenFileDueToMissingPermission(exception)) {
             launchers.readFileErrorPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -1422,18 +1433,43 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
     override fun onBackPressed() {
-        //if (pdf.isFullScreenToggled && !doubleBackToExitPressedOnce) {
-        if (pref.getDoubleTapToExitEnabled() && !doubleBackToExitPressedOnce) {
-            doubleBackToExitPressedOnce = true
-            Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_SHORT).show()
-            Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2500)
-        }
-        else {
+        if (!pref.getDoubleTapToExitEnabled() || doubleBackToExitPressedOnce) {
             super.onBackPressed()
+            return
+        }
+        Snackbar.make(binding.root, getString(R.string.press_back_again), Snackbar.LENGTH_LONG).show()
+
+        doubleBackToExitPressedOnce = true
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(2500)
+            doubleBackToExitPressedOnce = false
         }
     }
+
+
+//    override fun onBackPressed() {
+//        Toast.makeText(this@MainActivity, getString(R.string.press_back_again), Toast.LENGTH_SHORT).show()
+//        CoroutineScope(Dispatchers.IO).launch {
+//            delay(500)
+//            super.onBackPressed()
+//        }
+//    }
+
+//    override fun onBackPressed() {
+//        if (doubleBackToExitPressedOnce) {
+//            super.onBackPressed()
+//            return
+//        }
+//
+//        doubleBackToExitPressedOnce = true
+//        Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_SHORT).show()
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            delay(2500)
+//            doubleBackToExitPressedOnce = false
+//        }
+//    }
 }
 
 

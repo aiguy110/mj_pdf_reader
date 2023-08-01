@@ -72,6 +72,8 @@ data class PdfRecord(
     @ColumnInfo(defaultValue = UNSET_VALUE)
     val fileName: String,
 
+    val password: String?,
+
     @ColumnInfo(defaultValue = UNSET_DATE)
     var lastOpened: LocalDateTime,
 
@@ -91,13 +93,14 @@ data class PdfRecord(
                 entry.value.toUri(),
                 0,
                 getFileName(context, entry.value.toUri()),
+                null,
                 LocalDateTime.now(),
                 ReadingStatus.UNSET,
                 false
             )
         }
 
-        fun from(context: Context, pdf: PDF): PdfRecord {
+        fun from(context: Context, pdf: PDF, password: String? = null): PdfRecord {
             return PdfRecord(
                 pdf.fileHash
                     ?: computeHash(context, pdf)
@@ -106,6 +109,7 @@ data class PdfRecord(
                 pdf.uri ?: throw RuntimeException("No fileUri while create PdfRecord"),
                 pdf.length,
                 pdf.name.removeSuffix(".pdf"),
+                password,
                 LocalDateTime.now(),
                 ReadingStatus.UNSET,
                 false

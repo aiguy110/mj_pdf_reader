@@ -12,6 +12,8 @@ interface DatabaseManager {
 
     suspend fun findPageNumber(fileHash: String): Int
 
+    suspend fun findPdfPassword(fileHash: String): String?
+
     suspend fun setPageNumber(fileHash: String, page: Int)
 
     suspend fun hasRecord(fileHash: String): Boolean
@@ -23,5 +25,7 @@ interface DatabaseManager {
     suspend fun setFavorite(fileHash: String, favorite: Boolean)
 
     suspend fun setReading(fileHash: String, readingStatus: ReadingStatus)
+
+    suspend fun setPassword(fileHash: String, password: String)
 
 }

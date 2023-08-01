@@ -65,6 +65,7 @@ import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
 import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
 import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.shockwave.pdfium.PdfDocument
@@ -132,15 +133,15 @@ fun showAskForPasswordDialog(
     context: Context,
     pdf: PDF,
     dialogBinding: PasswordDialogBinding,
-    displayFunc: (Uri?) -> Unit)
-{
+    displayFunc: (Uri?, Boolean) -> Unit
+) {
     val alert = MaterialAlertDialogBuilder(context)
         .setTitle(R.string.protected_pdf)
         .setView(dialogBinding.root)
         .setIcon(R.drawable.lock_icon)
         .setPositiveButton(R.string.ok) { _, _ ->
             pdf.password = dialogBinding.passwordInput.text.toString()
-            displayFunc(pdf.uri)
+            displayFunc(pdf.uri, dialogBinding.savePassword.isChecked)
         }
         .create()
 

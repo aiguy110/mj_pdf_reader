@@ -29,6 +29,12 @@ class DatabaseManagerImpl(private val database: AppDatabase): DatabaseManager {
         }
     }
 
+    override suspend fun findPdfPassword(fileHash: String): String? {
+        return withContext(Dispatchers.IO) {
+            database.pdfRecordDao().findPdfPassword(fileHash)
+        }
+    }
+
     override suspend fun setPageNumber(fileHash: String, page: Int) {
         withContext(Dispatchers.IO) {
             database.pdfRecordDao().updatePageNumber(fileHash, page)
@@ -64,4 +70,11 @@ class DatabaseManagerImpl(private val database: AppDatabase): DatabaseManager {
             database.pdfRecordDao().updateReading(fileHash, readingStatus)
         }
     }
+
+    override suspend fun setPassword(fileHash: String, password: String) {
+        withContext(Dispatchers.IO) {
+            database.pdfRecordDao().updatePassword(fileHash, password)
+        }
+    }
+
 }

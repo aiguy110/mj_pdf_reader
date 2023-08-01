@@ -320,5 +320,6 @@
     <string name="auto_full_screen_summary">When a document is opened, automatically toggle Full Screen Mode.</string>
     <string name="dark_theme_for_pdf">PDF pages follow system theme</string>
     <string name="pdf_dark_theme_summary">PDF pages will be set to Light or Dark theme according to the current theme of the system.</string>
+    <string name="save_password">Save password</string>
 
 </resources>

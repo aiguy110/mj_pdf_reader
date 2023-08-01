@@ -77,7 +77,7 @@ fun openSelectedDocument(activity: MainActivity, pdf: PDF, selectedDocumentUri: 
 
     if (pdf.uri == null || selectedDocumentUri == pdf.uri) {
         activity.initPdf(pdf, selectedDocumentUri)
-        activity.displayFromUri(pdf.uri)
+        activity.displayFromUri(pdf.uri, true)
     } else {
         val intent = Intent(activity, activity.javaClass)
         intent.data = selectedDocumentUri
@@ -103,7 +103,9 @@ fun computeHash(context: Context, pdf: PDF): String? {
             }
             digester.update(buffer, 0, amountRead)
         }
-        return String.format("%032x", BigInteger(1, digester.digest()))
+        val hash = String.format("%032x", BigInteger(1, digester.digest()))
+        pdf.fileHash = hash
+        return hash
     } catch (e: NoSuchAlgorithmException) {
         return null
     } catch (e: IOException) {

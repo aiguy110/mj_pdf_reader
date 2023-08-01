@@ -55,7 +55,7 @@ import com.gitlab.mudlej.MjPdfReader.util.DataConverter
     autoMigrations = [
         AutoMigration(from = 1, to = 2, spec = AppDatabase.MyAutoMigration::class),
         AutoMigration(from = 1, to = 3, spec = AppDatabase.MyAutoMigration::class),
-        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 2, to = 3)
     ]
 )
 @TypeConverters(DataConverter::class)
@@ -70,9 +70,7 @@ abstract class AppDatabase : RoomDatabase() {
                 return INSTANCE as AppDatabase
             }
             val location = context.cacheDir.absolutePath + "/" + DATABASE_NAME
-            INSTANCE = Room.databaseBuilder(context, AppDatabase::class.java, location)
-                //.addMigrations(MIGRATION_1_2)
-                .build()
+            INSTANCE = Room.databaseBuilder(context, AppDatabase::class.java, location).build()
             return INSTANCE as AppDatabase
         }
     }
@@ -81,11 +79,3 @@ abstract class AppDatabase : RoomDatabase() {
     class MyAutoMigration : AutoMigrationSpec
 
 }
-
-//val MIGRATION_1_2 = object : Migration(1, 2) {
-//    override fun migrate(database: SupportSQLiteDatabase) {
-//        database.execSQL(
-//            "CREATE TABLE `PdfRecord` (`id` INTEGER, `name` TEXT, PRIMARY KEY(`id`))"
-//        )
-//    }
-//}
