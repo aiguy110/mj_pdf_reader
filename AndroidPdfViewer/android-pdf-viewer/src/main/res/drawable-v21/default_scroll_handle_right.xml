@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <corners
-        android:topLeftRadius="@dimen/scrollHandleRadius"
-        android:topRightRadius="@dimen/scrollHandleRadius" />
+        android:bottomLeftRadius="@dimen/scrollHandleRadius"
+        android:topLeftRadius="@dimen/scrollHandleRadius" />
     <solid android:color="?colorSurfaceVariant" />
 </shape>

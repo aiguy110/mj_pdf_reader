@@ -683,6 +683,7 @@ class MainActivity : AppCompatActivity() {
             unlockScreenOrientation()
             toggleFullscreen()
             stopAutoScrolling(binding)
+            enableZooming(binding)
             hideAutoScroll(binding)
             enableHorizontalSwiping(binding)
 
@@ -924,9 +925,9 @@ class MainActivity : AppCompatActivity() {
             binding.secondBarLayout.visibility = View.GONE
             binding.pdfView.systemUiVisibility = (
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                )
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            )
         }
 
         if (!pdf.isFullScreenToggled) {
@@ -1098,6 +1099,7 @@ class MainActivity : AppCompatActivity() {
                         searchIntent.putExtra(PDF.filePathKey, pdf.uri.toString())
                         searchIntent.putExtra(PDF.searchQueryKey, query)
                         startActivityForResult(searchIntent, PDF.startSearchActivity)
+                        supportActionBar?.collapseActionView()  // close it after searching
                     }
                 }
 

@@ -61,7 +61,7 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
         textView = new TextView(context);
         setVisibility(INVISIBLE);
         //setTextColor(Color.BLACK);
-        setTextColor(Color.parseColor("#CDCDCD"));
+        //setTextColor(Color.parseColor("#CDCDCD"));
         setTextSize(DEFAULT_TEXT_SIZE);
     }
 

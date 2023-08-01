@@ -144,7 +144,7 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        if (!pdfView.isDoubleTapEnabled()) {
+        if (!pdfView.isDoubleTapEnabled() || pdfView.isZoomDisabled()) {
             return false;
         }
 
