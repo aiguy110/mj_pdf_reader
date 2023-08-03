@@ -57,6 +57,8 @@ class PDF(
     var zoom: Float = 1F,
     var isPortrait: Boolean = true,
     var isFullScreenToggled: Boolean = false,
+    var isAutoScrollVisible: Boolean = false,
+    var isAutoScrolling: Boolean = false,
     var fileHash: String? = null,
     var downloadedPdf: ByteArray? = null,
     val text: MutableMap<Int, String> = mutableMapOf(),

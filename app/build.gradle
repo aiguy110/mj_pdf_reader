@@ -56,10 +56,16 @@ android {
         applicationId "com.gitlab.mudlej.MjPdfReader"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 48
-        versionName "2.0.1"
+        versionCode 50
+        versionName "2.1.0"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildFeatures {
@@ -80,6 +86,8 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled = true // for LocalDateTime before api < 26
+
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -104,6 +112,7 @@ dependencies {
     // Room
     implementation "androidx.room:room-runtime:2.4.3"
     implementation project(path: ':PdfiumAndroid')
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     annotationProcessor "androidx.room:room-compiler:2.4.3"
 
     // To use Kotlin annotation processing tool (kapt)
@@ -132,5 +141,8 @@ dependencies {
 
     // A color picker for Android by Hong Duan
     implementation 'com.github.duanhong169:colorpicker:1.1.6'
+
+    //  required fir desugar for LocalDateTime with old APIs
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.0.9")
 
 }

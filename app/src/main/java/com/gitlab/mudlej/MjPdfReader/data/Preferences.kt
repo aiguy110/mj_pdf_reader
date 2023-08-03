@@ -44,6 +44,7 @@
 package com.gitlab.mudlej.MjPdfReader.data
 
 import android.content.SharedPreferences
+import com.gitlab.mudlej.MjPdfReader.enums.ListFilter
 
 class Preferences(private val prefMan: SharedPreferences) {
 
@@ -58,6 +59,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val pageFlingKey = "pageFling"
         const val pdfDarkThemeKey = "pdfDarkTheme"
         const val appFollowSystemTheme = "appFollowSystemTheme"
+        const val pdfFollowSystemTheme = "pdfFollowSystemTheme"
         const val screenOnKey = "screenOn"
         const val hideDelayKey = "hideDelay"
         const val partSizeKey = "partSize"
@@ -70,7 +72,11 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val copyTextDialogKey = "copyTextDialog"
         const val turnPageByVolumeButtonsKey = "turnPageByVolumeButtons"
         const val secondBarEnabledKey = "secondBarEnabled"
+        const val hideButtonsLabelsKey = "hideButtonsLabels"
+        const val doubleTapToExitEnabledKey = "doubleTapToExitEnabled"
+        const val autoFullScreenKey = "autoFullScreenSwitch"
         const val scrollSpeedKey = "scrollSpeed"
+        const val listFilterKey = "listFilter"
 
         // Default values
         const val firstInstallDefault = true
@@ -81,12 +87,13 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val pageSnapDefault = false
         const val pageFlingDefault = false
         const val pdfDarkThemeDefault = false
-        const val appFollowSystemThemeDefault = false
+        const val appFollowSystemThemeDefault = true    // NEW: for version v2.1 M3 Theme
+        const val pdfFollowSystemThemeDefault = false
         const val annotationRenderingDefault = true
         const val screenOnDefault = false
         const val hideDelayDefault = 3000
-        const val spacingDefault = 10          // in dp
-        const val minZoomDefault = 0.5f //0.5f
+        const val spacingDefault = 10           // in dp
+        const val minZoomDefault = 0.5f         //0.5f
         const val midZoomDefault = 2.0f
         const val maxZoomDefault = 10.0f
         const val partSizeDefault = 256f
@@ -95,7 +102,11 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val copyTextDialogDefault = true
         const val turnPageByVolumeButtonsDefault = false
         const val secondBarEnabledDefault = false
+        const val hideButtonsLabelsDefault = false
+        const val doubleTapToExitEnabledDefault = true
+        const val autoFullScreenDefault = false
         const val scrollSpeedDefault = 3
+        const val listFilterDefault = "RECENT"  // ListFilter.RECENT.name
 
         // Colors
         const val pdfDarkBackgroundColor = -0x313132          // -0x313132 = 0xffcecece
@@ -119,6 +130,7 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getPageFling() = prefMan.getBoolean(pageFlingKey, pageFlingDefault)
     fun getPdfDarkTheme() = prefMan.getBoolean(pdfDarkThemeKey, pdfDarkThemeDefault)
     fun getAppFollowSystemTheme() = prefMan.getBoolean(appFollowSystemTheme, appFollowSystemThemeDefault)
+    fun getPdfFollowSystemTheme() = prefMan.getBoolean(pdfFollowSystemTheme, pdfFollowSystemThemeDefault)
     fun getScreenOn() = prefMan.getBoolean(screenOnKey, screenOnDefault)
     fun getHideDelay() = prefMan.getInt(hideDelayKey, hideDelayDefault)
     fun getPartSize() = prefMan.getFloat(partSizeKey, partSizeDefault)
@@ -127,7 +139,11 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getCopyTextDialog() = prefMan.getBoolean(copyTextDialogKey, copyTextDialogDefault)
     fun getTurnPageByVolumeButtons() = prefMan.getBoolean(turnPageByVolumeButtonsKey, turnPageByVolumeButtonsDefault)
     fun getSecondBarEnabled() = prefMan.getBoolean(secondBarEnabledKey, secondBarEnabledDefault)
+    fun getHideButtonsLabels() = prefMan.getBoolean(hideButtonsLabelsKey, hideButtonsLabelsDefault)
+    fun getDoubleTapToExitEnabled() = prefMan.getBoolean(doubleTapToExitEnabledKey, doubleTapToExitEnabledDefault)
+    fun getAutoFullScreen() = prefMan.getBoolean(autoFullScreenKey, autoFullScreenDefault)
     fun getScrollSpeed() = prefMan.getInt(scrollSpeedKey, scrollSpeedDefault)
+    fun getListFilter() = ListFilter.valueOf(prefMan.getString(listFilterKey, listFilterDefault) as String)
 
     // put values in Shared Preferences
     fun setFirstInstall(value: Boolean) = prefMan.edit().putBoolean(firstInstallKey, value).apply()
@@ -139,6 +155,7 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setPageFling(value: Boolean) = prefMan.edit().putBoolean(pageFlingKey, value).apply()
     fun setPdfDarkTheme(value: Boolean) = prefMan.edit().putBoolean(pdfDarkThemeKey, value).apply()
     fun setAppFollowSystemTheme(value: Boolean) = prefMan.edit().putBoolean(appFollowSystemTheme, value).apply()
+    fun setPdfFollowSystemTheme(value: Boolean) = prefMan.edit().putBoolean(pdfFollowSystemTheme, value).apply()
     fun setScreenOn(value: Boolean) = prefMan.edit().putBoolean(screenOnKey, value).apply()
     fun setHideDelay(value: Int) = prefMan.edit().putInt(hideDelayKey, value).apply()
     fun setPartSize(value: Float) = prefMan.edit().putFloat(partSizeKey, value).apply()
@@ -147,6 +164,10 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setCopyTextDialog(value: Boolean) = prefMan.edit().putBoolean(copyTextDialogKey, value).apply()
     fun setTurnPageByVolumeButtons(value: Boolean) = prefMan.edit().putBoolean(turnPageByVolumeButtonsKey, value).apply()
     fun setSecondBarEnabled(value: Boolean) = prefMan.edit().putBoolean(secondBarEnabledKey, value).apply()
+    fun setDoubleTapToExitEnabled(value: Boolean) = prefMan.edit().putBoolean(doubleTapToExitEnabledKey, value).apply()
+    fun setAutoFullScreen(value: Boolean) = prefMan.edit().putBoolean(autoFullScreenKey, value).apply()
+    fun setHideButtonsLabels(value: Boolean) = prefMan.edit().putBoolean(hideButtonsLabelsKey, value).apply()
     fun setScrollSpeed(value: Int) = prefMan.edit().putInt(scrollSpeedKey, value).apply()
+    fun setListFilter(value: ListFilter) = prefMan.edit().putString(listFilterKey, value.name).apply()
 
 }

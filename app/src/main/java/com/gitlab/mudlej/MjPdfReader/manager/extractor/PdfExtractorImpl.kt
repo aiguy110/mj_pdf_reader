@@ -46,6 +46,9 @@ class PdfExtractorImpl(
         for (i in 0 until getPageCount()) {
             val pageLinks = getPageLinks(i)
             for (link in pageLinks) {
+                if (link.uri.isNullOrEmpty() || link.uri.isBlank()) {
+                    continue
+                }
                 links.add(Link(
                     text = "",      // couldn't be extracted yet
                     url = link.uri,

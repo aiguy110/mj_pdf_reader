@@ -2,34 +2,43 @@ package com.gitlab.mudlej.MjPdfReader.ui.bookmark
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.LinearLayoutCompat.DividerMode
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.get
 import androidx.core.view.isVisible
+import androidx.core.view.setMargins
 import androidx.recyclerview.widget.RecyclerView
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.Bookmark
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.databinding.BookmarksListItemBinding
+import com.gitlab.mudlej.MjPdfReader.util.ViewUtil.inPx
+import com.google.android.material.card.MaterialCardView
 
 class BookmarkViewHolder(
     private val binding: BookmarksListItemBinding,
     private val bookmarkFunctions: BookmarkFunctions,
     private val activity: BookmarksActivity
-)
-    : RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
+
     fun bind(bookmark: Bookmark) {
         binding.root.removeAllViews()
-        binding.root.addView(addSubBookmarkLayout(bookmark))
+        binding.root.addView(createSubBookmarkLayout(bookmark))
     }
 
-    private fun addSubBookmarkLayout(subBookmark: Bookmark): ConstraintLayout {
+    private fun createSubBookmarkLayout(subBookmark: Bookmark): MaterialCardView {
 
-        val subBookmarkLayout = LayoutInflater.from(activity)
-            .inflate(R.layout.children_bookmark_layout, null) as ConstraintLayout
+        val cardView = LayoutInflater.from(activity)
+            .inflate(R.layout.children_bookmark_layout, null) as MaterialCardView
 
+        val subBookmarkLayout = cardView[0] as ConstraintLayout
         val subToggleButton = subBookmarkLayout[0] as ImageView
         val subText = subBookmarkLayout[1] as TextView
         val subPageNumber = subBookmarkLayout[2] as TextView
@@ -51,7 +60,7 @@ class BookmarkViewHolder(
         if (subBookmark.hasSubBookmarks()) {
             subChildrenLayout.removeAllViews()
             for (child in subBookmark.subBookmarks) {
-                val layout = addSubBookmarkLayout(child)
+                val layout = createSubBookmarkLayout(child)
                 subChildrenLayout.addView(layout)
             }
 
@@ -59,15 +68,16 @@ class BookmarkViewHolder(
                 if (subChildrenLayout.isVisible) {
                     subChildrenLayout.visibility = View.GONE
                     subToggleButton.setImageResource(R.drawable.ic_small_arrow_right)
-                } else {
+                }
+                else {
                     subChildrenLayout.visibility = View.VISIBLE
                     subToggleButton.setImageResource(R.drawable.ic_small_arrow_down)
                 }
             }
         }
         else {
-            subToggleButton.setImageResource(R.drawable.ic_bar)
+            subToggleButton.setImageResource(R.drawable.ic_bullet_point)
         }
-        return subBookmarkLayout
+        return cardView
     }
 }

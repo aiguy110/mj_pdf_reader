@@ -44,13 +44,23 @@
 package com.gitlab.mudlej.MjPdfReader.repository
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.Room
+import androidx.room.*
+import androidx.room.migration.AutoMigrationSpec
+import com.gitlab.mudlej.MjPdfReader.util.DataConverter
 
-@Database(entities = [SavedLocation::class], version = 1, exportSchema = false)
+@Database(
+    entities = [PdfRecord::class],
+    version = 3,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2, spec = AppDatabase.MyAutoMigration::class),
+        AutoMigration(from = 1, to = 3, spec = AppDatabase.MyAutoMigration::class),
+        AutoMigration(from = 2, to = 3)
+    ]
+)
+@TypeConverters(DataConverter::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun savedLocationDao(): SavedLocationDao
+    abstract fun pdfRecordDao(): PdfRecordDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null
@@ -64,4 +74,8 @@ abstract class AppDatabase : RoomDatabase() {
             return INSTANCE as AppDatabase
         }
     }
+
+    @RenameTable(fromTableName = "SavedLocation", toTableName = "PdfRecord")
+    class MyAutoMigration : AutoMigrationSpec
+
 }

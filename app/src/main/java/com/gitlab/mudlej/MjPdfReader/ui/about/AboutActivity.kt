@@ -64,6 +64,8 @@ import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityAboutBinding
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainIntroActivity
 import com.gitlab.mudlej.MjPdfReader.ui.showAppFeaturesDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 
 class AboutActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAboutBinding
@@ -185,7 +187,8 @@ class AboutActivity : AppCompatActivity() {
                 APP_VERSION_RELEASE
             ))
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, email, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, email, Toast.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, email, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -207,7 +210,7 @@ class AboutActivity : AppCompatActivity() {
 
     class PrivacyInfoDialog : DialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val builder = AlertDialog.Builder(requireContext())
+            val builder = MaterialAlertDialogBuilder(requireContext())
             return builder.setTitle(com.gitlab.mudlej.MjPdfReader.R.string.privacy)
                 .setMessage(com.gitlab.mudlej.MjPdfReader.R.string.privacy_info)
                 .setPositiveButton(com.gitlab.mudlej.MjPdfReader.R.string.ok) { dialog, _ -> dialog.dismiss() }

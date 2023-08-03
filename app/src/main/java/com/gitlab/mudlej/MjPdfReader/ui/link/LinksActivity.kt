@@ -17,6 +17,7 @@ import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityLinkBinding
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractor
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractorFactory
+import com.gitlab.mudlej.MjPdfReader.util.ColorUtil
 import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -93,6 +94,7 @@ class LinksActivity : AppCompatActivity(), LinkFunctions {
     }
 
     private fun initUi() {
+        ColorUtil.colorize(this, window)
         title = getString(R.string.links_activity_title)
         linkAdapter.submitList(links)
         linkAdapter.progressBar = binding.progressBar
@@ -170,7 +172,8 @@ class LinksActivity : AppCompatActivity(), LinkFunctions {
         copyToClipboard(this, copyLabel, link.url)
 
         // show message to user before closing
-        Toast.makeText(this, getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, getString(R.string.copied_to_clipboard), Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {

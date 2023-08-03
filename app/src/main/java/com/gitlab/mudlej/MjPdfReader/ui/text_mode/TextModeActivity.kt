@@ -25,6 +25,7 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityTextModeBinding
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractor
 import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractorFactory
 import com.gitlab.mudlej.MjPdfReader.ui.showGoToPageDialog
+import com.gitlab.mudlej.MjPdfReader.util.ColorUtil
 import com.gitlab.mudlej.MjPdfReader.util.getFileName
 import com.gitlab.mudlej.MjPdfReader.util.indexesOf
 import com.gitlab.mudlej.MjPdfReader.util.newColorPicker
@@ -88,7 +89,8 @@ class TextModeActivity  : AppCompatActivity() {
         appTitle.typeface = Typeface.SERIF
         appTitle.setOnClickListener {
             if (pdfTitle.isNotBlank()) {
-                Toast.makeText(this, pdfTitle, Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, pdfTitle, Toast.LENGTH_LONG).show()
+                Snackbar.make(binding.root, pdfTitle, Snackbar.LENGTH_LONG).show()
             }
         }
 
@@ -114,17 +116,19 @@ class TextModeActivity  : AppCompatActivity() {
     }
 
     private fun badFileExit() {
-        Toast.makeText(this, getString(R.string.failed_to_extract_text), Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, getString(R.string.failed_to_extract_text), Toast.LENGTH_LONG).show()
+        Snackbar.make(binding.root, getString(R.string.failed_to_extract_text), Snackbar.LENGTH_LONG).show()
         finish()
     }
 
     private fun initUi() {
+        ColorUtil.colorize(this, window)
         binding.apply {
             nextButton.setOnClickListener { nextPage() }
             prevButton.setOnClickListener { prevPage() }
             pageCounter.setOnClickListener {
                 val pageIndex = pageNumber - 1
-                showGoToPageDialog(this@TextModeActivity, pageIndex, pdfLength, ::goToPage)
+                showGoToPageDialog(this@TextModeActivity, binding.root, pageIndex, pdfLength, ::goToPage)
             }
         }
         updatePageCounter()
