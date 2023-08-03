@@ -56,7 +56,9 @@ import javax.net.ssl.SSLException;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 import com.gitlab.mudlej.MjPdfReader.R;
+import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding;
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * This class is used to get a PDF File from an URL
@@ -64,9 +66,11 @@ import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity;
 public class DownloadPDFFile extends AsyncTask<String, Void, Object> {
 
     private final WeakReference<MainActivity> mainActivityWR;
+    private final WeakReference<ActivityMainBinding> bindingWR;
 
-    public DownloadPDFFile(MainActivity activity) {
+    public DownloadPDFFile(MainActivity activity, ActivityMainBinding binding) {
         mainActivityWR = new WeakReference<>(activity);
+        bindingWR = new WeakReference<>(binding);
     }
 
     @Override
@@ -97,18 +101,23 @@ public class DownloadPDFFile extends AsyncTask<String, Void, Object> {
     @Override
     protected void onPostExecute(Object result) {
         MainActivity activity = mainActivityWR.get();
+        ActivityMainBinding binding = bindingWR.get();
 
         if (activity != null) {
             activity.hideProgressBar();
 
             if (result == null) {
-                Toast.makeText(activity, R.string.toast_generic_download_error, Toast.LENGTH_LONG).show();
+                //Toast.makeText(activity, R.string.toast_generic_download_error, Toast.LENGTH_LONG).show();
+                Snackbar.make(binding.getRoot(), R.string.toast_generic_download_error, Snackbar.LENGTH_LONG).show();
             } else if (result instanceof Integer) {
-                Toast.makeText(activity, R.string.toast_http_code_error, Toast.LENGTH_LONG).show();
+                //Toast.makeText(activity, R.string.toast_http_code_error, Toast.LENGTH_LONG).show();
+                Snackbar.make(binding.getRoot(), R.string.toast_http_code_error, Snackbar.LENGTH_LONG).show();
             } else if (result instanceof SSLException) {
-                Toast.makeText(activity, R.string.toast_ssl_error, Toast.LENGTH_LONG).show();
+                //Toast.makeText(activity, R.string.toast_ssl_error, Toast.LENGTH_LONG).show();
+                Snackbar.make(binding.getRoot(), R.string.toast_ssl_error, Snackbar.LENGTH_LONG).show();
             } else if (result instanceof IOException) {
-                Toast.makeText(activity, R.string.toast_generic_download_error, Toast.LENGTH_LONG).show();
+                //Toast.makeText(activity, R.string.toast_generic_download_error, Toast.LENGTH_LONG).show();
+                Snackbar.make(binding.getRoot(), R.string.toast_generic_download_error, Snackbar.LENGTH_LONG).show();
             } else if (result instanceof byte[]) {
                 activity.saveToFileAndDisplay((byte[]) result);
             }

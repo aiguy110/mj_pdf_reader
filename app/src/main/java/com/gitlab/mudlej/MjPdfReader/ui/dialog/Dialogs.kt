@@ -60,13 +60,14 @@ import com.gitlab.mudlej.MjPdfReader.BuildConfig
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.PDF
 import com.gitlab.mudlej.MjPdfReader.data.Preferences
+import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainActivity
 import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
 import com.gitlab.mudlej.MjPdfReader.util.copyToClipboard
-import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.shockwave.pdfium.PdfDocument
 
@@ -231,12 +232,15 @@ fun showBookmarksDialog(activity: MainActivity, pdfView: PDFView) {
 
 fun showCopyPageTextDialog(
     activity: MainActivity,
+    binding: ActivityMainBinding,
     pageNumber: Int,
     pageText: String,
     pref: Preferences,
     bypass: Boolean = false
 ) {
-    if (!bypass && !pref.getCopyTextDialog()) return
+    if (!bypass && !pref.getCopyTextDialog()) {
+        return
+    }
 
     // create a custom view to make the text selectable
     val pageTextView = TextView(activity)
@@ -259,7 +263,8 @@ fun showCopyPageTextDialog(
             copyToClipboard(activity, copyLabel, pageText)
 
             // show message to user before closing
-            Toast.makeText(activity, activity.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+            //Toast.makeText(activity, activity.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, activity.getString(R.string.copied_to_clipboard), Snackbar.LENGTH_SHORT).show()
             dialog.dismiss()
         }
         .also {
@@ -325,7 +330,13 @@ fun showSearchDialog(activity: Activity, pdf: PDF) {
         .show()
 }
 
-fun showGoToPageDialog(activity: Activity, pageIndex: Int, pdfLength: Int, goToPageFunc: (Int) -> Unit) {
+fun showGoToPageDialog(
+    activity: Activity,
+    view: View,
+    pageIndex: Int,
+    pdfLength: Int,
+    goToPageFunc: (Int) -> Unit
+) {
     // create EditText for input
     val inputLayout = LayoutInflater
         .from(activity)
@@ -341,7 +352,8 @@ fun showGoToPageDialog(activity: Activity, pageIndex: Int, pdfLength: Int, goToP
 
             // check if the user provided input
             if (query.isEmpty()) {
-                Toast.makeText(activity, activity.getString(R.string.no_input), Toast.LENGTH_SHORT).show()
+                //Toast.makeText(activity, activity.getString(R.string.no_input), Toast.LENGTH_SHORT).show()
+                Snackbar.make(view, activity.getString(R.string.no_input), Snackbar.LENGTH_SHORT).show()
                 return@setPositiveButton
             }
             if (query.isDigitsOnly())

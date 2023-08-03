@@ -89,7 +89,8 @@ class TextModeActivity  : AppCompatActivity() {
         appTitle.typeface = Typeface.SERIF
         appTitle.setOnClickListener {
             if (pdfTitle.isNotBlank()) {
-                Toast.makeText(this, pdfTitle, Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, pdfTitle, Toast.LENGTH_LONG).show()
+                Snackbar.make(binding.root, pdfTitle, Snackbar.LENGTH_LONG).show()
             }
         }
 
@@ -115,7 +116,8 @@ class TextModeActivity  : AppCompatActivity() {
     }
 
     private fun badFileExit() {
-        Toast.makeText(this, getString(R.string.failed_to_extract_text), Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, getString(R.string.failed_to_extract_text), Toast.LENGTH_LONG).show()
+        Snackbar.make(binding.root, getString(R.string.failed_to_extract_text), Snackbar.LENGTH_LONG).show()
         finish()
     }
 
@@ -126,7 +128,7 @@ class TextModeActivity  : AppCompatActivity() {
             prevButton.setOnClickListener { prevPage() }
             pageCounter.setOnClickListener {
                 val pageIndex = pageNumber - 1
-                showGoToPageDialog(this@TextModeActivity, pageIndex, pdfLength, ::goToPage)
+                showGoToPageDialog(this@TextModeActivity, binding.root, pageIndex, pdfLength, ::goToPage)
             }
         }
         updatePageCounter()

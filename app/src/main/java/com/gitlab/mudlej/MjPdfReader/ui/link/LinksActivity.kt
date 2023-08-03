@@ -172,7 +172,8 @@ class LinksActivity : AppCompatActivity(), LinkFunctions {
         copyToClipboard(this, copyLabel, link.url)
 
         // show message to user before closing
-        Toast.makeText(this, getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, getString(R.string.copied_to_clipboard), Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {

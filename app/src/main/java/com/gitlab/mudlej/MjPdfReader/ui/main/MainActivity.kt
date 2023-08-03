@@ -213,10 +213,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun respondToNoFileHash() {
-        Toast.makeText(
-            this,
+        Snackbar.make(
+            binding.root,
             "Can't hash the file! Last visited page won't be remembered in this session.",
-            Toast.LENGTH_LONG
+            Snackbar.LENGTH_LONG
         ).show()
     }
 
@@ -233,7 +233,8 @@ class MainActivity : AppCompatActivity() {
         fun titleClickListener() {
             val title = pdf.getTitle()
             if (title.isNotBlank()) {
-                Toast.makeText(this, title, Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, title, Toast.LENGTH_LONG).show()
+                Snackbar.make(binding.root, title, Snackbar.LENGTH_LONG).show()
             }
         }
         appTitle.setOnClickListener { titleClickListener() }
@@ -260,7 +261,8 @@ class MainActivity : AppCompatActivity() {
         }
         catch (e: ActivityNotFoundException) {
             // alert user that file manager not working
-            Toast.makeText(this, R.string.toast_pick_file_error, Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, R.string.toast_pick_file_error, Toast.LENGTH_LONG).show()
+            Snackbar.make(binding.root, R.string.toast_pick_file_error, Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -395,10 +397,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             withContext(Dispatchers.Main) {
-                if (pageText.isEmpty() || pageText.isBlank())
-                    showNoTextInPageToast()
-                else
-                    showCopyPageTextDialog(this@MainActivity, pageNumber, pageText, pref, bypass)
+                if (pageText.isEmpty() || pageText.isBlank()) {
+                    showNoTextInPageMessage()
+                }
+                else {
+                    showCopyPageTextDialog(this@MainActivity, binding, pageNumber, pageText, pref, bypass)
+                }
             }
         }
     }
@@ -409,8 +413,12 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun showNoTextInPageToast() {
-        Toast.makeText(this, "Couldn't find text in this page.", Toast.LENGTH_LONG).show()
+    private var showNoTextInPage = true
+    private fun showNoTextInPageMessage() {
+        if (showNoTextInPage) {
+            Snackbar.make(binding.root, "Couldn't find text in this page.", Snackbar.LENGTH_LONG).show()
+            showNoTextInPage = false
+        }
     }
 
     private fun setUpSecondBar() {
@@ -807,19 +815,25 @@ class MainActivity : AppCompatActivity() {
             return
         }
         val sharingIntent: Intent =
-            if (uri.scheme != null && uri.scheme!!.startsWith("http"))
+            if (uri.scheme != null && uri.scheme!!.startsWith("http")) {
                 plainTextShareIntent(getString(R.string.share_file), pdf.uri.toString())
-            else if (type == FileType.PDF)
+            }
+            else if (type == FileType.PDF) {
                 fileShareIntent(getString(R.string.share_file), pdf.name, uri)
-            else if (type == FileType.IMAGE)
+            }
+            else if (type == FileType.IMAGE) {
                 imageShareIntent(getString(R.string.share_file), pdf.name, uri)
-            else return
+            }
+            else {
+                return
+            }
 
         try {
             startActivity(sharingIntent)
         }
         catch (e: Throwable) {
-            Toast.makeText(this, "Error sharing the file. (${e.message})", Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, "Error sharing the file. (${e.message})", Toast.LENGTH_LONG).show()
+            Snackbar.make(binding.root, "Error sharing the file. (${e.message})", Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -864,7 +878,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun reportLoadPageError(page: Int, error: Throwable) {
         val message = resources.getString(R.string.cannot_load_page) + page + " " + error
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
         Log.e(TAG, message)
     }
 
@@ -872,7 +887,8 @@ class MainActivity : AppCompatActivity() {
         val fileHash = pdf.fileHash
         if (exception is PdfPasswordException && fileHash != null) {
             if (pdf.password != null) {
-                Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, R.string.wrong_password, Snackbar.LENGTH_SHORT).show()
                 pdf.password = null         // prevent the toast if the user rotates the screen
             }
 
@@ -892,7 +908,8 @@ class MainActivity : AppCompatActivity() {
             launchers.readFileErrorPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
         else {
-            Toast.makeText(this, R.string.file_opening_error, Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, R.string.file_opening_error, Toast.LENGTH_LONG).show()
+            Snackbar.make(binding.root, R.string.file_opening_error, Snackbar.LENGTH_LONG).show()
             Log.e(TAG, getString(R.string.file_opening_error), exception)
         }
     }
@@ -914,7 +931,8 @@ class MainActivity : AppCompatActivity() {
             exitProcess(0)
         }
         else {
-            Toast.makeText(this, R.string.file_opening_error, Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, R.string.file_opening_error, Toast.LENGTH_LONG).show()
+            Snackbar.make(binding.root, R.string.file_opening_error, Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -965,7 +983,7 @@ class MainActivity : AppCompatActivity() {
             // we will get the pdf asynchronously with the DownloadPDFFile object
             binding.progressBar.visibility = View.VISIBLE
             val downloadPDFFile =
-                DownloadPDFFile(this)
+                DownloadPDFFile(this, binding)
             downloadPDFFile.execute(uri.toString())
         }
     }
@@ -999,12 +1017,14 @@ class MainActivity : AppCompatActivity() {
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             writeBytesToFile(downloadDirectory, pdf.name, fileContent)
             if (showSuccessMessage) {
-                Toast.makeText(this, R.string.saved_to_download, Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, R.string.saved_to_download, Toast.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, R.string.saved_to_download, Snackbar.LENGTH_SHORT).show()
             }
         }
         catch (e: IOException) {
             Log.e(TAG, getString(R.string.save_to_download_failed), e)
-            Toast.makeText(this, R.string.save_to_download_failed, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, R.string.save_to_download_failed, Toast.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, R.string.save_to_download_failed, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -1013,7 +1033,8 @@ class MainActivity : AppCompatActivity() {
             trySaveToDownloads(pdf.downloadedPdf, true)
         }
         else {
-            Toast.makeText(this, R.string.save_to_download_failed, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, R.string.save_to_download_failed, Toast.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, R.string.save_to_download_failed, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -1054,7 +1075,8 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             catch (e: Throwable) {
-                Toast.makeText(this, "Failed to print. Error message: ${e.message}", Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, "Failed to print. Error message: ${e.message}", Toast.LENGTH_LONG).show()
+                Snackbar.make(binding.root, "Failed to print. Error message: ${e.message}", Snackbar.LENGTH_LONG).show()
             }
         }
     }
@@ -1168,7 +1190,7 @@ class MainActivity : AppCompatActivity() {
         fun goToPage(pageIndex: Int) {
             binding.pdfView.jumpTo(pageIndex)
         }
-        showGoToPageDialog(this, pdf.pageNumber, pdf.length, ::goToPage)
+        showGoToPageDialog(this, binding.root, pdf.pageNumber, pdf.length, ::goToPage)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -1183,8 +1205,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navToTextMode() {
-        if (!checkHasFile()) return
-        //Toast.makeText(this, "Text Mode is still under development", Toast.LENGTH_SHORT).show()
+        if (!checkHasFile()) {
+            return
+        }
 
         Intent(this, TextModeActivity::class.java).also {
             it.putExtra(PDF.filePathKey, pdf.uri.toString())
@@ -1319,7 +1342,8 @@ class MainActivity : AppCompatActivity() {
         }
         catch (e: Throwable) {
             // Several error may come out with file handling or DOM
-            Toast.makeText(this, getString(R.string.failed_save_screenshot), Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, getString(R.string.failed_save_screenshot), Toast.LENGTH_LONG).show()
+            Snackbar.make(binding.root, getString(R.string.failed_save_screenshot), Snackbar.LENGTH_LONG).show()
             e.printStackTrace()
         }
     }
@@ -1409,7 +1433,8 @@ class MainActivity : AppCompatActivity() {
                     )
 
                     if (!succeeded) {
-                        Toast.makeText(this, "Failed to highlight search result", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this, "Failed to highlight search result", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(binding.root, "Failed to highlight search result", Snackbar.LENGTH_SHORT).show()
                     }
                     else {
                         binding.pdfView.resetZoomWithAnimation()         // it won't work if the user was zoomed in before searching
@@ -1446,30 +1471,6 @@ class MainActivity : AppCompatActivity() {
             doubleBackToExitPressedOnce = false
         }
     }
-
-
-//    override fun onBackPressed() {
-//        Toast.makeText(this@MainActivity, getString(R.string.press_back_again), Toast.LENGTH_SHORT).show()
-//        CoroutineScope(Dispatchers.IO).launch {
-//            delay(500)
-//            super.onBackPressed()
-//        }
-//    }
-
-//    override fun onBackPressed() {
-//        if (doubleBackToExitPressedOnce) {
-//            super.onBackPressed()
-//            return
-//        }
-//
-//        doubleBackToExitPressedOnce = true
-//        Toast.makeText(this, getString(R.string.press_back_again), Toast.LENGTH_SHORT).show()
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            delay(2500)
-//            doubleBackToExitPressedOnce = false
-//        }
-//    }
 }
 
 

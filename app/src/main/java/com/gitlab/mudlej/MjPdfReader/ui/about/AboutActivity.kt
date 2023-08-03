@@ -65,6 +65,7 @@ import com.gitlab.mudlej.MjPdfReader.databinding.ActivityAboutBinding
 import com.gitlab.mudlej.MjPdfReader.ui.main.MainIntroActivity
 import com.gitlab.mudlej.MjPdfReader.ui.showAppFeaturesDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 
 class AboutActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAboutBinding
@@ -186,7 +187,8 @@ class AboutActivity : AppCompatActivity() {
                 APP_VERSION_RELEASE
             ))
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, email, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, email, Toast.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, email, Snackbar.LENGTH_SHORT).show()
         }
     }
 
