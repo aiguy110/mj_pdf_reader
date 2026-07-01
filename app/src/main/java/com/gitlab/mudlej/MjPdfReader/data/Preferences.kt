@@ -80,6 +80,7 @@ class Preferences(private val prefMan: SharedPreferences) {
         const val alwaysHorizontalKey = "alwaysHorizontalKey"
         const val scrollSpeedKey = "scrollSpeed"
         const val listFilterKey = "listFilter"
+        const val llmApiKeyKey = "llmApiKey"
 
         // Default values
         const val firstInstallDefault = true
@@ -154,6 +155,7 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun getEnableReloadButton() = prefMan.getBoolean(enableReloadButtonKey, enableReloadButtonDefault)
     fun getScrollSpeed() = prefMan.getInt(scrollSpeedKey, scrollSpeedDefault)
     fun getListFilter() = ListFilter.valueOf(prefMan.getString(listFilterKey, listFilterDefault) as String)
+    fun getLlmApiKey(): String? = prefMan.getString(llmApiKeyKey, null)
 
     // put values in Shared Preferences
     fun setFirstInstall(value: Boolean) = prefMan.edit().putBoolean(firstInstallKey, value).apply()
@@ -182,5 +184,6 @@ class Preferences(private val prefMan: SharedPreferences) {
     fun setEnableReloadButton(value: Boolean) = prefMan.edit().putBoolean(enableReloadButtonKey, value).apply()
     fun setScrollSpeed(value: Int) = prefMan.edit().putInt(scrollSpeedKey, value).apply()
     fun setListFilter(value: ListFilter) = prefMan.edit().putString(listFilterKey, value.name).apply()
+    fun setLlmApiKey(value: String?) = prefMan.edit().putString(llmApiKeyKey, value).apply()
 
 }

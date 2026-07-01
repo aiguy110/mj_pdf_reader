@@ -47,6 +47,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
+import android.text.InputType
+import androidx.preference.EditTextPreference
+import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -66,6 +69,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setBehaviorSection()
         setTextSection()
         setExperimentalSection()
+        setReferenceViewerSection()
     }
 
     private fun setVisualSection() {
@@ -233,6 +237,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
             addPreference(appDarkThemeSwitch)
             addPreference(pdfDarkThemeSwitch)
             addPreference(enableReloadButtonSwitch)
+        }
+    }
+
+    private fun setReferenceViewerSection() {
+        val apiKeyPref = EditTextPreference(requireContext()).apply {
+            title = getString(R.string.openrouter_api_key)
+            dialogMessage = getString(R.string.openrouter_api_key_summary)
+            key = Preferences.llmApiKeyKey
+            isIconSpaceReserved = false
+            setOnBindEditTextListener { editText ->
+                editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            summaryProvider = Preference.SummaryProvider<EditTextPreference> { pref ->
+                if (pref.text.isNullOrBlank()) getString(R.string.not_set) else "••••••••"
+            }
+        }
+
+        val section: PreferenceCategory? = findPreference("referenceViewerSection")
+        section?.apply {
+            isIconSpaceReserved = false
+            addPreference(apiKeyPref)
         }
     }
 }

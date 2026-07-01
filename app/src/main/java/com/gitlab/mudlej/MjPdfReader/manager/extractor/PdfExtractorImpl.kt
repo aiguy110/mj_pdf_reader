@@ -1,9 +1,12 @@
 package com.gitlab.mudlej.MjPdfReader.manager.extractor
 
+import android.graphics.Bitmap
+import android.graphics.RectF
 import com.gitlab.mudlej.MjPdfReader.data.Bookmark
 import com.gitlab.mudlej.MjPdfReader.data.Link
 import com.shockwave.pdfium.PdfDocument
 import com.shockwave.pdfium.PdfiumCore
+import com.shockwave.pdfium.util.SizeF
 
 class PdfExtractorImpl(
     private val pdfiumCore: PdfiumCore,
@@ -57,6 +60,48 @@ class PdfExtractorImpl(
             }
         }
         return links
+    }
+
+    override fun renderPageBitmap(pageNumber: Int, targetWidth: Int): Bitmap? {
+        val index = getIndex(pageNumber) ?: return null
+        return try {
+            pdfiumCore.openPage(pdfDocument, index)
+            val widthPt = pdfiumCore.getPageWidthPoint(pdfDocument, index)
+            val heightPt = pdfiumCore.getPageHeightPoint(pdfDocument, index)
+            if (widthPt <= 0 || heightPt <= 0) return null
+            val targetHeight = (targetWidth.toFloat() * heightPt / widthPt).toInt().coerceAtLeast(1)
+            val bitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+            pdfiumCore.renderPageBitmap(pdfDocument, bitmap, index, 0, 0, targetWidth, targetHeight, true)
+            bitmap
+        } catch (throwable: Throwable) {
+            throwable.printStackTrace()
+            null
+        }
+    }
+
+    override fun getTextBounds(pageNumber: Int, start: Int, end: Int): List<RectF> {
+        val index = getIndex(pageNumber) ?: return emptyList()
+        return try {
+            pdfiumCore.openPage(pdfDocument, index)
+            pdfiumCore.getPageTextBounds(pdfDocument, index, start, end).map { rect -> RectF(rect) }
+        } catch (throwable: Throwable) {
+            throwable.printStackTrace()
+            emptyList()
+        }
+    }
+
+    override fun getPageSizePoints(pageNumber: Int): SizeF {
+        val index = getIndex(pageNumber) ?: return SizeF(0f, 0f)
+        return try {
+            pdfiumCore.openPage(pdfDocument, index)
+            SizeF(
+                pdfiumCore.getPageWidthPoint(pdfDocument, index).toFloat(),
+                pdfiumCore.getPageHeightPoint(pdfDocument, index).toFloat()
+            )
+        } catch (throwable: Throwable) {
+            throwable.printStackTrace()
+            SizeF(0f, 0f)
+        }
     }
 
     private fun getIndex(pageNumber: Int): Int? {

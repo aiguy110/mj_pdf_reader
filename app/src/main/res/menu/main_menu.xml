@@ -137,4 +137,11 @@
         app:showAsAction="never"
         android:visible="false"/>
 
+    <item
+        android:id="@+id/analyzeReferencesOption"
+        android:title="@string/analyze_references"
+        android:icon="@drawable/ic_text"
+        app:showAsAction="never"
+        android:visible="false" />
+
 </menu>

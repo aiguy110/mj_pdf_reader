@@ -448,6 +448,14 @@ public class PdfiumCore {
         }
     }
 
+    /** Same text-bounds lookup as {@link #createHighlightText}, without the annotation side effect. */
+    public Rect[] getPageTextBounds(PdfDocument doc, int pageIndex, int start, int end) {
+        synchronized (lock) {
+            Long nativePagePtr = doc.mNativePagesPtr.get(pageIndex);
+            return nativeGetPageTextBounds(nativePagePtr, start, end);
+        }
+    }
+
     public void clearSearchResultsAnnot(PdfDocument doc, int pageIndex) {
         synchronized (lock) {
             Long nativePagePtr = doc.mNativePagesPtr.get(pageIndex);

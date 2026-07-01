@@ -81,14 +81,19 @@ import com.gitlab.mudlej.MjPdfReader.Launcher
 import com.gitlab.mudlej.MjPdfReader.Launchers
 import com.gitlab.mudlej.MjPdfReader.R
 import com.gitlab.mudlej.MjPdfReader.data.*
+import com.gitlab.mudlej.MjPdfReader.data.llm.PageAnalysisResult
+import com.gitlab.mudlej.MjPdfReader.data.llm.ReferenceMention
 import com.gitlab.mudlej.MjPdfReader.databinding.ActivityMainBinding
 import com.gitlab.mudlej.MjPdfReader.databinding.PasswordDialogBinding
 import com.gitlab.mudlej.MjPdfReader.enums.AdditionalOptions
 import com.gitlab.mudlej.MjPdfReader.enums.FileType
 import com.gitlab.mudlej.MjPdfReader.manager.database.DatabaseManager
 import com.gitlab.mudlej.MjPdfReader.manager.database.DatabaseManagerImpl
+import com.gitlab.mudlej.MjPdfReader.manager.extractor.PdfExtractor
 import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManager
 import com.gitlab.mudlej.MjPdfReader.manager.fullscreen.FullScreenOptionsManagerImpl
+import com.gitlab.mudlej.MjPdfReader.manager.llm.OpenRouterHttpException
+import com.gitlab.mudlej.MjPdfReader.manager.llm.ReferenceAnalyzer
 import com.gitlab.mudlej.MjPdfReader.manager.permission.PermissionManager
 import com.gitlab.mudlej.MjPdfReader.manager.print.PdfDocumentAdapter
 import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
@@ -98,6 +103,7 @@ import com.gitlab.mudlej.MjPdfReader.ui.about.AboutActivity
 import com.gitlab.mudlej.MjPdfReader.ui.bookmark.BookmarksActivity
 import com.gitlab.mudlej.MjPdfReader.ui.home.HomeActivity
 import com.gitlab.mudlej.MjPdfReader.ui.link.LinksActivity
+import com.gitlab.mudlej.MjPdfReader.ui.reference.ReferencePopup
 import com.gitlab.mudlej.MjPdfReader.ui.search.SearchActivity
 import com.gitlab.mudlej.MjPdfReader.ui.settings.SettingsActivity
 import com.gitlab.mudlej.MjPdfReader.ui.text_mode.TextModeActivity
@@ -107,13 +113,16 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.shockwave.pdfium.PdfPasswordException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.io.*
 import java.time.LocalDateTime
 import java.util.*
@@ -149,6 +158,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appTitlePageNumber: TextView
     private lateinit var showSearchBar: () -> Unit
     private var brightness: Int = -1
+
+    private var referenceExtractor: PdfExtractor? = null
+    private var currentAnalysis: PageAnalysisResult? = null
+    private var analysisJob: Job? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -321,8 +334,20 @@ class MainActivity : AppCompatActivity() {
             .onPageChange { page: Int, pageCount: Int -> setCurrentPage(page, pageCount) }
             .enableAnnotationRendering(Preferences.annotationRenderingDefault)
             .enableAntialiasing(pref.getAntiAliasing())
-            .onTap { fullScreenOptionsManager.showAllTemporarilyOrHide(); true }
-            .onLongPress { copyPageText(false) }
+            .onTap { e ->
+                val hit = findReferenceMentionAt(e.x, e.y)
+                if (hit != null) {
+                    showReferencePopup(e.x, e.y, hit)
+                    true
+                } else {
+                    fullScreenOptionsManager.showAllTemporarilyOrHide()
+                    true
+                }
+            }
+            .onLongPress { e ->
+                val hit = findReferenceMentionAt(e.x, e.y)
+                if (hit != null) showReferencePopup(e.x, e.y, hit) else copyPageText(false)
+            }
             .scrollHandle(createScrollHandle())
             .spacing(spacing)
             .onError { exception: Throwable -> handleFileOpeningError(exception) }
@@ -361,7 +386,8 @@ class MainActivity : AppCompatActivity() {
             R.id.shareFileOption,
             R.id.printFileOption,
             R.id.searchOption,
-            R.id.toggleSecondBarOption
+            R.id.toggleSecondBarOption,
+            R.id.analyzeReferencesOption
         )
         barButtonsThatNeedFile.forEach { actionBarMenu.findItem(it)?.isVisible = true }
 
@@ -464,6 +490,161 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(binding.root, "Couldn't find text in this page.", Snackbar.LENGTH_LONG).show()
             showNoTextInPage = false
         }
+    }
+
+    private fun getOrCreateReferenceExtractor(): PdfExtractor? {
+        referenceExtractor?.let { return it }
+        val uri = pdf.uri ?: return null
+        return try {
+            createPdfExtractor(this, uri, pdf.password).also { referenceExtractor = it }
+        } catch (throwable: Throwable) {
+            Log.e(TAG, "getOrCreateReferenceExtractor: failed to create PdfExtractor", throwable)
+            null
+        }
+    }
+
+    private fun showAnalysisScopeDialog() {
+        val options = arrayOf(getString(R.string.analyze_this_page), getString(R.string.analyze_whole_document))
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.analyze_references))
+            .setItems(options) { dialog, which ->
+                dialog.dismiss()
+                if (which == 0) triggerReferenceAnalysis() else triggerDocumentAnalysis()
+            }
+            .show()
+    }
+
+    private fun triggerReferenceAnalysis() {
+        val apiKey = pref.getLlmApiKey()
+        if (apiKey.isNullOrBlank()) {
+            showApiKeyMissingSnackbar()
+            return
+        }
+        val extractor = getOrCreateReferenceExtractor() ?: return
+        val fileHash = pdf.fileHash ?: return
+        val centerPage = pdf.pageNumber
+        val analyzer = ReferenceAnalyzer(extractor)
+        val windowKey = analyzer.windowKeyFor(centerPage, extractor.getPageCount())
+
+        val loadingSnackbar = Snackbar.make(binding.root, getString(R.string.analyzing_page), Snackbar.LENGTH_INDEFINITE)
+        loadingSnackbar.show()
+
+        lifecycleScope.launch {
+            try {
+                val cached = databaseManager.findReferenceAnalysis(fileHash, windowKey)
+                val result = cached ?: analyzer.analyze(apiKey, centerPage)
+                if (cached == null) {
+                    databaseManager.saveReferenceAnalysis(fileHash, windowKey, centerPage, result)
+                }
+                currentAnalysis = result
+                loadingSnackbar.dismiss()
+                Snackbar.make(binding.root, getString(R.string.analysis_found_references, result.items.size), Snackbar.LENGTH_LONG).show()
+            } catch (throwable: Throwable) {
+                loadingSnackbar.dismiss()
+                handleAnalysisError(throwable)
+            }
+        }
+    }
+
+    private fun triggerDocumentAnalysis() {
+        val apiKey = pref.getLlmApiKey()
+        if (apiKey.isNullOrBlank()) {
+            showApiKeyMissingSnackbar()
+            return
+        }
+        val extractor = getOrCreateReferenceExtractor() ?: return
+        val fileHash = pdf.fileHash ?: return
+        val pageCount = extractor.getPageCount()
+        val chunkCount = (pageCount + ReferenceAnalyzer.DOCUMENT_CHUNK_SIZE - 1) / ReferenceAnalyzer.DOCUMENT_CHUNK_SIZE
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.analysis_document_confirm_title))
+            .setMessage(getString(R.string.analysis_document_confirm_message, pageCount, chunkCount))
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                dialog.dismiss()
+                startDocumentAnalysis(extractor, fileHash, apiKey)
+            }
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
+    private fun startDocumentAnalysis(extractor: PdfExtractor, fileHash: String, apiKey: String) {
+        val analyzer = ReferenceAnalyzer(extractor)
+        val windowKey = "full"
+
+        val progressSnackbar = Snackbar.make(binding.root, getString(R.string.analyzing_document_progress, 0, 1), Snackbar.LENGTH_INDEFINITE)
+        progressSnackbar.setAction(getString(R.string.cancel)) { analysisJob?.cancel() }
+        progressSnackbar.show()
+
+        analysisJob = lifecycleScope.launch {
+            try {
+                val cached = databaseManager.findReferenceAnalysis(fileHash, windowKey)
+                val result = cached ?: analyzer.analyzeDocument(apiKey) { done, total ->
+                    progressSnackbar.setText(getString(R.string.analyzing_document_progress, done, total))
+                }
+                if (cached == null) {
+                    databaseManager.saveReferenceAnalysis(fileHash, windowKey, -1, result)
+                }
+                currentAnalysis = result
+                progressSnackbar.dismiss()
+                Snackbar.make(binding.root, getString(R.string.analysis_found_references, result.items.size), Snackbar.LENGTH_LONG).show()
+            } catch (throwable: Throwable) {
+                progressSnackbar.dismiss()
+                if (throwable !is kotlinx.coroutines.CancellationException) {
+                    handleAnalysisError(throwable)
+                }
+            }
+        }
+    }
+
+    private fun showApiKeyMissingSnackbar() {
+        Snackbar.make(binding.root, getString(R.string.analysis_no_api_key), Snackbar.LENGTH_LONG)
+            .setAction(getString(R.string.analysis_no_api_key_action)) {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            }
+            .show()
+    }
+
+    private fun handleAnalysisError(throwable: Throwable) {
+        Log.e(TAG, "Reference analysis failed", throwable)
+        val message = when (throwable) {
+            is OpenRouterHttpException -> if (throwable.code == 401 || throwable.code == 403) {
+                getString(R.string.analysis_auth_error, throwable.code)
+            } else {
+                getString(R.string.analysis_http_error, throwable.code)
+            }
+            is IOException -> getString(R.string.analysis_network_error)
+            is JsonSyntaxException -> getString(R.string.analysis_parse_error)
+            else -> getString(R.string.analysis_parse_error)
+        }
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun findReferenceMentionAt(x: Float, y: Float): ReferenceMention? {
+        val analysis = currentAnalysis ?: return null
+        val page = binding.pdfView.getPageAtTouchOffset(x, y)
+        val extractor = referenceExtractor ?: return null
+        val mappedX = -binding.pdfView.getCurrentXOffset() + x
+        val mappedY = -binding.pdfView.getCurrentYOffset() + y
+
+        for (mention in analysis.mentions) {
+            if (mention.mentionPageNumber != page || mention.resolvedItemId == null) continue
+            val pageRects = extractor.getTextBounds(page + 1, mention.charStart, mention.charEnd)
+            for (rect in pageRects) {
+                val mapped = binding.pdfView.mapPageRectToDevice(page, rect) ?: continue
+                if (mapped.contains(mappedX, mappedY)) {
+                    return mention
+                }
+            }
+        }
+        return null
+    }
+
+    private fun showReferencePopup(anchorX: Float, anchorY: Float, mention: ReferenceMention) {
+        val analysis = currentAnalysis ?: return
+        val item = analysis.items.firstOrNull { it.id == mention.resolvedItemId } ?: return
+        val extractor = referenceExtractor ?: return
+        ReferencePopup.show(this, binding.root, extractor, item, anchorX, anchorY)
     }
 
     private fun setUpSecondBar() {
@@ -1156,6 +1337,7 @@ class MainActivity : AppCompatActivity() {
             //R.id.searchOption -> searchFileClicked()
             R.id.toggleSecondBarOption -> toggleSecondBar()
             R.id.additionalOptionsOption -> showAdditionalOptions()
+            R.id.analyzeReferencesOption -> showAnalysisScopeDialog()
             else -> return super.onOptionsItemSelected(item)
         }
         return true

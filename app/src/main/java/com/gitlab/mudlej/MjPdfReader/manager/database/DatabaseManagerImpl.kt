@@ -1,8 +1,11 @@
 package com.gitlab.mudlej.MjPdfReader.manager.database
 
+import com.gitlab.mudlej.MjPdfReader.data.llm.PageAnalysisResult
 import com.gitlab.mudlej.MjPdfReader.enums.ReadingStatus
 import com.gitlab.mudlej.MjPdfReader.repository.AppDatabase
 import com.gitlab.mudlej.MjPdfReader.repository.PdfRecord
+import com.gitlab.mudlej.MjPdfReader.repository.ReferenceAnalysisCache
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -10,6 +13,8 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 class DatabaseManagerImpl(private val database: AppDatabase): DatabaseManager {
+
+    private val gson = Gson()
 
     override suspend fun findAllRecords(): List<PdfRecord> {
         return withContext(Dispatchers.IO) {
@@ -74,6 +79,32 @@ class DatabaseManagerImpl(private val database: AppDatabase): DatabaseManager {
     override suspend fun setPassword(fileHash: String, password: String) {
         withContext(Dispatchers.IO) {
             database.pdfRecordDao().updatePassword(fileHash, password)
+        }
+    }
+
+    override suspend fun findReferenceAnalysis(fileHash: String, windowKey: String): PageAnalysisResult? {
+        return withContext(Dispatchers.IO) {
+            database.referenceAnalysisCacheDao().find(fileHash, windowKey)
+                ?.let { gson.fromJson(it.resultJson, PageAnalysisResult::class.java) }
+        }
+    }
+
+    override suspend fun saveReferenceAnalysis(
+        fileHash: String,
+        windowKey: String,
+        centerPage: Int,
+        result: PageAnalysisResult,
+    ) {
+        withContext(Dispatchers.IO) {
+            database.referenceAnalysisCacheDao().insert(
+                ReferenceAnalysisCache(
+                    fileHash = fileHash,
+                    windowKey = windowKey,
+                    centerPage = centerPage,
+                    resultJson = gson.toJson(result),
+                    createdAt = LocalDateTime.now(),
+                )
+            )
         }
     }
 

@@ -54,18 +54,20 @@ import androidx.room.migration.AutoMigrationSpec
 import com.gitlab.mudlej.MjPdfReader.util.DataConverter
 
 @Database(
-    entities = [PdfRecord::class],
-    version = 3,
+    entities = [PdfRecord::class, ReferenceAnalysisCache::class],
+    version = 4,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2, spec = AppDatabase.MyAutoMigration::class),
         AutoMigration(from = 1, to = 3, spec = AppDatabase.MyAutoMigration::class),
-        AutoMigration(from = 2, to = 3)
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4)
     ]
 )
 @TypeConverters(DataConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun pdfRecordDao(): PdfRecordDao
+    abstract fun referenceAnalysisCacheDao(): ReferenceAnalysisCacheDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null

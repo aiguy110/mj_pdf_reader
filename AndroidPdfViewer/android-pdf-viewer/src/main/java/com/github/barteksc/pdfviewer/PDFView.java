@@ -1526,6 +1526,43 @@ public class PDFView extends RelativeLayout {
     }
 
     /**
+     * Maps a page-space (PDF point units) rect for pageIndex (0-indexed) into the same
+     * content-space coordinates used by {@link DragPinchManager}'s link tap hit-testing (i.e.
+     * comparable against a touch point after subtracting {@link #getCurrentXOffset()}/
+     * {@link #getCurrentYOffset()} — see {@code checkLinkTapped}), not raw screen coordinates.
+     */
+    public RectF mapPageRectToDevice(int pageIndex, RectF pageBoundsInPoints) {
+        if (pdfFile == null) {
+            return null;
+        }
+        SizeF pageSize = pdfFile.getScaledPageSize(pageIndex, zoom);
+        int pageX, pageY;
+        if (isSwipeVertical()) {
+            pageX = (int) pdfFile.getSecondaryPageOffset(pageIndex, zoom);
+            pageY = (int) pdfFile.getPageOffset(pageIndex, zoom);
+        } else {
+            pageY = (int) pdfFile.getSecondaryPageOffset(pageIndex, zoom);
+            pageX = (int) pdfFile.getPageOffset(pageIndex, zoom);
+        }
+        RectF mapped = pdfFile.mapRectToDevice(pageIndex, pageX, pageY, (int) pageSize.getWidth(),
+                (int) pageSize.getHeight(), pageBoundsInPoints);
+        if (mapped != null) {
+            mapped.sort();
+        }
+        return mapped;
+    }
+
+    /** Page (0-indexed) at the given touch point, using the same offset math as link tap hit-testing. */
+    public int getPageAtTouchOffset(float x, float y) {
+        if (pdfFile == null) {
+            return -1;
+        }
+        float mappedX = -getCurrentXOffset() + x;
+        float mappedY = -getCurrentYOffset() + y;
+        return pdfFile.getPageAtOffset(isSwipeVertical() ? mappedY : mappedX, zoom);
+    }
+
+    /**
      * Get the text of page
      */     // added by Mudlej
     public Map<Integer, String> getPagesText(int start, int end) {

@@ -147,6 +147,26 @@
     <string name="this_is_experimental">This is experimental</string>
     <string name="this_is_experimental_message">This feature of the app is still under development and is not stable or fully correct.</string>
     <string name="go_back">Go Back</string>
+
+    <string name="reference_viewer_settings">Reference Viewer</string>
+    <string name="openrouter_api_key">OpenRouter API Key</string>
+    <string name="openrouter_api_key_summary">Required to analyze pages for equation/figure references</string>
+    <string name="not_set">Not set</string>
+
+    <string name="analyze_references">Analyze Page for References</string>
+    <string name="analyze_this_page">This Page</string>
+    <string name="analyze_whole_document">Whole Document</string>
+    <string name="analyzing_page">Analyzing page…</string>
+    <string name="analyzing_document_progress">Analyzing page %1$d/%2$d…</string>
+    <string name="analysis_found_references">Found %1$d references — tap or hold highlighted text to view</string>
+    <string name="analysis_no_api_key">Set an OpenRouter API key first</string>
+    <string name="analysis_no_api_key_action">Set API Key</string>
+    <string name="analysis_network_error">Failed to reach OpenRouter — check connection</string>
+    <string name="analysis_auth_error">OpenRouter error %1$d — check API key</string>
+    <string name="analysis_http_error">OpenRouter error %1$d</string>
+    <string name="analysis_parse_error">Could not understand analysis result, try again</string>
+    <string name="analysis_document_confirm_title">Analyze Whole Document?</string>
+    <string name="analysis_document_confirm_message">This will analyze %1$d pages in ~%2$d requests to OpenRouter, which may take a while and use API credits.</string>
     <string name="selectable_text">Selectable Text of Page</string>
     <string name="show_copy_dialog_summary">Show a pop up that has the extracted text of the page when pressing and hold.</string>
     <string name="show_copy_dialog_title">Show Copy Text Dialog</string>
