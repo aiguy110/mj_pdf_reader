@@ -32,6 +32,18 @@ jobs:
           AU=placeholder-api-uri
           EOF
 
+      # PdfiumAndroid/build.gradle expects prebuilt .so files under src/main/libs
+      # (jniLibs.srcDir); they aren't checked into git (see PdfiumAndroid/src/main/jni/lib,
+      # which vendors the pdfium/freetype/libpng prebuilt .so consumed by Android.mk) and
+      # must be produced by ndk-build before the app module is assembled, or PDF loading
+      # fails at runtime with UnsatisfiedLinkError: nativeOpenDocument.
+      - name: Install NDK
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;26.1.10909125"
+
+      - name: Build PdfiumAndroid native libraries
+        run: "$ANDROID_HOME/ndk/26.1.10909125/ndk-build NDK_PROJECT_PATH=$(pwd)"
+        working-directory: PdfiumAndroid/src/main
+
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace
 
