@@ -45,7 +45,9 @@ package com.gitlab.mudlej.MjPdfReader
 
 import android.app.Application
 import android.content.Context
+import com.gitlab.mudlej.MjPdfReader.manager.log.RemoteLogging
 import com.google.android.material.color.DynamicColors
+import timber.log.Timber
 import org.acra.ReportField
 import org.acra.config.dialog
 import org.acra.config.httpSender
@@ -56,6 +58,11 @@ class App : Application() {
     override fun onCreate() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         super.onCreate()
+
+        // Forward logging API for new code (writes to logcat, so the drain captures it too).
+        Timber.plant(Timber.DebugTree())
+        // Capture this process's logcat -> local backup file -> batched upload to the mj-logs sink.
+        RemoteLogging.init(this)
     }
 
     override fun attachBaseContext(base: Context) {

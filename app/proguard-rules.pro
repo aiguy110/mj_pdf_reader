@@ -79,6 +79,8 @@
 
 # Application classes that will be serialized/deserialized over Gson
 -keep class com.gitlab.mudlej.MjPdfReader.data.SearchResult { *; }
+-keep class com.gitlab.mudlej.MjPdfReader.manager.log.LogEntry { *; }
+-keep class com.gitlab.mudlej.MjPdfReader.manager.log.LogBatch { *; }
 -keep class android.graphics.Bitmap { *; }
 -keep class java.io.File { *; }
 
